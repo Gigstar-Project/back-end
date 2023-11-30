@@ -46,11 +46,4 @@ public class MailServiceTest {
         assertEquals(201, emailResponse.getCode());
     }
 
-
-    @Test
-    public void testEmailIsAvailable() throws GeegStarException {
-        String userEmail = "max_ret@yahoo.com";
-        Boolean emailIsAvailable = mailService.isEmailAvailable(userEmail);
-        assertTrue(emailIsAvailable);
-    }
 }

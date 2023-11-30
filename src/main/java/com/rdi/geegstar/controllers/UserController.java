@@ -2,13 +2,11 @@ package com.rdi.geegstar.controllers;
 
 import com.rdi.geegstar.dto.requests.RegistrationRequest;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
+import com.rdi.geegstar.exceptions.GeegStarException;
 import com.rdi.geegstar.services.GeegStarUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -17,10 +15,30 @@ import static org.springframework.http.HttpStatus.CREATED;
 @AllArgsConstructor
 public class UserController {
 
-    private final GeegStarUserService gigStarUserService;
+    private final GeegStarUserService geegStarUserService;
 
     @PostMapping
     public ResponseEntity<RegistrationResponse> register(@RequestBody RegistrationRequest registrationRequest) {
-        return ResponseEntity.status(CREATED).body(gigStarUserService.registerUser(registrationRequest));
+        return ResponseEntity.status(CREATED).body(geegStarUserService.registerUser(registrationRequest));
+    }
+
+    @PostMapping("/confirmation-code/{userEmail}")
+    public ResponseEntity<?> requestEmailConfirmationCode(@PathVariable String userEmail) {
+        try {
+            return ResponseEntity.status(CREATED).body(geegStarUserService.requestEmailConfirmationCode(userEmail));
+        } catch (GeegStarException exception) {
+            return ResponseEntity.badRequest().body(exception);
+        }
+    }
+
+    @PostMapping("/confirm/{userEmail}/code/{tokenCode}")
+    public ResponseEntity<?> confirmEmail(@PathVariable String userEmail, @PathVariable String tokenCode) {
+        try {
+            return ResponseEntity.ok(geegStarUserService.confirmEmail(userEmail, tokenCode));
+
+        } catch (GeegStarException exception) {
+            return ResponseEntity.badRequest().body(exception);
+        }
+
     }
 }

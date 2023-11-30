@@ -25,7 +25,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class BrevoMailService implements MailService{
 
     private final MailConfig mailConfig;
-    private final UserService userService;
+
     @Override
     public EmailResponse sendMail(EmailRequest emailRequest) {
         final String URL = mailConfig.getBrevoMailUrl();
@@ -45,14 +45,6 @@ public class BrevoMailService implements MailService{
         return emailResponse;
     }
 
-    @Override
-    public Boolean isEmailAvailable(String userEmail) throws GeegStarException {
-        String regexPattern = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
-        boolean isNotValidEmail = !Pattern.compile(regexPattern).matcher(userEmail).matches();
-        if(isNotValidEmail) throw new GeegStarException(String.format("The email %s is not valid", userEmail));
-        boolean isEmailTaken = userService.findByEmail(userEmail).isPresent();
-        if (isEmailTaken) throw new EmailIsTakenException(String.format("The email %s is taken", userEmail));
-        return true;
-    }
+
 
 }

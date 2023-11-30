@@ -8,6 +8,4 @@ import com.rdi.geegstar.exceptions.GeegStarException;
 public interface MailService {
 
     EmailResponse sendMail(EmailRequest emailRequest);
-
-    Boolean isEmailAvailable(String userEmail) throws GeegStarException;
 }

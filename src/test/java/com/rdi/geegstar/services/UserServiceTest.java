@@ -3,11 +3,15 @@ package com.rdi.geegstar.services;
 import com.rdi.geegstar.dto.requests.RegistrationRequest;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.enums.Role;
+import com.rdi.geegstar.exceptions.EmailConfirmationFailedException;
+import com.rdi.geegstar.exceptions.GeegStarException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 public class UserServiceTest {
@@ -18,7 +22,6 @@ public class UserServiceTest {
 
     @Test
     public void testRegister(){
-
         RegistrationRequest registerRequest = new RegistrationRequest();
         registerRequest.setFirstName("Retnaa");
         registerRequest.setLastName("Dayok");
@@ -33,7 +36,19 @@ public class UserServiceTest {
 
 
     @Test
-    public void testEmailConfirmation() {
+    public void testRequestConfirmationCode() throws GeegStarException {
+        String userEmail = "ebukizy1@gmail.com";
+        var response = userService.requestEmailConfirmationCode(userEmail);
+        assertNotNull(response);
+    }
 
+
+    @Test
+    @Sql("/db/insert.sql")
+    public void testConfirmingEmail() throws EmailConfirmationFailedException {
+        String userEmail = "john499@qianhost.com";
+        String code = "4532";
+        var response = userService.confirmEmail(userEmail, code);
+        assertTrue(response);
     }
 }
