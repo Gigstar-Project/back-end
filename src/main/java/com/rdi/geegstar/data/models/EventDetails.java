@@ -14,6 +14,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Setter
 @Getter
 @Entity
+@Table(name = "events_details")
 @AllArgsConstructor
 @NoArgsConstructor
 public class EventDetails {

@@ -10,6 +10,7 @@ import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.exceptions.EmailConfirmationFailedException;
 import com.rdi.geegstar.exceptions.EmailIsTakenException;
 import com.rdi.geegstar.exceptions.GeegStarException;
+import com.rdi.geegstar.exceptions.UserNotFoundException;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,11 @@ public class GeegStarUserService implements UserService{
     @Override
     public Boolean confirmEmail(String userEmail, String tokenCode) throws EmailConfirmationFailedException {
         return tokenService.confirmEmail(userEmail, tokenCode);
+    }
+
+    @Override
+    public User findById(Long creativeTalentId) throws UserNotFoundException {
+        return userRepository.findById(creativeTalentId).orElseThrow(() -> new UserNotFoundException("User was not found in our system"));
     }
 
     private void emailConfirmationCodeTo(String userEmail, String tokenCode) {
