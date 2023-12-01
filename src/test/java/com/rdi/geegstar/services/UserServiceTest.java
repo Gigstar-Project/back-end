@@ -29,7 +29,7 @@ public class UserServiceTest {
         registerRequest.setEmail("dayokr@gmail.com");
         registerRequest.setPhoneNumber("07031005737");
         registerRequest.setPassword("password");
-        registerRequest.setRole(Role.CREATIVE_TALENT);
+        registerRequest.setRole(Role.TALENT);
         RegistrationResponse registrationResponse = userService.registerUser(registerRequest);
         assertNotNull(registrationResponse);
     }

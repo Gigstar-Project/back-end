@@ -1,8 +1,9 @@
-package com.rdi.geegstar.services;
+package com.rdi.geegstar.services.geegstarimplementations;
 
 import com.rdi.geegstar.data.models.Token;
 import com.rdi.geegstar.data.repositories.TokenRepository;
 import com.rdi.geegstar.exceptions.EmailConfirmationFailedException;
+import com.rdi.geegstar.services.TokenService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class GeegStarTokenService implements TokenService{
+public class GeegStarTokenService implements TokenService {
 
     private final TokenRepository tokenRepository;
     private final ModelMapper modelMapper;

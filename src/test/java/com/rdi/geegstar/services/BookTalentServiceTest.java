@@ -1,8 +1,8 @@
 package com.rdi.geegstar.services;
 
 import com.rdi.geegstar.dto.requests.AddressRequest;
-import com.rdi.geegstar.dto.requests.BookCreativeTalentRequest;
-import com.rdi.geegstar.dto.requests.EventDetailsRequest;
+import com.rdi.geegstar.dto.requests.BookTalentRequest;
+import com.rdi.geegstar.dto.requests.EventDetailRequest;
 import com.rdi.geegstar.dto.response.BookCreativeTalentResponse;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -25,20 +25,20 @@ public class BookTalentServiceTest {
 
     @Test
     @Sql("/db/insertUsers.sql")
-    public void testBookingTalent() throws UserNotFoundException {
-        BookCreativeTalentRequest bookCreativeTalentRequest = new BookCreativeTalentRequest();
-        EventDetailsRequest eventDetailsRequest = getEventDetailsRequest();
-        bookCreativeTalentRequest.setCreativeTalentId(102L);
-        bookCreativeTalentRequest.setEventDetails(eventDetailsRequest);
-        bookCreativeTalentRequest.setEventPlannerId(103L);
+    public void testBookTalent() throws UserNotFoundException {
+        BookTalentRequest bookTalentRequest = new BookTalentRequest();
+        EventDetailRequest eventDetailsRequest = getEventDetailsRequest();
+        bookTalentRequest.setCreativeTalentId(102L);
+        bookTalentRequest.setEventDetails(eventDetailsRequest);
+        bookTalentRequest.setEventPlannerId(103L);
         BookCreativeTalentResponse bookCreativeTalentResponse =
-                bookTalentService.bookCreativeTalent(bookCreativeTalentRequest);
+                bookTalentService.bookTalent(bookTalentRequest);
 
         assertThat(bookCreativeTalentResponse).isNotNull();
     }
 
-    public static EventDetailsRequest getEventDetailsRequest() {
-        EventDetailsRequest eventDetailsRequest = new EventDetailsRequest();
+    public static EventDetailRequest getEventDetailsRequest() {
+        EventDetailRequest eventDetailsRequest = new EventDetailRequest();
 
         eventDetailsRequest.setEventName("Darda's birthday party");
         eventDetailsRequest.setEventType(BIRTHDAY_PARTY);
@@ -61,5 +61,10 @@ public class BookTalentServiceTest {
         addressRequest.setBuildingNumber(4634L);
         addressRequest.setStreet("Yaba");
         return addressRequest;
+    }
+
+    @Test
+    public void testAcceptBooking() {
+
     }
 }

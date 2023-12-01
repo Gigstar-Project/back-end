@@ -1,8 +1,8 @@
 package com.rdi.geegstar.services;
 
-import com.rdi.geegstar.data.models.EventDetails;
-import com.rdi.geegstar.dto.requests.EventDetailsRequest;
+import com.rdi.geegstar.data.models.EventDetail;
+import com.rdi.geegstar.dto.requests.EventDetailRequest;
 
 public interface EventDetailsService {
-    EventDetails create(EventDetailsRequest eventDetailsRequest);
+    EventDetail create(EventDetailRequest eventDetailsRequest);
 }

@@ -1,4 +1,4 @@
-package com.rdi.geegstar.services;
+package com.rdi.geegstar.services.geegstarimplementations;
 
 import com.rdi.geegstar.data.models.Token;
 import com.rdi.geegstar.data.models.User;
@@ -11,6 +11,9 @@ import com.rdi.geegstar.exceptions.EmailConfirmationFailedException;
 import com.rdi.geegstar.exceptions.EmailIsTakenException;
 import com.rdi.geegstar.exceptions.GeegStarException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
+import com.rdi.geegstar.services.MailService;
+import com.rdi.geegstar.services.TokenService;
+import com.rdi.geegstar.services.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -22,7 +25,7 @@ import java.util.regex.Pattern;
 
 @Service
 @AllArgsConstructor
-public class GeegStarUserService implements UserService{
+public class GeegStarUserService implements UserService {
 
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;

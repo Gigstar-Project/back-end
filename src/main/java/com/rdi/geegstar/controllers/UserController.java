@@ -3,7 +3,7 @@ package com.rdi.geegstar.controllers;
 import com.rdi.geegstar.dto.requests.RegistrationRequest;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.exceptions.GeegStarException;
-import com.rdi.geegstar.services.GeegStarUserService;
+import com.rdi.geegstar.services.geegstarimplementations.GeegStarUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

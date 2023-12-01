@@ -20,8 +20,8 @@ public class Booking {
     private Long id;
     @ManyToMany
     private List<User> creativeTalent;
-    @OneToOne
+    @ManyToOne
     private User eventPlanner;
     @OneToOne
-    private EventDetails eventDetails;
+    private EventDetail eventDetails;
 }

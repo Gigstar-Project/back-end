@@ -33,7 +33,7 @@ public class UserControllerTest {
         registrationRequest.setEmail("dayokr@gmail.com");
         registrationRequest.setPhoneNumber("07031005737");
         registrationRequest.setPassword("password");
-        registrationRequest.setRole(Role.CREATIVE_TALENT);
+        registrationRequest.setRole(Role.TALENT);
 
         try {
             mockMvc.perform(

@@ -25,7 +25,7 @@ public class TokenServiceTest {
 
     @Test
     @Sql("/db/insert.sql")
-    public void confirmEmail() throws EmailConfirmationFailedException {
+    public void testConfirmEmail() throws EmailConfirmationFailedException {
         String userEmail = "john499@qianhost.com";
         String code = "4532";
         boolean confirmEmailResponse = tokenService.confirmEmail(userEmail, code);

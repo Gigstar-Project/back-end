@@ -17,13 +17,13 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Table(name = "events_details")
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventDetails {
+public class EventDetail {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
     private String eventName;
     private LocalDateTime eventDateAndTime;
-    @OneToOne(cascade = CascadeType.MERGE)
+    @OneToOne(cascade = CascadeType.ALL)
     private Address eventAddress;
     @Enumerated(EnumType.STRING)
     private EventType eventType;
