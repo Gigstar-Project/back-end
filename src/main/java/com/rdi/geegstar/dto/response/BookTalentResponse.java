@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BookCreativeTalentResponse {
+public class BookTalentResponse {
     private Long bookingId;
 }

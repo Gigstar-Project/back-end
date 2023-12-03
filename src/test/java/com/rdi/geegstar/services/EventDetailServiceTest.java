@@ -20,7 +20,5 @@ public class EventDetailServiceTest {
         EventDetailRequest eventDetailsRequest = getEventDetailsRequest();
         EventDetail eventDetails = eventDetailsService.create(eventDetailsRequest);
         assertThat(eventDetails).isNotNull();
-        System.out.println(eventDetails.getId());
-        System.out.println(eventDetails.getEventAddress().getId());
     }
 }

@@ -1,9 +1,13 @@
 package com.rdi.geegstar.services;
 
+import com.rdi.geegstar.dto.requests.AcceptBookingRequest;
 import com.rdi.geegstar.dto.requests.AddressRequest;
 import com.rdi.geegstar.dto.requests.BookTalentRequest;
 import com.rdi.geegstar.dto.requests.EventDetailRequest;
-import com.rdi.geegstar.dto.response.BookCreativeTalentResponse;
+import com.rdi.geegstar.dto.response.AcceptBookingResponse;
+import com.rdi.geegstar.dto.response.BookTalentResponse;
+import com.rdi.geegstar.dto.response.DeclineBookingResponse;
+import com.rdi.geegstar.exceptions.BookingNotFoundException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,15 +30,43 @@ public class BookTalentServiceTest {
     @Test
     @Sql("/db/insertUsers.sql")
     public void testBookTalent() throws UserNotFoundException {
+        BookTalentResponse bookTalentResponse = bookTalent();
+
+        assertThat(bookTalentResponse).isNotNull();
+    }
+
+    @Test
+    @Sql("/db/insertUsers.sql")
+    public void testAcceptBooking() throws UserNotFoundException, BookingNotFoundException {
+        BookTalentResponse bookTalentResponse = bookTalent();
+
+        AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
+        acceptBookingRequest.setBookingReply(true);
+        acceptBookingRequest.setBookingId(bookTalentResponse.getBookingId());
+
+        AcceptBookingResponse acceptBookingResponse =
+                bookTalentService.acceptBooking(acceptBookingRequest);
+
+        assertThat(acceptBookingResponse).isNotNull();
+    }
+
+    @Test
+    @Sql("/db/insertUsers.sql")
+    public void testDeclineBooking() throws UserNotFoundException, BookingNotFoundException {
+        BookTalentResponse bookTalentResponse = bookTalent();
+
+        DeclineBookingResponse declineBookingResponse =
+                bookTalentService.declineBooking(bookTalentResponse.getBookingId());
+        assertThat(declineBookingResponse).isNotNull();
+    }
+
+    private BookTalentResponse bookTalent() throws UserNotFoundException {
         BookTalentRequest bookTalentRequest = new BookTalentRequest();
         EventDetailRequest eventDetailsRequest = getEventDetailsRequest();
-        bookTalentRequest.setCreativeTalentId(102L);
-        bookTalentRequest.setEventDetails(eventDetailsRequest);
-        bookTalentRequest.setEventPlannerId(103L);
-        BookCreativeTalentResponse bookCreativeTalentResponse =
-                bookTalentService.bookTalent(bookTalentRequest);
-
-        assertThat(bookCreativeTalentResponse).isNotNull();
+        bookTalentRequest.setTalent(102L);
+        bookTalentRequest.setEventDetail(eventDetailsRequest);
+        bookTalentRequest.setPlanner(103L);
+        return bookTalentService.bookTalent(bookTalentRequest);
     }
 
     public static EventDetailRequest getEventDetailsRequest() {
@@ -61,10 +93,5 @@ public class BookTalentServiceTest {
         addressRequest.setBuildingNumber(4634L);
         addressRequest.setStreet("Yaba");
         return addressRequest;
-    }
-
-    @Test
-    public void testAcceptBooking() {
-
     }
 }
