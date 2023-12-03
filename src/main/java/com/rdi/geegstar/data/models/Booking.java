@@ -19,9 +19,10 @@ public class Booking {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
     @ManyToMany
-    private List<User> creativeTalent;
+    private List<User> talent;
     @ManyToOne
-    private User eventPlanner;
+    private User planner;
     @OneToOne
-    private EventDetail eventDetails;
+    private EventDetail eventDetail;
+    private boolean isAccepted;
 }

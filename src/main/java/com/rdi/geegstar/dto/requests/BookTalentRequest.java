@@ -6,7 +6,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class BookTalentRequest {
-    private EventDetailRequest eventDetails;
-    private Long eventPlannerId;
-    private Long creativeTalentId;
+    private EventDetailRequest eventDetail;
+    private Long planner;
+    private Long talent;
 }
