@@ -8,6 +8,7 @@ import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.enums.Role;
 import com.rdi.geegstar.exceptions.BookingNotFoundException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
+import com.rdi.geegstar.exceptions.WrongDateAndTimeFormat;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,7 +27,7 @@ public class BookServiceTest {
     private UserService userService;
 
     @Test
-    public void testBookTalent() throws UserNotFoundException {
+    public void testBookTalent() throws UserNotFoundException, WrongDateAndTimeFormat {
         BookingRequest bookTalentRequest = getBookingRequest();
 
         BookingResponse bookTalentResponse = bookTalentService.bookTalent(bookTalentRequest);
@@ -35,7 +36,7 @@ public class BookServiceTest {
     }
 
     @Test
-    public void testAcceptBooking() throws UserNotFoundException, BookingNotFoundException {
+    public void testAcceptBooking() throws UserNotFoundException, BookingNotFoundException, WrongDateAndTimeFormat {
         BookingRequest bookTalentRequest = getBookingRequest();
 
         BookingResponse bookTalentResponse = bookTalentService.bookTalent(bookTalentRequest);
@@ -50,7 +51,7 @@ public class BookServiceTest {
     }
 
     @Test
-    public void testDeclineBooking() throws UserNotFoundException, BookingNotFoundException {
+    public void testDeclineBooking() throws UserNotFoundException, BookingNotFoundException, WrongDateAndTimeFormat {
         BookingRequest bookTalentRequest = getBookingRequest();
 
         BookingResponse bookTalentResponse = bookTalentService.bookTalent(bookTalentRequest);
@@ -61,7 +62,7 @@ public class BookServiceTest {
         assertThat(declineBookingResponse).isNotNull();
     }
 
-    private BookingRequest getBookingRequest() {
+    private BookingRequest getBookingRequest() throws WrongDateAndTimeFormat {
         RegistrationRequest registerRequest = new RegistrationRequest();
         registerRequest.setFirstName("Retnaa");
         registerRequest.setLastName("Dayok");
@@ -90,11 +91,11 @@ public class BookServiceTest {
         return bookTalentRequest;
     }
 
-    public static EventDetailRequest getEventDetailRequest() {
+    public static EventDetailRequest getEventDetailRequest() throws WrongDateAndTimeFormat {
         EventDetailRequest eventDetailsRequest = new EventDetailRequest();
         eventDetailsRequest.setEventName("Darda's birthday party");
         eventDetailsRequest.setEventType(BIRTHDAY_PARTY);
-        eventDetailsRequest.setEventDateAndTime(LocalDateTime.of(2023, 12, 4, 10, 30, 0));
+        eventDetailsRequest.setEventDateAndTime("2023, 12, 04, 10, 30");
         AddressRequest addressRequest = getAddressRequest();
         eventDetailsRequest.setEventAddress(addressRequest);
         return eventDetailsRequest;

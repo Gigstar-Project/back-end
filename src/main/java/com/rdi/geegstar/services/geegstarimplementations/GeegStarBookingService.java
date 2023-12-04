@@ -19,6 +19,8 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -34,6 +36,8 @@ public class GeegStarBookingService implements BookingService {
         EventDetailRequest eventDetailsRequest = bookCreativeTalentRequest.getEventDetailRequest();
         Address eventAddress = modelMapper.map(eventDetailsRequest.getEventAddress(), Address.class);
         EventDetail eventDetail = modelMapper.map(eventDetailsRequest, EventDetail.class);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy, MM, dd, HH, mm");
+        eventDetail.setEventDateAndTime(LocalDateTime.parse(eventDetailsRequest.getEventDateAndTime(), formatter));
         eventDetail.setEventAddress(eventAddress);
         Booking savedBooking = getSavedBooking(bookCreativeTalentRequest, eventDetail);
         return modelMapper.map(savedBooking, BookingResponse.class);
