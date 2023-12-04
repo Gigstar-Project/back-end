@@ -35,7 +35,6 @@ public class GeegStarUserService implements UserService {
     @Override
     public RegistrationResponse registerUser(RegistrationRequest registerRequest) {
         User user = modelMapper.map(registerRequest, User.class);
-        System.out.println(user.getFirstName());
         User savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, RegistrationResponse.class);
     }

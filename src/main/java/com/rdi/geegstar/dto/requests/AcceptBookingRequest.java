@@ -1,10 +1,10 @@
-package com.rdi.geegstar.dto.response;
+package com.rdi.geegstar.dto.requests;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class BookCreativeTalentResponse {
+public class AcceptBookingRequest {
     private Long bookingId;
 }
