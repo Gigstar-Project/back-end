@@ -1,19 +1,19 @@
 package com.rdi.geegstar.services.geegstarimplementations;
 
+import com.rdi.geegstar.data.models.Address;
 import com.rdi.geegstar.data.models.Booking;
 import com.rdi.geegstar.data.models.EventDetail;
 import com.rdi.geegstar.data.models.User;
 import com.rdi.geegstar.data.repositories.BookingRepository;
 import com.rdi.geegstar.dto.requests.AcceptBookingRequest;
-import com.rdi.geegstar.dto.requests.BookTalentRequest;
+import com.rdi.geegstar.dto.requests.BookingRequest;
 import com.rdi.geegstar.dto.requests.EventDetailRequest;
 import com.rdi.geegstar.dto.response.AcceptBookingResponse;
-import com.rdi.geegstar.dto.response.BookTalentResponse;
+import com.rdi.geegstar.dto.response.BookingResponse;
 import com.rdi.geegstar.dto.response.DeclineBookingResponse;
 import com.rdi.geegstar.exceptions.BookingNotFoundException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
-import com.rdi.geegstar.services.BookTalentService;
-import com.rdi.geegstar.services.EventDetailsService;
+import com.rdi.geegstar.services.BookingService;
 import com.rdi.geegstar.services.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -23,26 +23,27 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class GeegStarBookTalentService implements BookTalentService {
+public class GeegStarBookingService implements BookingService {
 
     private final ModelMapper modelMapper;
-    private final EventDetailsService eventDetailsService;
     private final UserService userService;
     private final BookingRepository bookingRepository;
 
     @Override
-    public BookTalentResponse bookTalent(BookTalentRequest bookCreativeTalentRequest) throws UserNotFoundException {
-        EventDetailRequest eventDetailsRequest = bookCreativeTalentRequest.getEventDetail();
-        EventDetail eventDetails = eventDetailsService.create(eventDetailsRequest);
-        Booking savedBooking = getSavedBooking(bookCreativeTalentRequest, eventDetails);
-        return modelMapper.map(savedBooking, BookTalentResponse.class);
+    public BookingResponse bookTalent(BookingRequest bookCreativeTalentRequest) throws UserNotFoundException {
+        EventDetailRequest eventDetailsRequest = bookCreativeTalentRequest.getEventDetailRequest();
+        Address eventAddress = modelMapper.map(eventDetailsRequest.getEventAddress(), Address.class);
+        EventDetail eventDetail = modelMapper.map(eventDetailsRequest, EventDetail.class);
+        eventDetail.setEventAddress(eventAddress);
+        Booking savedBooking = getSavedBooking(bookCreativeTalentRequest, eventDetail);
+        return modelMapper.map(savedBooking, BookingResponse.class);
     }
 
     @Override
     public AcceptBookingResponse acceptBooking(AcceptBookingRequest acceptBookingRequest) throws BookingNotFoundException {
         Long bookingId = acceptBookingRequest.getBookingId();
         Booking foundBooking = getBooking(bookingId);
-        foundBooking.setAccepted(acceptBookingRequest.getBookingReply());
+        foundBooking.setAccepted(true);
         bookingRepository.save(foundBooking);
         //Create a bill calling the bookingBill service
         return new AcceptBookingResponse("Successful");
@@ -61,13 +62,13 @@ public class GeegStarBookTalentService implements BookTalentService {
         return new DeclineBookingResponse("Successful");
     }
 
-    private Booking getSavedBooking(BookTalentRequest bookCreativeTalentRequest, EventDetail eventDetails) throws UserNotFoundException {
+    private Booking getSavedBooking(BookingRequest bookCreativeTalentRequest, EventDetail eventDetail) throws UserNotFoundException {
         User creativeTalent = userService.findById(bookCreativeTalentRequest.getTalent());
         User eventPlanner = userService.findById(bookCreativeTalentRequest.getPlanner());
         Booking booking = new Booking();
         booking.setTalent(List.of(creativeTalent));
         booking.setPlanner(eventPlanner);
-        booking.setEventDetail(eventDetails);
+        booking.setEventDetail(eventDetail);
         return bookingRepository.save(booking);
     }
 }
