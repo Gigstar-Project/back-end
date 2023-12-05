@@ -13,13 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDateTime;
-
 import static com.rdi.geegstar.enums.EventType.BIRTHDAY_PARTY;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
-public class BookServiceTest {
+public class BookingServiceTest {
 
     @Autowired
     private BookingService bookTalentService;
@@ -91,7 +89,7 @@ public class BookServiceTest {
         return bookTalentRequest;
     }
 
-    public static EventDetailRequest getEventDetailRequest() throws WrongDateAndTimeFormat {
+    private static EventDetailRequest getEventDetailRequest() throws WrongDateAndTimeFormat {
         EventDetailRequest eventDetailsRequest = new EventDetailRequest();
         eventDetailsRequest.setEventName("Darda's birthday party");
         eventDetailsRequest.setEventType(BIRTHDAY_PARTY);
@@ -101,7 +99,7 @@ public class BookServiceTest {
         return eventDetailsRequest;
     }
 
-    public static AddressRequest getAddressRequest() {
+    private static AddressRequest getAddressRequest() {
         AddressRequest addressRequest = new AddressRequest();
         addressRequest.setCity("Lagos mainland");
         addressRequest.setCountry("Nigeria");
