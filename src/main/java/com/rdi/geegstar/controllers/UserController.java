@@ -22,7 +22,7 @@ public class UserController {
         return ResponseEntity.status(CREATED).body(geegStarUserService.registerUser(registrationRequest));
     }
 
-    @PostMapping("/confirmation-code/{userEmail}")
+    @PostMapping("/confirmation/{userEmail}")
     public ResponseEntity<?> requestEmailConfirmationCode(@PathVariable String userEmail) {
         try {
             return ResponseEntity.status(CREATED).body(geegStarUserService.requestEmailConfirmationCode(userEmail));
@@ -31,7 +31,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/confirm/{userEmail}/code/{tokenCode}")
+    @PostMapping("/confirmation/{userEmail}/{tokenCode}")
     public ResponseEntity<?> confirmEmail(@PathVariable String userEmail, @PathVariable String tokenCode) {
         try {
             return ResponseEntity.ok(geegStarUserService.confirmEmail(userEmail, tokenCode));
