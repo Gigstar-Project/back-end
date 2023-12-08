@@ -6,6 +6,7 @@ import com.rdi.geegstar.data.repositories.UserRepository;
 import com.rdi.geegstar.dto.requests.EmailRequest;
 import com.rdi.geegstar.dto.requests.Recipient;
 import com.rdi.geegstar.dto.requests.RegistrationRequest;
+import com.rdi.geegstar.dto.response.UserDisplayDetails;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.exceptions.EmailConfirmationFailedException;
 import com.rdi.geegstar.exceptions.EmailIsTakenException;
@@ -59,8 +60,14 @@ public class GeegStarUserService implements UserService {
     }
 
     @Override
-    public User findById(Long creativeTalentId) throws UserNotFoundException {
-        return userRepository.findById(creativeTalentId).orElseThrow(() -> new UserNotFoundException("User was not found in our system"));
+    public User findById(Long userId) throws UserNotFoundException {
+        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User was not found in our system"));
+    }
+
+    @Override
+    public UserDisplayDetails getUserDetails(Long userId) throws UserNotFoundException {
+        User user = findById(userId);
+        return modelMapper.map(user, UserDisplayDetails.class);
     }
 
     private void emailConfirmationCodeTo(String userEmail, String tokenCode) {
