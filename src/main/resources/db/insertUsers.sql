@@ -2,4 +2,4 @@ insert into users (date_registered, id, email, first_name, last_name, password, 
 values ('2023-11-30 13:30:28', 102, 'da@gmail.com', 'Retnaa', 'Dayok', 'password', '07031005737', 'TALENT'),
        ('2023-11-30 13:30:28', 103, 'darda@gmail.com', 'Retnaa', 'Dayok', 'password', '07031005737', 'PLANNER'),
        ('2023-11-30 13:30:28', 104, 'daggmax@gmail.com', 'Retnaa', 'Dayok', 'password', '07031005737', 'TALENT'),
-       ('2023-11-30 13:30:28', 102, 'dammmg@gmail.com', 'Retnaa', 'Dayok', 'password', '07031005737', 'TALENT');
+       ('2023-11-30 13:30:28', 105, 'dammmg@gmail.com', 'Retnaa', 'Dayok', 'password', '07031005737', 'TALENT');

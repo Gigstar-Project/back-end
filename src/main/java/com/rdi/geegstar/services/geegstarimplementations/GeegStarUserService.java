@@ -6,6 +6,7 @@ import com.rdi.geegstar.data.repositories.UserRepository;
 import com.rdi.geegstar.dto.requests.EmailRequest;
 import com.rdi.geegstar.dto.requests.Recipient;
 import com.rdi.geegstar.dto.requests.RegistrationRequest;
+import com.rdi.geegstar.dto.response.TalentsResponse;
 import com.rdi.geegstar.dto.response.UserDisplayDetails;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.exceptions.EmailConfirmationFailedException;
@@ -23,6 +24,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import static com.rdi.geegstar.enums.Role.TALENT;
 
 @Service
 @AllArgsConstructor
@@ -68,6 +72,14 @@ public class GeegStarUserService implements UserService {
     public UserDisplayDetails getUserDetails(Long userId) throws UserNotFoundException {
         User user = findById(userId);
         return modelMapper.map(user, UserDisplayDetails.class);
+    }
+
+    @Override
+    public List<TalentsResponse> getTalents() {
+        Optional<User> talents = userRepository.getAllBy(TALENT);
+        return talents.stream()
+                .map(talent -> modelMapper.map(talent, TalentsResponse.class))
+                .collect(Collectors.toList());
     }
 
     private void emailConfirmationCodeTo(String userEmail, String tokenCode) {

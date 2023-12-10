@@ -1,6 +1,7 @@
 package com.rdi.geegstar.services;
 
 import com.rdi.geegstar.dto.requests.RegistrationRequest;
+import com.rdi.geegstar.dto.response.TalentsResponse;
 import com.rdi.geegstar.dto.response.UserDisplayDetails;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.enums.Role;
@@ -12,9 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.List;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class UserServiceTest {
@@ -74,7 +76,11 @@ public class UserServiceTest {
     }
 
     @Test
+    @Sql("/db/insertUsers.sql")
     public void testFindAllTalents() {
-
+        int totalNumberOfTalents = 3;
+        List<TalentsResponse> talentsResponseList = userService.getTalents();
+        assertThat(talentsResponseList).isNotNull();
+        assertEquals(totalNumberOfTalents, talentsResponseList.size());
     }
 }
