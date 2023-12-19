@@ -76,10 +76,11 @@ public class GeegStarUserService implements UserService {
 
     @Override
     public List<TalentsResponse> getTalents() {
-        Optional<User> talents = userRepository.getAllBy(TALENT);
-        return talents.stream()
-                .map(talent -> modelMapper.map(talent, TalentsResponse.class))
-                .collect(Collectors.toList());
+        return userRepository.findAll()
+                .stream()
+                .filter(user -> TALENT.equals(user.getRole()))
+                .map(user -> modelMapper.map(user, TalentsResponse.class))
+                .toList();
     }
 
     private void emailConfirmationCodeTo(String userEmail, String tokenCode) {
