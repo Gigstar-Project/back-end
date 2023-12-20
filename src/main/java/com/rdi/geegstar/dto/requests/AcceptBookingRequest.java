@@ -7,4 +7,5 @@ import lombok.Setter;
 @Setter
 public class AcceptBookingRequest {
     private Long bookingId;
+    private Long talentId;
 }

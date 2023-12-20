@@ -30,6 +30,7 @@ public class User {
     private String phoneNumber;
     @Enumerated(EnumType.STRING)
     private Role role;
+    private String profilePicture;
     private LocalDateTime dateRegistered;
 
     @PrePersist

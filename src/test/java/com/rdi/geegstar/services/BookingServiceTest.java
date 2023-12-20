@@ -41,6 +41,7 @@ public class BookingServiceTest {
 
         AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
         acceptBookingRequest.setBookingId(bookTalentResponse.getBookingId());
+        acceptBookingRequest.setTalentId(bookTalentRequest.getTalent());
 
         AcceptBookingResponse acceptBookingResponse =
                 bookTalentService.acceptBooking(acceptBookingRequest);

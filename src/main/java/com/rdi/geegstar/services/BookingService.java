@@ -12,7 +12,7 @@ public interface BookingService {
 
     BookingResponse bookTalent(BookingRequest bookCreativeTalentRequest) throws UserNotFoundException;
 
-    AcceptBookingResponse acceptBooking(AcceptBookingRequest acceptBookingRequest) throws BookingNotFoundException;
+    AcceptBookingResponse acceptBooking(AcceptBookingRequest acceptBookingRequest) throws BookingNotFoundException, UserNotFoundException;
 
     DeclineBookingResponse declineBooking(Long bookingId) throws BookingNotFoundException;
 }
