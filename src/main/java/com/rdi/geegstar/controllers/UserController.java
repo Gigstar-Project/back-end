@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
@@ -47,10 +49,14 @@ public class UserController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<GetUserResponse> findUserBy(@PathVariable Long id) {
         try {
-            System.out.println("I done show here oh");
             return ResponseEntity.ok(geegStarUserService.getUserById(id));
         } catch (UserNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @GetMapping("/talents")
+    public ResponseEntity<List<GetUserResponse>> getAllTalents() {
+        return ResponseEntity.ok(geegStarUserService.getAllTalents());
     }
 }

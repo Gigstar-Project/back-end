@@ -14,8 +14,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -94,7 +93,24 @@ public class UserControllerTest {
                     .andExpect(status().is2xxSuccessful())
                     .andDo(print());
         } catch (Exception exception) {
-            throw new RuntimeException(exception);
+            exception.printStackTrace();
         }
     }
+
+    @Test
+    @Sql("/db/insertUsers.sql")
+    public void testGetAllTalents() {
+        try {
+            mockMvc.perform(
+                            MockMvcRequestBuilders.get(String.format("%s/talents", URL))
+                                    .accept(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print());
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
+
 }
