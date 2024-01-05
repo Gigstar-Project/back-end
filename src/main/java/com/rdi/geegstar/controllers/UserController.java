@@ -2,9 +2,12 @@ package com.rdi.geegstar.controllers;
 
 import com.rdi.geegstar.dto.requests.RegistrationRequest;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
+import com.rdi.geegstar.dto.response.GetUserResponse;
 import com.rdi.geegstar.exceptions.GeegStarException;
+import com.rdi.geegstar.exceptions.UserNotFoundException;
 import com.rdi.geegstar.services.geegstarimplementations.GeegStarUserService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +42,15 @@ public class UserController {
         } catch (GeegStarException exception) {
             return ResponseEntity.badRequest().body(exception);
         }
+    }
 
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<GetUserResponse> findUserBy(@PathVariable Long id) {
+        try {
+            System.out.println("I done show here oh");
+            return ResponseEntity.ok(geegStarUserService.getUserById(id));
+        } catch (UserNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

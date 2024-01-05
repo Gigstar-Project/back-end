@@ -1,8 +1,7 @@
 package com.rdi.geegstar.services;
 
 import com.rdi.geegstar.dto.requests.RegistrationRequest;
-import com.rdi.geegstar.dto.response.TalentsResponse;
-import com.rdi.geegstar.dto.response.UserDisplayDetails;
+import com.rdi.geegstar.dto.response.GetUserResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.enums.Role;
 import com.rdi.geegstar.exceptions.EmailConfirmationFailedException;
@@ -58,7 +57,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testFindUserById() throws UserNotFoundException {
+    public void testGetUserById() throws UserNotFoundException {
         RegistrationRequest registerRequest = new RegistrationRequest();
         registerRequest.setFirstName("Retnaa");
         registerRequest.setLastName("Dayok");
@@ -70,15 +69,16 @@ public class UserServiceTest {
         RegistrationResponse registrationResponse = userService.registerUser(registerRequest);
         assertNotNull(registrationResponse);
 
-        UserDisplayDetails userDisplayDetails = userService.getUserDetails(registrationResponse.getId());
+        GetUserResponse userDisplayDetails = userService.getUserById(registrationResponse.getId());
 
         assertThat(userDisplayDetails).isNotNull();
     }
 
     @Test
     @Sql("/db/insertUsers.sql")
-    public void testFindAllTalents() {
-        List<TalentsResponse> talentsResponseList = userService.getTalents();
+    public void testGetAllTalents() {
+        List<GetUserResponse> talentsResponseList = userService.getAllTalents();
         assertThat(talentsResponseList).isNotNull();
     }
+
 }

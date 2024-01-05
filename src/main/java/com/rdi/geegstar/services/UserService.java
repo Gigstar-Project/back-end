@@ -2,8 +2,7 @@ package com.rdi.geegstar.services;
 
 import com.rdi.geegstar.data.models.User;
 import com.rdi.geegstar.dto.requests.RegistrationRequest;
-import com.rdi.geegstar.dto.response.TalentsResponse;
-import com.rdi.geegstar.dto.response.UserDisplayDetails;
+import com.rdi.geegstar.dto.response.GetUserResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.exceptions.EmailConfirmationFailedException;
 import com.rdi.geegstar.exceptions.GeegStarException;
@@ -24,7 +23,7 @@ public interface UserService {
 
     User findById(Long userId) throws UserNotFoundException;
 
-    UserDisplayDetails getUserDetails(Long userId) throws UserNotFoundException;
+    GetUserResponse getUserById(Long userId) throws UserNotFoundException;
 
-    List<TalentsResponse> getTalents();
+    List<GetUserResponse> getAllTalents();
 }
