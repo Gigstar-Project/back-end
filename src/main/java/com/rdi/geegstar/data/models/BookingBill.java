@@ -1,0 +1,31 @@
+package com.rdi.geegstar.data.models;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+import static jakarta.persistence.GenerationType.IDENTITY;
+
+@Entity
+@Setter
+@Getter
+public class BookingBill {
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    private Long id;
+    @OneToOne
+    private User planner;
+    @OneToOne
+    private User talent;
+    private String text;
+    private boolean isPaid;
+    private LocalDateTime dateTimeCreated;
+
+    @PrePersist
+    public void setDateTimeCreated() {
+        dateTimeCreated = LocalDateTime.now();
+    }
+
+}
