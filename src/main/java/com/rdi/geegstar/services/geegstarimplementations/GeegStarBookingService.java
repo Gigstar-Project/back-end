@@ -50,6 +50,7 @@ public class GeegStarBookingService implements BookingService {
         Booking foundBooking = findBookingById(bookingId);
         foundBooking.setAccepted(true);
         //Create a bill calling the bookingBill service
+
         createCalendar(acceptBookingRequest, foundBooking);
         return new AcceptBookingResponse("Successful");
     }

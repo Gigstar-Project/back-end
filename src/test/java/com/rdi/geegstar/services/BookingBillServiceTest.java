@@ -2,6 +2,7 @@ package com.rdi.geegstar.services;
 
 import com.rdi.geegstar.data.models.BookingBill;
 import com.rdi.geegstar.dto.requests.*;
+import com.rdi.geegstar.dto.response.BookingBillPaymentResponse;
 import com.rdi.geegstar.dto.response.BookingBillResponse;
 import com.rdi.geegstar.dto.response.BookingResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
@@ -50,7 +51,7 @@ public class BookingBillServiceTest {
 
     @Test
     @Sql("/db/insertUsers.sql")
-    public void testGetBookingBillById() throws WrongDateAndTimeFormat, UserNotFoundException, BookingNotFoundException, BookingBillNotFoundException {
+    public void testFindBookingBillById() throws WrongDateAndTimeFormat, UserNotFoundException, BookingNotFoundException, BookingBillNotFoundException {
         BookingRequest bookTalentRequest = getBookingRequest();
         BookingResponse bookTalentResponse = bookTalentService.bookTalent(bookTalentRequest);
         BookingBillRequest bookingBillRequest = new BookingBillRequest();
@@ -65,6 +66,27 @@ public class BookingBillServiceTest {
         BookingBill foundBookingBill = bookingBillService.findBookingBillById(bookingBillResponse.getBookingBillId());
 
         assertThat(foundBookingBill).isNotNull();
+    }
+
+    @Test
+    @Sql("/db/insertUsers.sql")
+    public void testPayBookingBill() throws WrongDateAndTimeFormat, UserNotFoundException, BookingNotFoundException, BookingBillNotFoundException {
+        BookingRequest bookTalentRequest = getBookingRequest();
+        BookingResponse bookTalentResponse = bookTalentService.bookTalent(bookTalentRequest);
+        BookingBillRequest bookingBillRequest = new BookingBillRequest();
+        BigDecimal cost = BigDecimal.valueOf(2000000);
+        bookingBillRequest.setBookingCost(cost);
+        bookingBillRequest.setBookingId(bookTalentResponse.getBookingId());
+        bookingBillRequest.setText("The cost covers for all expenses");
+        bookingBillRequest.setPlannerId(103L);
+        bookingBillRequest.setTalentId(102L);
+        BookingBillResponse bookingBillResponse = bookingBillService.createBookingBill(bookingBillRequest);
+
+
+        BookingBillPaymentResponse bookingBillPaymentResponse =
+                bookingBillService.payBookingBill(bookingBillResponse.getBookingBillId());
+
+        assertThat(bookingBillPaymentResponse).isNotNull();
     }
 
     private BookingRequest getBookingRequest() throws WrongDateAndTimeFormat {

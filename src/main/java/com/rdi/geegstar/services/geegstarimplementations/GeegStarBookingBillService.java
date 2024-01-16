@@ -6,6 +6,7 @@ import com.rdi.geegstar.data.models.EventDetail;
 import com.rdi.geegstar.data.models.User;
 import com.rdi.geegstar.data.repositories.BookingBillRepository;
 import com.rdi.geegstar.dto.requests.BookingBillRequest;
+import com.rdi.geegstar.dto.response.BookingBillPaymentResponse;
 import com.rdi.geegstar.dto.response.BookingBillResponse;
 import com.rdi.geegstar.exceptions.BookingBillNotFoundException;
 import com.rdi.geegstar.exceptions.BookingNotFoundException;
@@ -47,6 +48,14 @@ public class GeegStarBookingBillService implements BookingBillService {
                         () -> new BookingBillNotFoundException(
                                 String.format("Booking bill with Id %d is not found", bookingBillId)
                         ));
+    }
+
+    @Override
+    public BookingBillPaymentResponse payBookingBill(Long bookingBillId) throws BookingBillNotFoundException {
+        BookingBill foundBookingBill = findBookingBillById(bookingBillId);
+        foundBookingBill.setPaid(true);
+        bookingBillRepository.save(foundBookingBill);
+        return new BookingBillPaymentResponse("Successful");
     }
 
 }
