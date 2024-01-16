@@ -7,6 +7,7 @@ import com.rdi.geegstar.data.models.User;
 import com.rdi.geegstar.data.repositories.BookingBillRepository;
 import com.rdi.geegstar.dto.requests.BookingBillRequest;
 import com.rdi.geegstar.dto.response.BookingBillResponse;
+import com.rdi.geegstar.exceptions.BookingBillNotFoundException;
 import com.rdi.geegstar.exceptions.BookingNotFoundException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
 import com.rdi.geegstar.services.BookingBillService;
@@ -29,13 +30,23 @@ public class GeegStarBookingBillService implements BookingBillService {
     public BookingBillResponse createBookingBill(BookingBillRequest bookingBillRequest) throws UserNotFoundException, BookingNotFoundException {
         User talent = userService.findById(bookingBillRequest.getTalentId());
         User planner = userService.findById(bookingBillRequest.getPlannerId());
-        Booking booking = bookingService.findBookingById(bookingBillRequest.getBookingId());
+        Booking bookingToBill = bookingService.findBookingById(bookingBillRequest.getBookingId());
         BookingBill bookingBill = new BookingBill();
+        bookingBill.setBooking(bookingToBill);
         bookingBill.setTalent(talent);
         bookingBill.setPlanner(planner);
         bookingBill.setText(bookingBillRequest.getText());
         BookingBill savedBookingBill = bookingBillRepository.save(bookingBill);
         return modelMapper.map(savedBookingBill, BookingBillResponse.class);
+    }
+
+    @Override
+    public BookingBill findBookingBillById(Long bookingBillId) throws BookingBillNotFoundException {
+        return bookingBillRepository.findById(bookingBillId)
+                .orElseThrow(
+                        () -> new BookingBillNotFoundException(
+                                String.format("Booking bill with Id %d is not found", bookingBillId)
+                        ));
     }
 
 }

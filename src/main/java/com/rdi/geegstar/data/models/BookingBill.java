@@ -16,6 +16,8 @@ public class BookingBill {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
     @OneToOne
+    private Booking booking;
+    @OneToOne
     private User planner;
     @OneToOne
     private User talent;
