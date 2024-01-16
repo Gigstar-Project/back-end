@@ -41,7 +41,7 @@ public class UserServiceTest {
 
     @Test
     public void testRequestConfirmationCode() throws GeegStarException {
-        String userEmail = "ebukizy1@gmail.com";
+        String userEmail = "max_ret@yahoo.com";
         var response = userService.requestEmailConfirmationCode(userEmail);
         assertNotNull(response);
     }

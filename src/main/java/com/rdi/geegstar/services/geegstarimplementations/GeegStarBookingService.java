@@ -47,7 +47,7 @@ public class GeegStarBookingService implements BookingService {
     public AcceptBookingResponse acceptBooking(AcceptBookingRequest acceptBookingRequest)
             throws BookingNotFoundException, UserNotFoundException {
         Long bookingId = acceptBookingRequest.getBookingId();
-        Booking foundBooking = getBooking(bookingId);
+        Booking foundBooking = findBookingById(bookingId);
         foundBooking.setAccepted(true);
         //Create a bill calling the bookingBill service
         createCalendar(acceptBookingRequest, foundBooking);
@@ -67,14 +67,14 @@ public class GeegStarBookingService implements BookingService {
         calendarService.create(calendar);
     }
 
-    private Booking getBooking(Long bookingId) throws BookingNotFoundException {
+    public Booking findBookingById(Long bookingId) throws BookingNotFoundException {
         return bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new BookingNotFoundException(String.format("The booking with %d id is not found", bookingId)));
     }
 
     @Override
     public DeclineBookingResponse declineBooking(Long bookingId) throws BookingNotFoundException {
-        Booking foundBooking = getBooking(bookingId);
+        Booking foundBooking = findBookingById(bookingId);
         foundBooking.setAccepted(false);
         bookingRepository.save(foundBooking);
         return new DeclineBookingResponse("Successful");

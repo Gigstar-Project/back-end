@@ -1,5 +1,6 @@
 package com.rdi.geegstar.services;
 
+import com.rdi.geegstar.data.models.Booking;
 import com.rdi.geegstar.dto.requests.*;
 import com.rdi.geegstar.dto.response.AcceptBookingResponse;
 import com.rdi.geegstar.dto.response.BookingResponse;
@@ -59,6 +60,16 @@ public class BookingServiceTest {
         DeclineBookingResponse declineBookingResponse =
                 bookTalentService.declineBooking(bookTalentResponse.getBookingId());
         assertThat(declineBookingResponse).isNotNull();
+    }
+
+    @Test
+    public void testFindBookingById() throws WrongDateAndTimeFormat, UserNotFoundException, BookingNotFoundException {
+        BookingRequest bookTalentRequest = getBookingRequest();
+        BookingResponse bookTalentResponse = bookTalentService.bookTalent(bookTalentRequest);
+
+        Booking foundBooking = bookTalentService.findBookingById(bookTalentResponse.getBookingId());
+
+        assertThat(foundBooking).isNotNull();
     }
 
     private BookingRequest getBookingRequest() throws WrongDateAndTimeFormat {

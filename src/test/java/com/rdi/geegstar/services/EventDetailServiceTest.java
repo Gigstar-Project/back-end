@@ -23,6 +23,7 @@ public class EventDetailServiceTest {
         EventDetail eventDetails = eventDetailsService.create(eventDetailsRequest);
         assertThat(eventDetails).isNotNull();
     }
+
     private static EventDetailRequest getEventDetailRequest() throws WrongDateAndTimeFormat {
         EventDetailRequest eventDetailsRequest = new EventDetailRequest();
         eventDetailsRequest.setEventName("Darda's birthday party");

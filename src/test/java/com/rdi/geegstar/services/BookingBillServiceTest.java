@@ -2,6 +2,7 @@ package com.rdi.geegstar.services;
 
 import com.rdi.geegstar.dto.requests.BookingBillRequest;
 import com.rdi.geegstar.dto.response.BookingBillResponse;
+import com.rdi.geegstar.exceptions.BookingNotFoundException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class BookingBillServiceTest {
     private BookingBillService bookingBillService;
     @Test
     @Sql("/db/insertUsers.sql")
-    public void testCreateBookingBill() throws UserNotFoundException {
+    public void testCreateBookingBill() throws UserNotFoundException, BookingNotFoundException {
         BookingBillRequest bookingBillRequest = new BookingBillRequest();
         BigDecimal cost = BigDecimal.valueOf(2000000);
         bookingBillRequest.setBookingCost(cost);
