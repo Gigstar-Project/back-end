@@ -21,7 +21,7 @@ public interface UserService {
 
     Boolean confirmEmail(String userEmail, String code) throws EmailConfirmationFailedException;
 
-    User findById(Long userId) throws UserNotFoundException;
+    User findUserById(Long userId) throws UserNotFoundException;
 
     GetUserResponse getUserById(Long userId) throws UserNotFoundException;
 

@@ -59,7 +59,7 @@ public class GeegStarBookingService implements BookingService {
             AcceptBookingRequest acceptBookingRequest,
             Booking foundBooking) throws UserNotFoundException {
         Booking savedAcceptedBooking = bookingRepository.save(foundBooking);
-        User talent = userService.findById(acceptBookingRequest.getTalentId());
+        User talent = userService.findUserById(acceptBookingRequest.getTalentId());
         EventDetail eventDetail = foundBooking.getEventDetail();
         Calendar calendar = new Calendar();
         calendar.setBooking(savedAcceptedBooking);
@@ -82,8 +82,8 @@ public class GeegStarBookingService implements BookingService {
     }
 
     private Booking getSavedBooking(BookingRequest bookCreativeTalentRequest, EventDetail eventDetail) throws UserNotFoundException {
-        User creativeTalent = userService.findById(bookCreativeTalentRequest.getTalent());
-        User eventPlanner = userService.findById(bookCreativeTalentRequest.getPlanner());
+        User creativeTalent = userService.findUserById(bookCreativeTalentRequest.getTalent());
+        User eventPlanner = userService.findUserById(bookCreativeTalentRequest.getPlanner());
         Booking booking = new Booking();
         booking.setTalent(List.of(creativeTalent));
         booking.setPlanner(eventPlanner);

@@ -62,13 +62,13 @@ public class GeegStarUserService implements UserService {
     }
 
     @Override
-    public User findById(Long userId) throws UserNotFoundException {
+    public User findUserById(Long userId) throws UserNotFoundException {
         return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User was not found in our system"));
     }
 
     @Override
     public GetUserResponse getUserById(Long userId) throws UserNotFoundException {
-        User user = findById(userId);
+        User user = findUserById(userId);
         return modelMapper.map(user, GetUserResponse.class);
     }
 
