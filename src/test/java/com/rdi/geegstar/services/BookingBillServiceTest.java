@@ -14,7 +14,6 @@ import com.rdi.geegstar.exceptions.WrongDateAndTimeFormat;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.math.BigDecimal;
 
@@ -32,25 +31,24 @@ public class BookingBillServiceTest {
     private UserService userService;
 
     @Test
-    @Sql("/db/insertUsers.sql")
     public void testCreateBookingBill() throws UserNotFoundException, BookingNotFoundException, WrongDateAndTimeFormat {
         BookingRequest bookTalentRequest = getBookingRequest();
         BookingResponse bookTalentResponse = bookTalentService.bookTalent(bookTalentRequest);
-
         BookingBillRequest bookingBillRequest = new BookingBillRequest();
         BigDecimal cost = BigDecimal.valueOf(2000000);
         bookingBillRequest.setBookingCost(cost);
         bookingBillRequest.setBookingId(bookTalentResponse.getBookingId());
         bookingBillRequest.setText("The cost covers for all expenses");
-        bookingBillRequest.setPlannerId(103L);
-        bookingBillRequest.setTalentId(102L);
+        RegistrationResponse talentRegistrationResponse = getUserRegistrationResponse(Role.TALENT);
+        RegistrationResponse plannerRegistrationResponse = getUserRegistrationResponse(Role.PLANNER);
+        bookingBillRequest.setPlannerId(talentRegistrationResponse.getId());
+        bookingBillRequest.setTalentId(plannerRegistrationResponse.getId());
 
         BookingBillResponse bookingBillResponse = bookingBillService.createBookingBill(bookingBillRequest);
         assertThat(bookingBillResponse).isNotNull();
     }
 
     @Test
-    @Sql("/db/insertUsers.sql")
     public void testFindBookingBillById() throws WrongDateAndTimeFormat, UserNotFoundException, BookingNotFoundException, BookingBillNotFoundException {
         BookingRequest bookTalentRequest = getBookingRequest();
         BookingResponse bookTalentResponse = bookTalentService.bookTalent(bookTalentRequest);
@@ -59,8 +57,10 @@ public class BookingBillServiceTest {
         bookingBillRequest.setBookingCost(cost);
         bookingBillRequest.setBookingId(bookTalentResponse.getBookingId());
         bookingBillRequest.setText("The cost covers for all expenses");
-        bookingBillRequest.setPlannerId(103L);
-        bookingBillRequest.setTalentId(102L);
+        RegistrationResponse talentRegistrationResponse = getUserRegistrationResponse(Role.TALENT);
+        RegistrationResponse plannerRegistrationResponse = getUserRegistrationResponse(Role.PLANNER);
+        bookingBillRequest.setPlannerId(talentRegistrationResponse.getId());
+        bookingBillRequest.setTalentId(plannerRegistrationResponse.getId());
         BookingBillResponse bookingBillResponse = bookingBillService.createBookingBill(bookingBillRequest);
 
         BookingBill foundBookingBill = bookingBillService.findBookingBillById(bookingBillResponse.getBookingBillId());
@@ -69,7 +69,6 @@ public class BookingBillServiceTest {
     }
 
     @Test
-    @Sql("/db/insertUsers.sql")
     public void testPayBookingBill() throws WrongDateAndTimeFormat, UserNotFoundException, BookingNotFoundException, BookingBillNotFoundException {
         BookingRequest bookTalentRequest = getBookingRequest();
         BookingResponse bookTalentResponse = bookTalentService.bookTalent(bookTalentRequest);
@@ -78,37 +77,27 @@ public class BookingBillServiceTest {
         bookingBillRequest.setBookingCost(cost);
         bookingBillRequest.setBookingId(bookTalentResponse.getBookingId());
         bookingBillRequest.setText("The cost covers for all expenses");
-        bookingBillRequest.setPlannerId(103L);
-        bookingBillRequest.setTalentId(102L);
+        RegistrationResponse talentRegistrationResponse = getUserRegistrationResponse(Role.TALENT);
+        RegistrationResponse plannerRegistrationResponse = getUserRegistrationResponse(Role.PLANNER);
+        bookingBillRequest.setPlannerId(talentRegistrationResponse.getId());
+        bookingBillRequest.setTalentId(plannerRegistrationResponse.getId());
         BookingBillResponse bookingBillResponse = bookingBillService.createBookingBill(bookingBillRequest);
 
+        PayBookingBillRequest payBookingBillRequest = new PayBookingBillRequest();
+        payBookingBillRequest.setBookingBillId(bookingBillResponse.getBookingBillId());
+        payBookingBillRequest.setSenderId(plannerRegistrationResponse.getId());
+        payBookingBillRequest.setReceiverId(talentRegistrationResponse.getId());
 
         BookingBillPaymentResponse bookingBillPaymentResponse =
-                bookingBillService.payBookingBill(bookingBillResponse.getBookingBillId());
+                bookingBillService.payBookingBill(payBookingBillRequest);
 
         assertThat(bookingBillPaymentResponse).isNotNull();
     }
 
     private BookingRequest getBookingRequest() throws WrongDateAndTimeFormat {
-        RegistrationRequest registerRequest = new RegistrationRequest();
-        registerRequest.setFirstName("Retnaa");
-        registerRequest.setLastName("Dayok");
-        registerRequest.setUsername("Darda");
-        registerRequest.setEmail("dayokr@gmail.com");
-        registerRequest.setPhoneNumber("07031005737");
-        registerRequest.setPassword("password");
-        registerRequest.setRole(Role.TALENT);
-        RegistrationResponse talentRegistrationResponse = userService.registerUser(registerRequest);
+        RegistrationResponse talentRegistrationResponse = getUserRegistrationResponse(Role.TALENT);
 
-        RegistrationRequest registerRequest2 = new RegistrationRequest();
-        registerRequest.setFirstName("Retnaa");
-        registerRequest.setLastName("Dayok");
-        registerRequest.setUsername("Darda");
-        registerRequest.setEmail("dayokr@gmail.com");
-        registerRequest.setPhoneNumber("07031005737");
-        registerRequest.setPassword("password");
-        registerRequest.setRole(Role.PLANNER);
-        RegistrationResponse plannerRegistrationResponse = userService.registerUser(registerRequest2);
+        RegistrationResponse plannerRegistrationResponse = getUserRegistrationResponse(Role.PLANNER);
 
         BookingRequest bookTalentRequest = new BookingRequest();
         EventDetailRequest eventDetailsRequest = getEventDetailRequest();
@@ -116,6 +105,18 @@ public class BookingBillServiceTest {
         bookTalentRequest.setEventDetailRequest(eventDetailsRequest);
         bookTalentRequest.setPlanner(plannerRegistrationResponse.getId());
         return bookTalentRequest;
+    }
+
+    private RegistrationResponse getUserRegistrationResponse(Role role) {
+        RegistrationRequest talentRegisterRequest = new RegistrationRequest();
+        talentRegisterRequest.setFirstName("Retnaa");
+        talentRegisterRequest.setLastName("Dayok");
+        talentRegisterRequest.setUsername("Darda");
+        talentRegisterRequest.setEmail("dayokr@gmail.com");
+        talentRegisterRequest.setPhoneNumber("07031005737");
+        talentRegisterRequest.setPassword("password");
+        talentRegisterRequest.setRole(role);
+        return userService.registerUser(talentRegisterRequest);
     }
 
     private static EventDetailRequest getEventDetailRequest() throws WrongDateAndTimeFormat {

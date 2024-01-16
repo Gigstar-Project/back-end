@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -22,7 +23,9 @@ public class BookingBill {
     @OneToOne
     private User talent;
     private String text;
-    private boolean isPaid;
+    private BigDecimal amount;
+    @OneToOne
+    private Payment payment;
     private LocalDateTime dateTimeCreated;
 
     @PrePersist
