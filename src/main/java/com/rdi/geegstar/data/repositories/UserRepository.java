@@ -1,6 +1,7 @@
 package com.rdi.geegstar.data.repositories;
 
 import com.rdi.geegstar.data.models.User;
+import com.rdi.geegstar.enums.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

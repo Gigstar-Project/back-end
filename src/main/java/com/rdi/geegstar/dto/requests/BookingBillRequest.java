@@ -4,10 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-
-@Getter
 @Setter
-public class AcceptBookingRequest {
+@Getter
+public class BookingBillRequest {
     private Long bookingId;
     private Long talentId;
+    private Long plannerId;
+    private BigDecimal bookingCost;
+    private String text;
 }

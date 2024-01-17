@@ -1,17 +1,21 @@
 package com.rdi.geegstar.services;
 
 import com.rdi.geegstar.dto.requests.RegistrationRequest;
+import com.rdi.geegstar.dto.response.GetUserResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.enums.Role;
 import com.rdi.geegstar.exceptions.EmailConfirmationFailedException;
 import com.rdi.geegstar.exceptions.GeegStarException;
+import com.rdi.geegstar.exceptions.UserNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class UserServiceTest {
@@ -37,7 +41,7 @@ public class UserServiceTest {
 
     @Test
     public void testRequestConfirmationCode() throws GeegStarException {
-        String userEmail = "ebukizy1@gmail.com";
+        String userEmail = "max_ret@yahoo.com";
         var response = userService.requestEmailConfirmationCode(userEmail);
         assertNotNull(response);
     }
@@ -51,4 +55,30 @@ public class UserServiceTest {
         var response = userService.confirmEmail(userEmail, code);
         assertTrue(response);
     }
+
+    @Test
+    public void testGetUserById() throws UserNotFoundException {
+        RegistrationRequest registerRequest = new RegistrationRequest();
+        registerRequest.setFirstName("Retnaa");
+        registerRequest.setLastName("Dayok");
+        registerRequest.setUsername("Darda");
+        registerRequest.setEmail("dayr@gmail.com");
+        registerRequest.setPhoneNumber("07031005737");
+        registerRequest.setPassword("password");
+        registerRequest.setRole(Role.TALENT);
+        RegistrationResponse registrationResponse = userService.registerUser(registerRequest);
+        assertNotNull(registrationResponse);
+
+        GetUserResponse userDisplayDetails = userService.getUserById(registrationResponse.getId());
+
+        assertThat(userDisplayDetails).isNotNull();
+    }
+
+    @Test
+    @Sql("/db/insertUsers.sql")
+    public void testGetAllTalents() {
+        List<GetUserResponse> talentsResponseList = userService.getAllTalents();
+        assertThat(talentsResponseList).isNotNull();
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.rdi.geegstar.services;
 
+import com.rdi.geegstar.data.models.Booking;
 import com.rdi.geegstar.dto.requests.*;
 import com.rdi.geegstar.dto.response.AcceptBookingResponse;
 import com.rdi.geegstar.dto.response.BookingResponse;
@@ -12,6 +13,8 @@ import com.rdi.geegstar.exceptions.WrongDateAndTimeFormat;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.math.BigDecimal;
 
 import static com.rdi.geegstar.enums.EventType.BIRTHDAY_PARTY;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -41,6 +44,7 @@ public class BookingServiceTest {
 
         AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
         acceptBookingRequest.setBookingId(bookTalentResponse.getBookingId());
+        acceptBookingRequest.setTalentId(bookTalentRequest.getTalent());
 
         AcceptBookingResponse acceptBookingResponse =
                 bookTalentService.acceptBooking(acceptBookingRequest);
@@ -58,6 +62,16 @@ public class BookingServiceTest {
         DeclineBookingResponse declineBookingResponse =
                 bookTalentService.declineBooking(bookTalentResponse.getBookingId());
         assertThat(declineBookingResponse).isNotNull();
+    }
+
+    @Test
+    public void testFindBookingById() throws WrongDateAndTimeFormat, UserNotFoundException, BookingNotFoundException {
+        BookingRequest bookTalentRequest = getBookingRequest();
+        BookingResponse bookTalentResponse = bookTalentService.bookTalent(bookTalentRequest);
+
+        Booking foundBooking = bookTalentService.findBookingById(bookTalentResponse.getBookingId());
+
+        assertThat(foundBooking).isNotNull();
     }
 
     private BookingRequest getBookingRequest() throws WrongDateAndTimeFormat {
