@@ -5,9 +5,10 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Getter
 @Setter
-public class AcceptBookingRequest {
-    private Long bookingId;
-    private Long talentId;
+@Getter
+public class PaymentRequest {
+    private Long sender;
+    private Long receiver;
+    private BigDecimal amount;
 }

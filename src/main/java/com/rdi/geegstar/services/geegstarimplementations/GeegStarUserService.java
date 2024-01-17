@@ -6,6 +6,7 @@ import com.rdi.geegstar.data.repositories.UserRepository;
 import com.rdi.geegstar.dto.requests.EmailRequest;
 import com.rdi.geegstar.dto.requests.Recipient;
 import com.rdi.geegstar.dto.requests.RegistrationRequest;
+import com.rdi.geegstar.dto.response.GetUserResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.exceptions.EmailConfirmationFailedException;
 import com.rdi.geegstar.exceptions.EmailIsTakenException;
@@ -22,6 +23,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+
+import static com.rdi.geegstar.enums.Role.TALENT;
 
 @Service
 @AllArgsConstructor
@@ -59,8 +62,23 @@ public class GeegStarUserService implements UserService {
     }
 
     @Override
-    public User findById(Long creativeTalentId) throws UserNotFoundException {
-        return userRepository.findById(creativeTalentId).orElseThrow(() -> new UserNotFoundException("User was not found in our system"));
+    public User findUserById(Long userId) throws UserNotFoundException {
+        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User was not found in our system"));
+    }
+
+    @Override
+    public GetUserResponse getUserById(Long userId) throws UserNotFoundException {
+        User user = findUserById(userId);
+        return modelMapper.map(user, GetUserResponse.class);
+    }
+
+    @Override
+    public List<GetUserResponse> getAllTalents() {
+        return userRepository.findAll()
+                .stream()
+                .filter(user -> TALENT.equals(user.getRole()))
+                .map(user -> modelMapper.map(user, GetUserResponse.class))
+                .toList();
     }
 
     private void emailConfirmationCodeTo(String userEmail, String tokenCode) {

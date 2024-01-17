@@ -10,10 +10,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -79,4 +80,37 @@ public class UserControllerTest {
             exception.printStackTrace();
         }
     }
+
+    @Test
+    @Sql("/db/insertUsers.sql")
+    public void testGetUserById() {
+        Long userId = 104L;
+        try{
+            mockMvc.perform(
+                            MockMvcRequestBuilders.get(String.format("%s/%d", URL, userId))
+                                    .accept(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print());
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    @Test
+    @Sql("/db/insertUsers.sql")
+    public void testGetAllTalents() {
+        try {
+            mockMvc.perform(
+                            MockMvcRequestBuilders.get(String.format("%s/talents", URL))
+                                    .accept(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print());
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
+
 }
