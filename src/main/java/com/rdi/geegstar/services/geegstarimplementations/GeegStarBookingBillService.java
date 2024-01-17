@@ -19,10 +19,12 @@ import com.rdi.geegstar.services.PaymentService;
 import com.rdi.geegstar.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+
 public class GeegStarBookingBillService implements BookingBillService {
 
     private final BookingBillRepository bookingBillRepository;

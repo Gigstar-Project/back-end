@@ -3,6 +3,7 @@ package com.rdi.geegstar.services.geegstarimplementations;
 import com.rdi.geegstar.data.models.*;
 import com.rdi.geegstar.data.repositories.BookingRepository;
 import com.rdi.geegstar.dto.requests.AcceptBookingRequest;
+import com.rdi.geegstar.dto.requests.BookingBillRequest;
 import com.rdi.geegstar.dto.requests.BookingRequest;
 import com.rdi.geegstar.dto.requests.EventDetailRequest;
 import com.rdi.geegstar.dto.response.AcceptBookingResponse;
@@ -10,11 +11,13 @@ import com.rdi.geegstar.dto.response.BookingResponse;
 import com.rdi.geegstar.dto.response.DeclineBookingResponse;
 import com.rdi.geegstar.exceptions.BookingNotFoundException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
+import com.rdi.geegstar.services.BookingBillService;
 import com.rdi.geegstar.services.BookingService;
 import com.rdi.geegstar.services.CalendarService;
 import com.rdi.geegstar.services.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -44,20 +47,17 @@ public class GeegStarBookingService implements BookingService {
     }
 
     @Override
-    public AcceptBookingResponse acceptBooking(AcceptBookingRequest acceptBookingRequest)
+    public AcceptBookingResponse acceptBooking (AcceptBookingRequest acceptBookingRequest)
             throws BookingNotFoundException, UserNotFoundException {
         Long bookingId = acceptBookingRequest.getBookingId();
         Booking foundBooking = findBookingById(bookingId);
         foundBooking.setAccepted(true);
-        //Create a bill calling the bookingBill service
-
         createCalendar(acceptBookingRequest, foundBooking);
         return new AcceptBookingResponse("Successful");
     }
 
-    private void createCalendar(
-            AcceptBookingRequest acceptBookingRequest,
-            Booking foundBooking) throws UserNotFoundException {
+    private void createCalendar (AcceptBookingRequest acceptBookingRequest, Booking foundBooking)
+            throws UserNotFoundException {
         Booking savedAcceptedBooking = bookingRepository.save(foundBooking);
         User talent = userService.findUserById(acceptBookingRequest.getTalentId());
         EventDetail eventDetail = foundBooking.getEventDetail();
@@ -70,7 +70,8 @@ public class GeegStarBookingService implements BookingService {
 
     public Booking findBookingById(Long bookingId) throws BookingNotFoundException {
         return bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new BookingNotFoundException(String.format("The booking with %d id is not found", bookingId)));
+                .orElseThrow(() ->
+                        new BookingNotFoundException(String.format("The booking with %d id is not found", bookingId)));
     }
 
     @Override
@@ -81,7 +82,8 @@ public class GeegStarBookingService implements BookingService {
         return new DeclineBookingResponse("Successful");
     }
 
-    private Booking getSavedBooking(BookingRequest bookCreativeTalentRequest, EventDetail eventDetail) throws UserNotFoundException {
+    private Booking getSavedBooking(BookingRequest bookCreativeTalentRequest, EventDetail eventDetail)
+            throws UserNotFoundException {
         User creativeTalent = userService.findUserById(bookCreativeTalentRequest.getTalent());
         User eventPlanner = userService.findUserById(bookCreativeTalentRequest.getPlanner());
         Booking booking = new Booking();

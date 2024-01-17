@@ -74,7 +74,7 @@ public class BookingControllerTest {
         Long bookingId = bookingResponse.getBookingId();
         AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
         acceptBookingRequest.setBookingId(bookingId);
-
+        acceptBookingRequest.setTalentId(talentId);
         try {
             mockMvc.perform(
                             MockMvcRequestBuilders.patch("/api/v1/booking/accept")

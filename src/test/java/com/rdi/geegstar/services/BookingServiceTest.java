@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
+
 import static com.rdi.geegstar.enums.EventType.BIRTHDAY_PARTY;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 

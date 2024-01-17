@@ -31,7 +31,8 @@ public class BookingBillServiceTest {
     private UserService userService;
 
     @Test
-    public void testCreateBookingBill() throws UserNotFoundException, BookingNotFoundException, WrongDateAndTimeFormat {
+    public void testCreateBookingBill()
+            throws UserNotFoundException, BookingNotFoundException, WrongDateAndTimeFormat {
         BookingRequest bookTalentRequest = getBookingRequest();
         BookingResponse bookTalentResponse = bookTalentService.bookTalent(bookTalentRequest);
         BookingBillRequest bookingBillRequest = new BookingBillRequest();
@@ -49,7 +50,9 @@ public class BookingBillServiceTest {
     }
 
     @Test
-    public void testFindBookingBillById() throws WrongDateAndTimeFormat, UserNotFoundException, BookingNotFoundException, BookingBillNotFoundException {
+    public void testFindBookingBillById()
+            throws WrongDateAndTimeFormat, UserNotFoundException,
+            BookingNotFoundException, BookingBillNotFoundException {
         BookingRequest bookTalentRequest = getBookingRequest();
         BookingResponse bookTalentResponse = bookTalentService.bookTalent(bookTalentRequest);
         BookingBillRequest bookingBillRequest = new BookingBillRequest();
@@ -69,7 +72,9 @@ public class BookingBillServiceTest {
     }
 
     @Test
-    public void testPayBookingBill() throws WrongDateAndTimeFormat, UserNotFoundException, BookingNotFoundException, BookingBillNotFoundException {
+    public void testPayBookingBill()
+            throws WrongDateAndTimeFormat, UserNotFoundException,
+            BookingNotFoundException, BookingBillNotFoundException {
         BookingRequest bookTalentRequest = getBookingRequest();
         BookingResponse bookTalentResponse = bookTalentService.bookTalent(bookTalentRequest);
         BookingBillRequest bookingBillRequest = new BookingBillRequest();
