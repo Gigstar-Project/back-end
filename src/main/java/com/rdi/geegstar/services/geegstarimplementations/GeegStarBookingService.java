@@ -3,9 +3,8 @@ package com.rdi.geegstar.services.geegstarimplementations;
 import com.rdi.geegstar.data.models.*;
 import com.rdi.geegstar.data.repositories.BookingRepository;
 import com.rdi.geegstar.dto.requests.*;
-import com.rdi.geegstar.dto.response.AcceptBookingResponse;
-import com.rdi.geegstar.dto.response.BookingResponse;
-import com.rdi.geegstar.dto.response.DeclineBookingResponse;
+import com.rdi.geegstar.dto.response.*;
+import com.rdi.geegstar.enums.Role;
 import com.rdi.geegstar.exceptions.BookingNotFoundException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
 import com.rdi.geegstar.services.BookingService;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -70,6 +70,36 @@ public class GeegStarBookingService implements BookingService {
         return bookingRepository.findById(bookingId)
                 .orElseThrow(() ->
                         new BookingNotFoundException(String.format("The booking with %d id is not found", bookingId)));
+    }
+
+    @Override
+    public List<PlannerBookingResponse> getPlannerBookings(Long plannerId) {
+        List<Booking> bookings = bookingRepository.findAll();
+        return bookings.stream()
+                .filter(booking ->
+                        Objects.equals(booking.getPlanner().getId(), plannerId))
+                .map(booking -> {
+                    User talent = booking.getTalent();
+                    BookingResponseTalentResponse bookingResponseTalentResponse =
+                            modelMapper.map(talent, BookingResponseTalentResponse.class);
+                    EventDetail eventDetail = booking.getEventDetail();
+                     Address address = eventDetail.getEventAddress();
+                    BookingResponseEventDetailResponse bookingResponseEventDetailResponse =
+                            modelMapper.map(eventDetail, BookingResponseEventDetailResponse.class);
+                    BookingResponseAddressResponse bookingResponseAddressResponse =
+                            modelMapper.map(address, BookingResponseAddressResponse.class);bookingResponseEventDetailResponse.setEventAddress(bookingResponseAddressResponse);
+                    Calendar calendar = booking.getCalendar();
+                    BookingResponseCalenderResponse bookingResponseCalenderResponse =
+                            modelMapper.map(calendar, BookingResponseCalenderResponse.class);
+                    PlannerBookingResponse plannerBookingResponse = new PlannerBookingResponse();
+                    plannerBookingResponse.setId(booking.getId());
+                    plannerBookingResponse.setTalent(bookingResponseTalentResponse);
+                    plannerBookingResponse.setEventDetail(bookingResponseEventDetailResponse);
+                    plannerBookingResponse.setCalendar(bookingResponseCalenderResponse);
+                    plannerBookingResponse.setAccepted(booking.isAccepted());
+                    return plannerBookingResponse;
+                })
+                .toList();
     }
 
     @Override
