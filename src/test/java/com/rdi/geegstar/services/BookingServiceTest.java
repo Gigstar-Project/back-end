@@ -14,8 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.math.BigDecimal;
-
 import static com.rdi.geegstar.enums.EventType.BIRTHDAY_PARTY;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -44,7 +42,7 @@ public class BookingServiceTest {
 
         AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
         acceptBookingRequest.setBookingId(bookTalentResponse.getBookingId());
-        acceptBookingRequest.setTalentId(bookTalentRequest.getTalent());
+        acceptBookingRequest.setTalentId(bookTalentRequest.getTalentId());
 
         AcceptBookingResponse acceptBookingResponse =
                 bookTalentService.acceptBooking(acceptBookingRequest);
@@ -97,9 +95,9 @@ public class BookingServiceTest {
 
         BookingRequest bookTalentRequest = new BookingRequest();
         EventDetailRequest eventDetailsRequest = getEventDetailRequest();
-        bookTalentRequest.setTalent(talentRegistrationResponse.getId());
+        bookTalentRequest.setTalentId(talentRegistrationResponse.getId());
         bookTalentRequest.setEventDetailRequest(eventDetailsRequest);
-        bookTalentRequest.setPlanner(plannerRegistrationResponse.getId());
+        bookTalentRequest.setPlannerId(plannerRegistrationResponse.getId());
         return bookTalentRequest;
     }
 

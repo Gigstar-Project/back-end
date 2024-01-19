@@ -2,27 +2,21 @@ package com.rdi.geegstar.services.geegstarimplementations;
 
 import com.rdi.geegstar.data.models.*;
 import com.rdi.geegstar.data.repositories.BookingRepository;
-import com.rdi.geegstar.dto.requests.AcceptBookingRequest;
-import com.rdi.geegstar.dto.requests.BookingBillRequest;
-import com.rdi.geegstar.dto.requests.BookingRequest;
-import com.rdi.geegstar.dto.requests.EventDetailRequest;
+import com.rdi.geegstar.dto.requests.*;
 import com.rdi.geegstar.dto.response.AcceptBookingResponse;
 import com.rdi.geegstar.dto.response.BookingResponse;
 import com.rdi.geegstar.dto.response.DeclineBookingResponse;
 import com.rdi.geegstar.exceptions.BookingNotFoundException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
-import com.rdi.geegstar.services.BookingBillService;
 import com.rdi.geegstar.services.BookingService;
-import com.rdi.geegstar.services.CalendarService;
 import com.rdi.geegstar.services.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -31,7 +25,6 @@ public class GeegStarBookingService implements BookingService {
     private final ModelMapper modelMapper;
     private final UserService userService;
     private final BookingRepository bookingRepository;
-    private final CalendarService calendarService;
 
     @Override
     public BookingResponse bookTalent(BookingRequest bookCreativeTalentRequest)
@@ -42,7 +35,17 @@ public class GeegStarBookingService implements BookingService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy, MM, dd, HH, mm");
         eventDetail.setEventDateAndTime(LocalDateTime.parse(eventDetailsRequest.getEventDateAndTime(), formatter));
         eventDetail.setEventAddress(eventAddress);
-        Booking savedBooking = getSavedBooking(bookCreativeTalentRequest, eventDetail);
+        User talent = userService.findUserById(bookCreativeTalentRequest.getTalentId());
+        User planner = userService.findUserById(bookCreativeTalentRequest.getPlannerId());
+        Calendar calendar = new Calendar();
+        calendar.setTalent(talent);
+        calendar.setEventDateAndTime(LocalDateTime.parse(eventDetailsRequest.getEventDateAndTime(), formatter));
+        Booking booking = new Booking();
+        booking.setTalent(talent);
+        booking.setPlanner(planner);
+        booking.setEventDetail(eventDetail);
+        booking.setCalendar(calendar);
+        Booking savedBooking = bookingRepository.save(booking);
         return modelMapper.map(savedBooking, BookingResponse.class);
     }
 
@@ -51,21 +54,16 @@ public class GeegStarBookingService implements BookingService {
             throws BookingNotFoundException, UserNotFoundException {
         Long bookingId = acceptBookingRequest.getBookingId();
         Booking foundBooking = findBookingById(bookingId);
-        foundBooking.setAccepted(true);
-        createCalendar(acceptBookingRequest, foundBooking);
-        return new AcceptBookingResponse("Successful");
-    }
-
-    private void createCalendar (AcceptBookingRequest acceptBookingRequest, Booking foundBooking)
-            throws UserNotFoundException {
-        Booking savedAcceptedBooking = bookingRepository.save(foundBooking);
-        User talent = userService.findUserById(acceptBookingRequest.getTalentId());
-        EventDetail eventDetail = foundBooking.getEventDetail();
-        Calendar calendar = new Calendar();
-        calendar.setBooking(savedAcceptedBooking);
-        calendar.setTalent(talent);
-        calendar.setEventDateAndTime(eventDetail.getEventDateAndTime());
-        calendarService.create(calendar);
+        Calendar calendar = foundBooking.getCalendar();
+        Long bookedTalentId = foundBooking.getTalent().getId();
+        Long givenTalentIdFromRequest = acceptBookingRequest.getTalentId();
+        if (Objects.equals(bookedTalentId, givenTalentIdFromRequest)) {
+            foundBooking.setAccepted(true);
+            calendar.setIsBooked(true);
+            bookingRepository.save(foundBooking);
+            return new AcceptBookingResponse("Successful");
+        }
+        return new AcceptBookingResponse("Un-Successful");
     }
 
     public Booking findBookingById(Long bookingId) throws BookingNotFoundException {
@@ -82,14 +80,4 @@ public class GeegStarBookingService implements BookingService {
         return new DeclineBookingResponse("Successful");
     }
 
-    private Booking getSavedBooking(BookingRequest bookCreativeTalentRequest, EventDetail eventDetail)
-            throws UserNotFoundException {
-        User creativeTalent = userService.findUserById(bookCreativeTalentRequest.getTalent());
-        User eventPlanner = userService.findUserById(bookCreativeTalentRequest.getPlanner());
-        Booking booking = new Booking();
-        booking.setTalent(List.of(creativeTalent));
-        booking.setPlanner(eventPlanner);
-        booking.setEventDetail(eventDetail);
-        return bookingRepository.save(booking);
-    }
 }

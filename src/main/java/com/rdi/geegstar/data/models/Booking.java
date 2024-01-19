@@ -8,6 +8,7 @@ import lombok.Setter;
 import java.util.List;
 
 import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Setter
@@ -19,11 +20,13 @@ public class Booking {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
-    @ManyToMany
-    private List<User> talent;
+    @ManyToOne
+    private User talent;
     @ManyToOne
     private User planner;
     @OneToOne(cascade = ALL)
     private EventDetail eventDetail;
+    @OneToOne(cascade = ALL)
+    private Calendar calendar;
     private boolean isAccepted;
 }
