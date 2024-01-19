@@ -103,6 +103,36 @@ public class GeegStarBookingService implements BookingService {
     }
 
     @Override
+    public List<TalentBookingResponse> getTalentBookings(Long talentId) {
+        List<Booking> bookings = bookingRepository.findAll();
+        return bookings.stream()
+                .filter(booking -> Objects.equals(booking.getTalent().getId(), talentId))
+                .map(booking -> {
+                    User planner = booking.getPlanner();
+                    BookingResponsePlannerResponse bookingResponsePlannerResponse =
+                            modelMapper.map(planner, BookingResponsePlannerResponse.class);
+                    EventDetail eventDetail = booking.getEventDetail();
+                    Address address = eventDetail.getEventAddress();
+                    BookingResponseEventDetailResponse bookingResponseEventDetailResponse =
+                            modelMapper.map(eventDetail, BookingResponseEventDetailResponse.class);
+                    BookingResponseAddressResponse bookingResponseAddressResponse =
+                            modelMapper.map(address, BookingResponseAddressResponse.class);
+                    bookingResponseEventDetailResponse.setEventAddress(bookingResponseAddressResponse);
+                    Calendar calendar = booking.getCalendar();
+                    BookingResponseCalenderResponse bookingResponseCalenderResponse =
+                            modelMapper.map(calendar, BookingResponseCalenderResponse.class);
+                    TalentBookingResponse talentBookingResponse = new TalentBookingResponse();
+                    talentBookingResponse.setPlanner(bookingResponsePlannerResponse);
+                    talentBookingResponse.setEventDetail(bookingResponseEventDetailResponse);
+                    talentBookingResponse.setCalendar(bookingResponseCalenderResponse);
+                    talentBookingResponse.setId(booking.getId());
+                    talentBookingResponse.setAccepted(booking.isAccepted());
+                    return talentBookingResponse;
+                })
+                .toList();
+    }
+
+    @Override
     public DeclineBookingResponse declineBooking(Long bookingId) throws BookingNotFoundException {
         Booking foundBooking = findBookingById(bookingId);
         foundBooking.setAccepted(false);

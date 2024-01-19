@@ -73,7 +73,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void testGetUserBookings() throws WrongDateAndTimeFormat, UserNotFoundException {
+    public void testGetPlannerBookings() throws WrongDateAndTimeFormat, UserNotFoundException {
         RegistrationResponse talentRegistrationResponse = getRegistrationResponse(Role.TALENT);
         RegistrationResponse talentRegistrationResponse2 = getRegistrationResponse(Role.TALENT);
         RegistrationResponse plannerRegistrationResponse = getRegistrationResponse(PLANNER);
@@ -93,9 +93,33 @@ public class BookingServiceTest {
         bookingService.bookTalent(bookTalentRequest2);
 
         List<PlannerBookingResponse> plannerBookingResponse = bookingService.getPlannerBookings(plannerRegistrationResponse.getId());
-//        List<UserBookingResponse> talentBookingResponse = bookingService.getTalentBookings(plannerRegistrationResponse.getId());
 
         assertThat(plannerBookingResponse).isNotNull();
+    }
+
+    @Test
+    public void testGetTalentBookings() throws WrongDateAndTimeFormat, UserNotFoundException {
+        RegistrationResponse talentRegistrationResponse = getRegistrationResponse(Role.TALENT);
+        RegistrationResponse talentRegistrationResponse2 = getRegistrationResponse(Role.TALENT);
+        RegistrationResponse plannerRegistrationResponse = getRegistrationResponse(PLANNER);
+        EventDetailRequest eventDetailsRequest = getEventDetailRequest();
+
+        BookingRequest bookTalentRequest = new BookingRequest();
+        bookTalentRequest.setTalentId(talentRegistrationResponse.getId());
+        bookTalentRequest.setEventDetailRequest(eventDetailsRequest);
+        bookTalentRequest.setPlannerId(plannerRegistrationResponse.getId());
+
+        BookingRequest bookTalentRequest2 = new BookingRequest();
+        bookTalentRequest2.setTalentId(talentRegistrationResponse2.getId());
+        bookTalentRequest2.setEventDetailRequest(eventDetailsRequest);
+        bookTalentRequest2.setPlannerId(plannerRegistrationResponse.getId());
+
+        bookingService.bookTalent(bookTalentRequest);
+        bookingService.bookTalent(bookTalentRequest2);
+
+        List<TalentBookingResponse> talentBookingResponse = bookingService.getTalentBookings(talentRegistrationResponse2.getId());
+
+        assertThat(talentBookingResponse).isNotNull();
     }
 
     private BookingRequest getBookingRequest() throws WrongDateAndTimeFormat {
