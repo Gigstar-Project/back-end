@@ -10,7 +10,11 @@ import com.rdi.geegstar.exceptions.UserNotFoundException;
 import com.rdi.geegstar.services.BookingService;
 import com.rdi.geegstar.services.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,6 +24,7 @@ import java.util.Objects;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class GeegStarBookingService implements BookingService {
 
     private final ModelMapper modelMapper;
@@ -73,63 +78,78 @@ public class GeegStarBookingService implements BookingService {
     }
 
     @Override
-    public List<PlannerBookingResponse> getPlannerBookings(Long plannerId) {
-        List<Booking> bookings = bookingRepository.findAll();
+    public List<UserBookingResponse> getUserBookings(GetUserBookingsRequest getUserBookingsRequest) throws UserNotFoundException {
+        User user = userService.findUserById(getUserBookingsRequest.getUserId());
+        Pageable pageable = PageRequest.of(getUserBookingsRequest.getPageNumber() - 1, getUserBookingsRequest.getPageSize());
+        boolean isA_PlannerRequest = Role.PLANNER.equals(getUserBookingsRequest.getUserRole());
+        Page<Booking> bookingPage = null;
+        if (isA_PlannerRequest) bookingPage = bookingRepository.findAllByPlanner(user, pageable);
+        if(!isA_PlannerRequest) bookingPage = bookingRepository.findAllByTalent(user, pageable);
+        List<Booking> bookings = bookingPage.getContent();
         return bookings.stream()
-                .filter(booking ->
-                        Objects.equals(booking.getPlanner().getId(), plannerId))
+                .filter(booking -> {
+                    Long plannerIdOfBooking = booking.getPlanner().getId();
+                    Long talentIdOfBooking = booking.getTalent().getId();
+                    Long userId = getUserBookingsRequest.getUserId();
+                    boolean isUserBooking = false;
+                    if (isA_PlannerRequest) isUserBooking = Objects.equals(plannerIdOfBooking, userId);
+                    if(!isA_PlannerRequest) isUserBooking = Objects.equals(talentIdOfBooking, userId);
+                    return isUserBooking;
+                })
                 .map(booking -> {
+                    User planner = booking.getPlanner();
                     User talent = booking.getTalent();
-                    BookingResponseTalentResponse bookingResponseTalentResponse =
-                            modelMapper.map(talent, BookingResponseTalentResponse.class);
                     EventDetail eventDetail = booking.getEventDetail();
-                     Address address = eventDetail.getEventAddress();
-                    BookingResponseEventDetailResponse bookingResponseEventDetailResponse =
-                            modelMapper.map(eventDetail, BookingResponseEventDetailResponse.class);
-                    BookingResponseAddressResponse bookingResponseAddressResponse =
-                            modelMapper.map(address, BookingResponseAddressResponse.class);bookingResponseEventDetailResponse.setEventAddress(bookingResponseAddressResponse);
+                    Address address = eventDetail.getEventAddress();
                     Calendar calendar = booking.getCalendar();
-                    BookingResponseCalenderResponse bookingResponseCalenderResponse =
-                            modelMapper.map(calendar, BookingResponseCalenderResponse.class);
-                    PlannerBookingResponse plannerBookingResponse = new PlannerBookingResponse();
-                    plannerBookingResponse.setId(booking.getId());
-                    plannerBookingResponse.setTalent(bookingResponseTalentResponse);
-                    plannerBookingResponse.setEventDetail(bookingResponseEventDetailResponse);
-                    plannerBookingResponse.setCalendar(bookingResponseCalenderResponse);
-                    plannerBookingResponse.setAccepted(booking.isAccepted());
-                    return plannerBookingResponse;
+                    boolean isAccepted = booking.isAccepted();
+                    Long bookingId = booking.getId();
+                    return getUserBookingResponse(
+                            isA_PlannerRequest,
+                            talent, planner, 
+                            calendar, address,
+                            eventDetail, bookingId, 
+                            isAccepted);
                 })
                 .toList();
     }
 
-    @Override
-    public List<TalentBookingResponse> getTalentBookings(Long talentId) {
-        List<Booking> bookings = bookingRepository.findAll();
-        return bookings.stream()
-                .filter(booking -> Objects.equals(booking.getTalent().getId(), talentId))
-                .map(booking -> {
-                    User planner = booking.getPlanner();
-                    BookingResponsePlannerResponse bookingResponsePlannerResponse =
-                            modelMapper.map(planner, BookingResponsePlannerResponse.class);
-                    EventDetail eventDetail = booking.getEventDetail();
-                    Address address = eventDetail.getEventAddress();
-                    BookingResponseEventDetailResponse bookingResponseEventDetailResponse =
-                            modelMapper.map(eventDetail, BookingResponseEventDetailResponse.class);
-                    BookingResponseAddressResponse bookingResponseAddressResponse =
-                            modelMapper.map(address, BookingResponseAddressResponse.class);
-                    bookingResponseEventDetailResponse.setEventAddress(bookingResponseAddressResponse);
-                    Calendar calendar = booking.getCalendar();
-                    BookingResponseCalenderResponse bookingResponseCalenderResponse =
-                            modelMapper.map(calendar, BookingResponseCalenderResponse.class);
-                    TalentBookingResponse talentBookingResponse = new TalentBookingResponse();
-                    talentBookingResponse.setPlanner(bookingResponsePlannerResponse);
-                    talentBookingResponse.setEventDetail(bookingResponseEventDetailResponse);
-                    talentBookingResponse.setCalendar(bookingResponseCalenderResponse);
-                    talentBookingResponse.setId(booking.getId());
-                    talentBookingResponse.setAccepted(booking.isAccepted());
-                    return talentBookingResponse;
-                })
-                .toList();
+    private UserBookingResponse getUserBookingResponse(boolean isA_PlannerRequest, User talent, User planner, Calendar calendar, Address address, EventDetail eventDetail, Long bookingId, boolean isAccepted) {
+        UserBookingResponse userBookingResponse = new UserBookingResponse();
+        if (isA_PlannerRequest) setBookingResponseTalentResponse(talent, userBookingResponse);
+        if(!isA_PlannerRequest) setBookingResponsePlannerResponse(planner, userBookingResponse);
+        BookingResponseVariables bookingResponseVariables = getMappedBookingResponseVariables(calendar, address, eventDetail);
+        userBookingResponse.setId(bookingId);
+        userBookingResponse.setEventDetail(bookingResponseVariables.bookingResponseEventDetailResponse());
+        userBookingResponse.setCalendar(bookingResponseVariables.bookingResponseCalenderResponse());
+        userBookingResponse.setAccepted(isAccepted);
+        return userBookingResponse;
+    }
+
+    private BookingResponseVariables getMappedBookingResponseVariables(Calendar calendar, Address address, EventDetail eventDetail) {
+        BookingResponseCalenderResponse bookingResponseCalenderResponse =
+                modelMapper.map(calendar, BookingResponseCalenderResponse.class);
+        BookingResponseAddressResponse bookingResponseAddressResponse =
+                modelMapper.map(address, BookingResponseAddressResponse.class);
+        BookingResponseEventDetailResponse bookingResponseEventDetailResponse =
+                modelMapper.map(eventDetail, BookingResponseEventDetailResponse.class);
+        bookingResponseEventDetailResponse.setEventAddress(bookingResponseAddressResponse);
+        return new BookingResponseVariables(bookingResponseCalenderResponse, bookingResponseEventDetailResponse);
+    }
+
+    private record BookingResponseVariables(BookingResponseCalenderResponse bookingResponseCalenderResponse, BookingResponseEventDetailResponse bookingResponseEventDetailResponse) {
+    }
+
+    private void setBookingResponsePlannerResponse(User planner, UserBookingResponse userBookingResponse) {
+        BookingResponsePlannerResponse bookingResponsePlannerResponse =
+                modelMapper.map(planner, BookingResponsePlannerResponse.class);
+        userBookingResponse.setPlannerResponse(bookingResponsePlannerResponse);
+    }
+
+    private void setBookingResponseTalentResponse(User talent, UserBookingResponse userBookingResponse) {
+        BookingResponseTalentResponse bookingResponseTalentResponse =
+                modelMapper.map(talent, BookingResponseTalentResponse.class);
+        userBookingResponse.setTalentResponse(bookingResponseTalentResponse);
     }
 
     @Override

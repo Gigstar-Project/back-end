@@ -3,8 +3,8 @@ package com.rdi.geegstar.services;
 import com.rdi.geegstar.data.models.Booking;
 import com.rdi.geegstar.dto.requests.AcceptBookingRequest;
 import com.rdi.geegstar.dto.requests.BookingRequest;
+import com.rdi.geegstar.dto.requests.GetUserBookingsRequest;
 import com.rdi.geegstar.dto.response.*;
-import com.rdi.geegstar.enums.Role;
 import com.rdi.geegstar.exceptions.BookingNotFoundException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
 
@@ -20,7 +20,7 @@ public interface BookingService {
 
     Booking findBookingById(Long bookingId) throws BookingNotFoundException;
 
-    List<PlannerBookingResponse> getPlannerBookings(Long plannerId);
+    List<UserBookingResponse> getUserBookings(GetUserBookingsRequest getUserBookingsRequest) throws UserNotFoundException;
 
-    List<TalentBookingResponse> getTalentBookings(Long talentId);
+
 }
