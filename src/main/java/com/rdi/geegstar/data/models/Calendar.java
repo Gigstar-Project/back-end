@@ -12,7 +12,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Setter
 @Getter
-@Entity
+@Entity(name = "Calendars")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Calendar {
