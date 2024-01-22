@@ -1,6 +1,7 @@
 package com.rdi.geegstar.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rdi.geegstar.dto.requests.GetAllTalentsRequest;
 import com.rdi.geegstar.dto.requests.RegistrationRequest;
 import com.rdi.geegstar.enums.Role;
 import org.junit.jupiter.api.Test;
@@ -100,13 +101,22 @@ public class UserControllerTest {
     @Test
     @Sql("/db/insertUsers.sql")
     public void testGetAllTalents() {
+        ObjectMapper mapper = new ObjectMapper();
+        GetAllTalentsRequest getAllTalentsRequest = new GetAllTalentsRequest();
+        int pageNumber = 1;
+        int pageSize = 1;
+        getAllTalentsRequest.setPageNumber(pageNumber);
+        getAllTalentsRequest.setPageSize(pageSize);
         try {
             mockMvc.perform(
                             MockMvcRequestBuilders.get(String.format("%s/talents", URL))
+                                    .content(mapper.writeValueAsString(getAllTalentsRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
                                     .accept(MediaType.APPLICATION_JSON)
                     )
                     .andExpect(status().is2xxSuccessful())
                     .andDo(print());
+
         } catch (Exception exception) {
             exception.printStackTrace();
         }

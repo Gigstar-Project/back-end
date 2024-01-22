@@ -1,13 +1,14 @@
 package com.rdi.geegstar.controllers;
 
+import com.rdi.geegstar.dto.requests.GetAllTalentsRequest;
 import com.rdi.geegstar.dto.requests.RegistrationRequest;
+import com.rdi.geegstar.dto.response.GetAllTalentsResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.dto.response.GetUserResponse;
 import com.rdi.geegstar.exceptions.GeegStarException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
 import com.rdi.geegstar.services.geegstarimplementations.GeegStarUserService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,8 +57,8 @@ public class UserController {
     }
 
     @GetMapping("/talents")
-    public ResponseEntity<List<GetUserResponse>> getAllTalents() {
-        List<GetUserResponse> talents = geegStarUserService.getAllTalents();
+    public ResponseEntity<List<GetAllTalentsResponse>> getAllTalents(@RequestBody GetAllTalentsRequest getAllTalentsRequest) {
+        List<GetAllTalentsResponse> talents = geegStarUserService.getAllTalents(getAllTalentsRequest);
         return ResponseEntity.ok(talents);
     }
 }

@@ -1,6 +1,8 @@
 package com.rdi.geegstar.services;
 
+import com.rdi.geegstar.dto.requests.GetAllTalentsRequest;
 import com.rdi.geegstar.dto.requests.RegistrationRequest;
+import com.rdi.geegstar.dto.response.GetAllTalentsResponse;
 import com.rdi.geegstar.dto.response.GetUserResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.enums.Role;
@@ -77,7 +79,12 @@ public class UserServiceTest {
     @Test
     @Sql("/db/insertUsers.sql")
     public void testGetAllTalents() {
-        List<GetUserResponse> talentsResponseList = userService.getAllTalents();
+        GetAllTalentsRequest getAllTalentRequest = new GetAllTalentsRequest();
+        int pageNumber = 1;
+        int pageSize = 1;
+        getAllTalentRequest.setPageNumber(pageNumber);
+        getAllTalentRequest.setPageSize(pageSize);
+        List<GetAllTalentsResponse> talentsResponseList = userService.getAllTalents(getAllTalentRequest);
         assertThat(talentsResponseList).isNotNull();
     }
 
