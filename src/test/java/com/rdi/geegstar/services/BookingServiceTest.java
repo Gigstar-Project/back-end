@@ -132,8 +132,7 @@ public class BookingServiceTest {
         registerRequest.setPhoneNumber("07031005737");
         registerRequest.setPassword("password");
         registerRequest.setRole(talent);
-        RegistrationResponse talentRegistrationResponse = userService.registerUser(registerRequest);
-        return talentRegistrationResponse;
+        return userService.registerUser(registerRequest);
     }
 
     private EventDetailRequest getEventDetailRequest() throws WrongDateAndTimeFormat {

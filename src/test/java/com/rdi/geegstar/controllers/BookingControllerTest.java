@@ -29,6 +29,7 @@ public class BookingControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+    private final String URL = "/api/v1/booking";
 
     @Test
     public void testBookTalent() throws WrongDateAndTimeFormat, UnsupportedEncodingException, JsonProcessingException {
@@ -38,7 +39,7 @@ public class BookingControllerTest {
         BookingRequest bookingRequest = getBookingRequest(plannerId, talentId);
         try {
             mockMvc.perform(
-                            post("/api/v1/booking")
+                            post(URL)
                                     .content(mapper.writeValueAsString(bookingRequest))
                                     .contentType(MediaType.APPLICATION_JSON)
                     )
@@ -50,34 +51,20 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void testAcceptBooking() throws WrongDateAndTimeFormat, UnsupportedEncodingException, JsonProcessingException {
+    public void testAcceptBooking()
+            throws WrongDateAndTimeFormat, UnsupportedEncodingException, JsonProcessingException {
         Long talentId = registerUser(Role.TALENT);
         Long plannerId = registerUser(Role.PLANNER);
-        ObjectMapper mapper = new ObjectMapper();
         BookingRequest bookingRequest = getBookingRequest(plannerId, talentId);
-        MvcResult responseOfBooking = null;
-        try {
-            responseOfBooking = mockMvc.perform(
-                            post("/api/v1/booking")
-                                    .content(mapper.writeValueAsString(bookingRequest))
-                                    .contentType(MediaType.APPLICATION_JSON)
-                    )
-                    .andExpect(status().is2xxSuccessful())
-                    .andReturn();
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-
-        String content = responseOfBooking.getResponse().getContentAsString();
-        BookingResponse bookingResponse = mapper.readValue(content, BookingResponse.class);
-
+        BookingResponse bookingResponse = getBookingResponse(bookingRequest);
+        ObjectMapper mapper = new ObjectMapper();
         Long bookingId = bookingResponse.getBookingId();
         AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
         acceptBookingRequest.setBookingId(bookingId);
         acceptBookingRequest.setTalentId(talentId);
         try {
             mockMvc.perform(
-                            MockMvcRequestBuilders.patch("/api/v1/booking/accept")
+                            MockMvcRequestBuilders.patch(String.format("%s/accept", URL))
                                     .content(mapper.writeValueAsString(acceptBookingRequest))
                                     .contentType(MediaType.APPLICATION_JSON)
                     )
@@ -89,15 +76,55 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void testDeclineBooking() throws WrongDateAndTimeFormat, UnsupportedEncodingException, JsonProcessingException {
+    public void testDeclineBooking()
+            throws WrongDateAndTimeFormat, UnsupportedEncodingException, JsonProcessingException {
         Long talentId = registerUser(Role.TALENT);
         Long plannerId = registerUser(Role.PLANNER);
-        ObjectMapper mapper = new ObjectMapper();
         BookingRequest bookingRequest = getBookingRequest(plannerId, talentId);
+        BookingResponse bookingResponse = getBookingResponse( bookingRequest);
+        Long bookingId = bookingResponse.getBookingId();
+
+        try {
+            mockMvc.perform(
+                            MockMvcRequestBuilders.patch(String.format("%s/decline", bookingId))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print());
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testFindBookingById()
+            throws UnsupportedEncodingException, JsonProcessingException, WrongDateAndTimeFormat {
+        Long talentId = registerUser(Role.TALENT);
+        Long plannerId = registerUser(Role.PLANNER);
+        BookingRequest bookingRequest = getBookingRequest(plannerId, talentId);
+        BookingResponse bookingResponse = getBookingResponse( bookingRequest);
+        Long bookingId = bookingResponse.getBookingId();
+
+        try{
+            mockMvc.perform(
+                            MockMvcRequestBuilders.get(String.format("%s/%s", URL, bookingId))
+                                    .accept(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print());
+
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    private BookingResponse getBookingResponse( BookingRequest bookingRequest)
+            throws UnsupportedEncodingException, JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
         MvcResult responseOfBooking = null;
         try {
             responseOfBooking = mockMvc.perform(
-                            post("/api/v1/booking")
+                            post(URL)
                                     .content(mapper.writeValueAsString(bookingRequest))
                                     .contentType(MediaType.APPLICATION_JSON)
                     )
@@ -107,20 +134,9 @@ public class BookingControllerTest {
             exception.printStackTrace();
         }
 
+        assert responseOfBooking != null;
         String content = responseOfBooking.getResponse().getContentAsString();
-        BookingResponse bookingResponse = mapper.readValue(content, BookingResponse.class);
-        Long bookingId = bookingResponse.getBookingId();
-
-        try {
-            mockMvc.perform(
-                            MockMvcRequestBuilders.patch("/api/v1/booking/decline/"+ bookingId)
-                                    .contentType(MediaType.APPLICATION_JSON)
-                    )
-                    .andExpect(status().is2xxSuccessful())
-                    .andDo(print());
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
+        return mapper.readValue(content, BookingResponse.class);
     }
 
     private static BookingRequest getBookingRequest(Long plannerId, Long talentId) throws WrongDateAndTimeFormat {
@@ -134,8 +150,8 @@ public class BookingControllerTest {
     }
 
 
-    public Long registerUser(Role userRole) throws UnsupportedEncodingException, JsonProcessingException {
-        String URL = "/api/v1/user";
+    private Long registerUser(Role userRole) throws UnsupportedEncodingException, JsonProcessingException {
+        String USER_URL = "/api/v1/user";
         ObjectMapper mapper = new ObjectMapper();
         RegistrationRequest registrationRequest = new RegistrationRequest();
         registrationRequest.setFirstName("Retnaa");
@@ -148,7 +164,7 @@ public class BookingControllerTest {
         MvcResult userRegistrationResponse = null;
         try {
             userRegistrationResponse = mockMvc.perform(
-                            post(URL)
+                            post(USER_URL)
                                     .content(mapper.writeValueAsString(registrationRequest))
                                     .contentType(MediaType.APPLICATION_JSON)
                     )
