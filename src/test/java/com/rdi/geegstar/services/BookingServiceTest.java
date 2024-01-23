@@ -2,26 +2,30 @@ package com.rdi.geegstar.services;
 
 import com.rdi.geegstar.data.models.Booking;
 import com.rdi.geegstar.dto.requests.*;
-import com.rdi.geegstar.dto.response.AcceptBookingResponse;
-import com.rdi.geegstar.dto.response.BookingResponse;
-import com.rdi.geegstar.dto.response.DeclineBookingResponse;
-import com.rdi.geegstar.dto.response.RegistrationResponse;
+import com.rdi.geegstar.dto.response.*;
 import com.rdi.geegstar.enums.Role;
 import com.rdi.geegstar.exceptions.BookingNotFoundException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
 import com.rdi.geegstar.exceptions.WrongDateAndTimeFormat;
+import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 import static com.rdi.geegstar.enums.EventType.BIRTHDAY_PARTY;
+import static com.rdi.geegstar.enums.Role.PLANNER;
+import static com.rdi.geegstar.enums.Role.TALENT;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
+@Slf4j
 public class BookingServiceTest {
 
     @Autowired
-    private BookingService bookTalentService;
+    private BookingService bookingService;
     @Autowired
     private UserService userService;
 
@@ -29,7 +33,7 @@ public class BookingServiceTest {
     public void testBookTalent() throws UserNotFoundException, WrongDateAndTimeFormat {
         BookingRequest bookTalentRequest = getBookingRequest();
 
-        BookingResponse bookTalentResponse = bookTalentService.bookTalent(bookTalentRequest);
+        BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
 
         assertThat(bookTalentResponse).isNotNull();
     }
@@ -38,14 +42,14 @@ public class BookingServiceTest {
     public void testAcceptBooking() throws UserNotFoundException, BookingNotFoundException, WrongDateAndTimeFormat {
         BookingRequest bookTalentRequest = getBookingRequest();
 
-        BookingResponse bookTalentResponse = bookTalentService.bookTalent(bookTalentRequest);
+        BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
 
         AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
         acceptBookingRequest.setBookingId(bookTalentResponse.getBookingId());
         acceptBookingRequest.setTalentId(bookTalentRequest.getTalentId());
 
         AcceptBookingResponse acceptBookingResponse =
-                bookTalentService.acceptBooking(acceptBookingRequest);
+                bookingService.acceptBooking(acceptBookingRequest);
 
         assertThat(acceptBookingResponse).isNotNull();
     }
@@ -54,44 +58,62 @@ public class BookingServiceTest {
     public void testDeclineBooking() throws UserNotFoundException, BookingNotFoundException, WrongDateAndTimeFormat {
         BookingRequest bookTalentRequest = getBookingRequest();
 
-        BookingResponse bookTalentResponse = bookTalentService.bookTalent(bookTalentRequest);
+        BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
 
 
         DeclineBookingResponse declineBookingResponse =
-                bookTalentService.declineBooking(bookTalentResponse.getBookingId());
+                bookingService.declineBooking(bookTalentResponse.getBookingId());
         assertThat(declineBookingResponse).isNotNull();
     }
 
     @Test
     public void testFindBookingById() throws WrongDateAndTimeFormat, UserNotFoundException, BookingNotFoundException {
         BookingRequest bookTalentRequest = getBookingRequest();
-        BookingResponse bookTalentResponse = bookTalentService.bookTalent(bookTalentRequest);
+        BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
 
-        Booking foundBooking = bookTalentService.findBookingById(bookTalentResponse.getBookingId());
+        Booking foundBooking = bookingService.findBookingById(bookTalentResponse.getBookingId());
 
         assertThat(foundBooking).isNotNull();
     }
 
-    private BookingRequest getBookingRequest() throws WrongDateAndTimeFormat {
-        RegistrationRequest registerRequest = new RegistrationRequest();
-        registerRequest.setFirstName("Retnaa");
-        registerRequest.setLastName("Dayok");
-        registerRequest.setUsername("Darda");
-        registerRequest.setEmail("dayokr@gmail.com");
-        registerRequest.setPhoneNumber("07031005737");
-        registerRequest.setPassword("password");
-        registerRequest.setRole(Role.TALENT);
-        RegistrationResponse talentRegistrationResponse = userService.registerUser(registerRequest);
+    @Test
+    public void testGetUserBookings() throws WrongDateAndTimeFormat, UserNotFoundException {
+        RegistrationResponse talentRegistrationResponse = getRegistrationResponse(Role.TALENT);
+        RegistrationResponse talentRegistrationResponse2 = getRegistrationResponse(Role.TALENT);
+        RegistrationResponse plannerRegistrationResponse = getRegistrationResponse(PLANNER);
+        EventDetailRequest eventDetailsRequest = getEventDetailRequest();
 
-        RegistrationRequest registerRequest2 = new RegistrationRequest();
-        registerRequest.setFirstName("Retnaa");
-        registerRequest.setLastName("Dayok");
-        registerRequest.setUsername("Darda");
-        registerRequest.setEmail("dayokr@gmail.com");
-        registerRequest.setPhoneNumber("07031005737");
-        registerRequest.setPassword("password");
-        registerRequest.setRole(Role.PLANNER);
-        RegistrationResponse plannerRegistrationResponse = userService.registerUser(registerRequest2);
+        BookingRequest bookTalentRequest = new BookingRequest();
+        bookTalentRequest.setTalentId(talentRegistrationResponse.getId());
+        bookTalentRequest.setEventDetailRequest(eventDetailsRequest);
+        bookTalentRequest.setPlannerId(plannerRegistrationResponse.getId());
+
+        BookingRequest bookTalentRequest2 = new BookingRequest();
+        bookTalentRequest2.setTalentId(talentRegistrationResponse2.getId());
+        bookTalentRequest2.setEventDetailRequest(eventDetailsRequest);
+        bookTalentRequest2.setPlannerId(plannerRegistrationResponse.getId());
+
+        bookingService.bookTalent(bookTalentRequest);
+        bookingService.bookTalent(bookTalentRequest2);
+
+        GetUserBookingsRequest getUserBookingsRequest = new GetUserBookingsRequest();
+        int pageNumber = 1;
+        int numberOfBookingsToPage = 1;
+        getUserBookingsRequest.setUserId(talentRegistrationResponse2.getId());
+        getUserBookingsRequest.setPageNumber(pageNumber);
+        getUserBookingsRequest.setPageSize(numberOfBookingsToPage);
+        getUserBookingsRequest.setUserRole(TALENT);
+
+        List<UserBookingResponse> userBookingsResponse = bookingService.getUserBookings(getUserBookingsRequest);
+//        log.info("bookings:: {}", plannerBookingResponse);
+//        System.out.println(userBookingsResponse);
+        Assertions.assertThat(userBookingsResponse).hasSize(numberOfBookingsToPage);
+    }
+
+    private BookingRequest getBookingRequest() throws WrongDateAndTimeFormat {
+        RegistrationResponse talentRegistrationResponse = getRegistrationResponse(Role.TALENT);
+
+        RegistrationResponse plannerRegistrationResponse = getRegistrationResponse(PLANNER);
 
         BookingRequest bookTalentRequest = new BookingRequest();
         EventDetailRequest eventDetailsRequest = getEventDetailRequest();
@@ -101,7 +123,20 @@ public class BookingServiceTest {
         return bookTalentRequest;
     }
 
-    private static EventDetailRequest getEventDetailRequest() throws WrongDateAndTimeFormat {
+    private RegistrationResponse getRegistrationResponse(Role talent) {
+        RegistrationRequest registerRequest = new RegistrationRequest();
+        registerRequest.setFirstName("Retnaa");
+        registerRequest.setLastName("Dayok");
+        registerRequest.setUsername("Darda");
+        registerRequest.setEmail("dayokr@gmail.com");
+        registerRequest.setPhoneNumber("07031005737");
+        registerRequest.setPassword("password");
+        registerRequest.setRole(talent);
+        RegistrationResponse talentRegistrationResponse = userService.registerUser(registerRequest);
+        return talentRegistrationResponse;
+    }
+
+    private EventDetailRequest getEventDetailRequest() throws WrongDateAndTimeFormat {
         EventDetailRequest eventDetailsRequest = new EventDetailRequest();
         eventDetailsRequest.setEventName("Darda's birthday party");
         eventDetailsRequest.setEventType(BIRTHDAY_PARTY);
@@ -111,7 +146,7 @@ public class BookingServiceTest {
         return eventDetailsRequest;
     }
 
-    private static AddressRequest getAddressRequest() {
+    private AddressRequest getAddressRequest() {
         AddressRequest addressRequest = new AddressRequest();
         addressRequest.setCity("Lagos mainland");
         addressRequest.setCountry("Nigeria");

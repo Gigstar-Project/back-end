@@ -1,7 +1,9 @@
 package com.rdi.geegstar.services;
 
 import com.rdi.geegstar.data.models.User;
+import com.rdi.geegstar.dto.requests.GetAllTalentsRequest;
 import com.rdi.geegstar.dto.requests.RegistrationRequest;
+import com.rdi.geegstar.dto.response.GetAllTalentsResponse;
 import com.rdi.geegstar.dto.response.GetUserResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.exceptions.EmailConfirmationFailedException;
@@ -9,13 +11,9 @@ import com.rdi.geegstar.exceptions.GeegStarException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
     RegistrationResponse registerUser(RegistrationRequest registerRequest);
-
-
-    Optional<User> findByEmail(String userEmail);
 
     Object requestEmailConfirmationCode(String userEmail) throws GeegStarException;
 
@@ -25,5 +23,5 @@ public interface UserService {
 
     GetUserResponse getUserById(Long userId) throws UserNotFoundException;
 
-    List<GetUserResponse> getAllTalents();
+    List<GetAllTalentsResponse> getAllTalents(GetAllTalentsRequest getAllTalentsRequest);
 }

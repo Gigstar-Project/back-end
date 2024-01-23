@@ -4,8 +4,10 @@ import com.rdi.geegstar.data.models.Token;
 import com.rdi.geegstar.data.models.User;
 import com.rdi.geegstar.data.repositories.UserRepository;
 import com.rdi.geegstar.dto.requests.EmailRequest;
+import com.rdi.geegstar.dto.requests.GetAllTalentsRequest;
 import com.rdi.geegstar.dto.requests.Recipient;
 import com.rdi.geegstar.dto.requests.RegistrationRequest;
+import com.rdi.geegstar.dto.response.GetAllTalentsResponse;
 import com.rdi.geegstar.dto.response.GetUserResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.exceptions.EmailConfirmationFailedException;
@@ -17,11 +19,13 @@ import com.rdi.geegstar.services.TokenService;
 import com.rdi.geegstar.services.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 import static com.rdi.geegstar.enums.Role.TALENT;
@@ -40,11 +44,6 @@ public class GeegStarUserService implements UserService {
         User user = modelMapper.map(registerRequest, User.class);
         User savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, RegistrationResponse.class);
-    }
-
-    @Override
-    public Optional<User> findByEmail(String userEmail) {
-        return userRepository.findByEmail(userEmail);
     }
 
     @Override
@@ -73,11 +72,12 @@ public class GeegStarUserService implements UserService {
     }
 
     @Override
-    public List<GetUserResponse> getAllTalents() {
-        return userRepository.findAll()
-                .stream()
-                .filter(user -> TALENT.equals(user.getRole()))
-                .map(user -> modelMapper.map(user, GetUserResponse.class))
+    public List<GetAllTalentsResponse> getAllTalents(GetAllTalentsRequest getAllTalentRequest) {
+        Pageable pageable = PageRequest.of(getAllTalentRequest.getPageNumber(), getAllTalentRequest.getPageSize());
+        Page<User> talentPage = userRepository.findAllByRole(TALENT, pageable);
+        List<User> talents = talentPage.getContent();
+        return talents.stream()
+                .map(user -> modelMapper.map(user, GetAllTalentsResponse.class))
                 .toList();
     }
 

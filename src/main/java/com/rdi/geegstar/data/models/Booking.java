@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Entity
 @Table(name = "bookings")
 @NoArgsConstructor
+@ToString
 public class Booking {
     @Id
     @GeneratedValue(strategy = IDENTITY)
