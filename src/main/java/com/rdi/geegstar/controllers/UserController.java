@@ -58,7 +58,6 @@ public class UserController {
 
     @GetMapping("/talents")
     public ResponseEntity<List<GetAllTalentsResponse>> getAllTalents(@RequestBody GetAllTalentsRequest getAllTalentsRequest) {
-        List<GetAllTalentsResponse> talents = geegStarUserService.getAllTalents(getAllTalentsRequest);
-        return ResponseEntity.ok(talents);
+        return ResponseEntity.ok(geegStarUserService.getAllTalents(getAllTalentsRequest));
     }
 }
