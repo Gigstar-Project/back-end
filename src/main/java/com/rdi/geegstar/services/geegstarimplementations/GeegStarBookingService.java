@@ -2,36 +2,34 @@ package com.rdi.geegstar.services.geegstarimplementations;
 
 import com.rdi.geegstar.data.models.*;
 import com.rdi.geegstar.data.repositories.BookingRepository;
-import com.rdi.geegstar.dto.requests.AcceptBookingRequest;
-import com.rdi.geegstar.dto.requests.BookingBillRequest;
-import com.rdi.geegstar.dto.requests.BookingRequest;
-import com.rdi.geegstar.dto.requests.EventDetailRequest;
-import com.rdi.geegstar.dto.response.AcceptBookingResponse;
-import com.rdi.geegstar.dto.response.BookingResponse;
-import com.rdi.geegstar.dto.response.DeclineBookingResponse;
+import com.rdi.geegstar.dto.requests.*;
+import com.rdi.geegstar.dto.response.*;
+import com.rdi.geegstar.enums.Role;
 import com.rdi.geegstar.exceptions.BookingNotFoundException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
-import com.rdi.geegstar.services.BookingBillService;
 import com.rdi.geegstar.services.BookingService;
-import com.rdi.geegstar.services.CalendarService;
 import com.rdi.geegstar.services.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class GeegStarBookingService implements BookingService {
 
     private final ModelMapper modelMapper;
     private final UserService userService;
     private final BookingRepository bookingRepository;
-    private final CalendarService calendarService;
 
     @Override
     public BookingResponse bookTalent(BookingRequest bookCreativeTalentRequest)
@@ -42,7 +40,17 @@ public class GeegStarBookingService implements BookingService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy, MM, dd, HH, mm");
         eventDetail.setEventDateAndTime(LocalDateTime.parse(eventDetailsRequest.getEventDateAndTime(), formatter));
         eventDetail.setEventAddress(eventAddress);
-        Booking savedBooking = getSavedBooking(bookCreativeTalentRequest, eventDetail);
+        User talent = userService.findUserById(bookCreativeTalentRequest.getTalentId());
+        User planner = userService.findUserById(bookCreativeTalentRequest.getPlannerId());
+        Calendar calendar = new Calendar();
+        calendar.setTalent(talent);
+        calendar.setEventDateAndTime(LocalDateTime.parse(eventDetailsRequest.getEventDateAndTime(), formatter));
+        Booking booking = new Booking();
+        booking.setTalent(talent);
+        booking.setPlanner(planner);
+        booking.setEventDetail(eventDetail);
+        booking.setCalendar(calendar);
+        Booking savedBooking = bookingRepository.save(booking);
         return modelMapper.map(savedBooking, BookingResponse.class);
     }
 
@@ -51,27 +59,97 @@ public class GeegStarBookingService implements BookingService {
             throws BookingNotFoundException, UserNotFoundException {
         Long bookingId = acceptBookingRequest.getBookingId();
         Booking foundBooking = findBookingById(bookingId);
-        foundBooking.setAccepted(true);
-        createCalendar(acceptBookingRequest, foundBooking);
-        return new AcceptBookingResponse("Successful");
-    }
-
-    private void createCalendar (AcceptBookingRequest acceptBookingRequest, Booking foundBooking)
-            throws UserNotFoundException {
-        Booking savedAcceptedBooking = bookingRepository.save(foundBooking);
-        User talent = userService.findUserById(acceptBookingRequest.getTalentId());
-        EventDetail eventDetail = foundBooking.getEventDetail();
-        Calendar calendar = new Calendar();
-        calendar.setBooking(savedAcceptedBooking);
-        calendar.setTalent(talent);
-        calendar.setEventDateAndTime(eventDetail.getEventDateAndTime());
-        calendarService.create(calendar);
+        Calendar calendar = foundBooking.getCalendar();
+        Long bookedTalentId = foundBooking.getTalent().getId();
+        Long givenTalentIdFromRequest = acceptBookingRequest.getTalentId();
+        if (Objects.equals(bookedTalentId, givenTalentIdFromRequest)) {
+            foundBooking.setAccepted(true);
+            calendar.setIsBooked(true);
+            bookingRepository.save(foundBooking);
+            return new AcceptBookingResponse("Successful");
+        }
+        return new AcceptBookingResponse("Un-Successful");
     }
 
     public Booking findBookingById(Long bookingId) throws BookingNotFoundException {
         return bookingRepository.findById(bookingId)
                 .orElseThrow(() ->
                         new BookingNotFoundException(String.format("The booking with %d id is not found", bookingId)));
+    }
+
+    @Override
+    public List<UserBookingResponse> getUserBookings(GetUserBookingsRequest getUserBookingsRequest) throws UserNotFoundException {
+        User user = userService.findUserById(getUserBookingsRequest.getUserId());
+        Pageable pageable = PageRequest.of(getUserBookingsRequest.getPageNumber() - 1, getUserBookingsRequest.getPageSize());
+        boolean isA_PlannerRequest = Role.PLANNER.equals(getUserBookingsRequest.getUserRole());
+        Page<Booking> bookingPage = null;
+        if (isA_PlannerRequest) bookingPage = bookingRepository.findAllByPlanner(user, pageable);
+        if(!isA_PlannerRequest) bookingPage = bookingRepository.findAllByTalent(user, pageable);
+        List<Booking> bookings = bookingPage.getContent();
+        return bookings.stream()
+                .filter(booking -> {
+                    Long plannerIdOfBooking = booking.getPlanner().getId();
+                    Long talentIdOfBooking = booking.getTalent().getId();
+                    Long userId = getUserBookingsRequest.getUserId();
+                    boolean isUserBooking = false;
+                    if (isA_PlannerRequest) isUserBooking = Objects.equals(plannerIdOfBooking, userId);
+                    if(!isA_PlannerRequest) isUserBooking = Objects.equals(talentIdOfBooking, userId);
+                    return isUserBooking;
+                })
+                .map(booking -> {
+                    User planner = booking.getPlanner();
+                    User talent = booking.getTalent();
+                    EventDetail eventDetail = booking.getEventDetail();
+                    Address address = eventDetail.getEventAddress();
+                    Calendar calendar = booking.getCalendar();
+                    boolean isAccepted = booking.isAccepted();
+                    Long bookingId = booking.getId();
+                    return getUserBookingResponse(
+                            isA_PlannerRequest,
+                            talent, planner, 
+                            calendar, address,
+                            eventDetail, bookingId, 
+                            isAccepted);
+                })
+                .toList();
+    }
+
+    private UserBookingResponse getUserBookingResponse(boolean isA_PlannerRequest, User talent, User planner, Calendar calendar, Address address, EventDetail eventDetail, Long bookingId, boolean isAccepted) {
+        UserBookingResponse userBookingResponse = new UserBookingResponse();
+        if (isA_PlannerRequest) setBookingResponseTalentResponse(talent, userBookingResponse);
+        if(!isA_PlannerRequest) setBookingResponsePlannerResponse(planner, userBookingResponse);
+        BookingResponseVariables bookingResponseVariables = getMappedBookingResponseVariables(calendar, address, eventDetail);
+        userBookingResponse.setId(bookingId);
+        userBookingResponse.setEventDetail(bookingResponseVariables.bookingResponseEventDetailResponse());
+        userBookingResponse.setCalendar(bookingResponseVariables.bookingResponseCalenderResponse());
+        userBookingResponse.setAccepted(isAccepted);
+        return userBookingResponse;
+    }
+
+    private BookingResponseVariables getMappedBookingResponseVariables(Calendar calendar, Address address, EventDetail eventDetail) {
+        BookingResponseCalenderResponse bookingResponseCalenderResponse =
+                modelMapper.map(calendar, BookingResponseCalenderResponse.class);
+        BookingResponseAddressResponse bookingResponseAddressResponse =
+                modelMapper.map(address, BookingResponseAddressResponse.class);
+        BookingResponseEventDetailResponse bookingResponseEventDetailResponse =
+                modelMapper.map(eventDetail, BookingResponseEventDetailResponse.class);
+        bookingResponseEventDetailResponse.setEventAddress(bookingResponseAddressResponse);
+        return new BookingResponseVariables(bookingResponseCalenderResponse, bookingResponseEventDetailResponse);
+    }
+
+    private record BookingResponseVariables(BookingResponseCalenderResponse bookingResponseCalenderResponse, BookingResponseEventDetailResponse bookingResponseEventDetailResponse) {
+    }
+
+    private void setBookingResponsePlannerResponse(User planner, UserBookingResponse userBookingResponse) {
+        BookingResponsePlannerResponse bookingResponsePlannerResponse =
+                modelMapper.map(planner, BookingResponsePlannerResponse.class);
+        userBookingResponse.setPlannerResponse(bookingResponsePlannerResponse);
+    }
+
+    private void setBookingResponseTalentResponse(User talent, UserBookingResponse userBookingResponse) {
+        BookingResponseTalentResponse bookingResponseTalentResponse =
+                modelMapper.map(talent, BookingResponseTalentResponse.class);
+        userBookingResponse.setTalentResponse(bookingResponseTalentResponse);
     }
 
     @Override
@@ -82,14 +160,4 @@ public class GeegStarBookingService implements BookingService {
         return new DeclineBookingResponse("Successful");
     }
 
-    private Booking getSavedBooking(BookingRequest bookCreativeTalentRequest, EventDetail eventDetail)
-            throws UserNotFoundException {
-        User creativeTalent = userService.findUserById(bookCreativeTalentRequest.getTalent());
-        User eventPlanner = userService.findUserById(bookCreativeTalentRequest.getPlanner());
-        Booking booking = new Booking();
-        booking.setTalent(List.of(creativeTalent));
-        booking.setPlanner(eventPlanner);
-        booking.setEventDetail(eventDetail);
-        return bookingRepository.save(booking);
-    }
 }

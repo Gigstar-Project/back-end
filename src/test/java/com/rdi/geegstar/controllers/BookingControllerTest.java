@@ -127,8 +127,8 @@ public class BookingControllerTest {
         EventDetailRequest eventDetailRequest =
                 getEventDetailRequest();
         BookingRequest bookingRequest = new BookingRequest();
-        bookingRequest.setPlanner(plannerId);
-        bookingRequest.setTalent(talentId);
+        bookingRequest.setPlannerId(plannerId);
+        bookingRequest.setTalentId(talentId);
         bookingRequest.setEventDetailRequest(eventDetailRequest);
         return bookingRequest;
     }

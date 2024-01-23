@@ -1,7 +1,10 @@
 package com.rdi.geegstar.services;
 
-import com.rdi.geegstar.data.models.Calendar;
+import com.rdi.geegstar.dto.response.GetTalentCalendars;
+import com.rdi.geegstar.exceptions.UserNotFoundException;
+
+import java.util.List;
 
 public interface CalendarService {
-    Calendar create(Calendar calendar);
+    List<GetTalentCalendars> getTalentCalendars(Long talentId) throws UserNotFoundException;
 }

@@ -8,12 +8,11 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Setter
 @Getter
-@Entity
+@Entity(name = "Calendars")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Calendar {
@@ -22,8 +21,7 @@ public class Calendar {
     private Long id;
     @ManyToOne
     private User talent;
-    @OneToOne
-    private Booking booking;
+    private Boolean isBooked;
     private LocalDateTime eventDateAndTime;
     private LocalDateTime dateCreated;
 

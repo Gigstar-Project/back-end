@@ -106,9 +106,9 @@ public class BookingBillServiceTest {
 
         BookingRequest bookTalentRequest = new BookingRequest();
         EventDetailRequest eventDetailsRequest = getEventDetailRequest();
-        bookTalentRequest.setTalent(talentRegistrationResponse.getId());
+        bookTalentRequest.setTalentId(talentRegistrationResponse.getId());
         bookTalentRequest.setEventDetailRequest(eventDetailsRequest);
-        bookTalentRequest.setPlanner(plannerRegistrationResponse.getId());
+        bookTalentRequest.setPlannerId(plannerRegistrationResponse.getId());
         return bookTalentRequest;
     }
 
