@@ -1,10 +1,11 @@
-package com.rdi.geegstar.services;
+package com.rdi.geegstar.services.geegstarimplementations;
 
 import com.rdi.geegstar.config.MailConfig;
 import com.rdi.geegstar.dto.requests.EmailRequest;
 import com.rdi.geegstar.dto.response.EmailResponse;
 import com.rdi.geegstar.exceptions.EmailIsTakenException;
 import com.rdi.geegstar.exceptions.GeegStarException;
+import com.rdi.geegstar.services.MailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,7 +23,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Service
 @RequiredArgsConstructor
-public class BrevoMailService implements MailService{
+public class BrevoMailService implements MailService {
 
     private final MailConfig mailConfig;
 
