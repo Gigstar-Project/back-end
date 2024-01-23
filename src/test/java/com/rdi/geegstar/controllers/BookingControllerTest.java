@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.io.UnsupportedEncodingException;
 
 import static com.rdi.geegstar.enums.EventType.BIRTHDAY_PARTY;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -97,18 +98,26 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void testFindBookingById()
+    public void testGetUserBookings()
             throws UnsupportedEncodingException, JsonProcessingException, WrongDateAndTimeFormat {
         Long talentId = registerUser(Role.TALENT);
         Long plannerId = registerUser(Role.PLANNER);
+        int pageSize = 1;
+        int pageNumber = 1;
         BookingRequest bookingRequest = getBookingRequest(plannerId, talentId);
         BookingResponse bookingResponse = getBookingResponse( bookingRequest);
         Long bookingId = bookingResponse.getBookingId();
-
+        GetUserBookingsRequest getUserBookingsRequest = new GetUserBookingsRequest();
+        getUserBookingsRequest.setUserRole(Role.TALENT);
+        getUserBookingsRequest.setUserId(talentId);
+        getUserBookingsRequest.setPageSize(pageSize);
+        getUserBookingsRequest.setPageNumber(pageNumber);
+        ObjectMapper mapper = new ObjectMapper();
         try{
             mockMvc.perform(
-                            MockMvcRequestBuilders.get(String.format("%s/%s", URL, bookingId))
-                                    .accept(MediaType.APPLICATION_JSON)
+                            MockMvcRequestBuilders.get(URL)
+                                    .content(mapper.writeValueAsString(getUserBookingsRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
                     )
                     .andExpect(status().is2xxSuccessful())
                     .andDo(print());
