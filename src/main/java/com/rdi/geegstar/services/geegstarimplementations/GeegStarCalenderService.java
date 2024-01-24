@@ -24,8 +24,7 @@ public class GeegStarCalenderService implements CalendarService {
 
     @Override
     public List<GetTalentCalendars> getTalentCalendars(Long talentId) throws UserNotFoundException {
-        User talent = userService.findUserById(talentId);
-        List<Calendar> calendars = calendarRepository.findByTalent(talent);
+        List<Calendar> calendars = calendarRepository.findByTalentId(talentId);
         return calendars.stream()
                 .map(calender -> modelMapper.map(calender, GetTalentCalendars.class))
                 .toList();

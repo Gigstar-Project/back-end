@@ -69,7 +69,7 @@ public class CalenderServiceTest {
         EventDetailRequest eventDetailsRequest = new EventDetailRequest();
         eventDetailsRequest.setEventName("Darda's birthday party");
         eventDetailsRequest.setEventType(BIRTHDAY_PARTY);
-        eventDetailsRequest.setEventDateAndTime("2023, 12, 04, 10, 30");
+        eventDetailsRequest.setEventDateAndTime("2024, 12, 04, 10, 30");
         AddressRequest addressRequest = getAddressRequest();
         eventDetailsRequest.setEventAddress(addressRequest);
         return eventDetailsRequest;
