@@ -26,6 +26,7 @@ public class BookingBill {
     private BigDecimal amount;
     @OneToOne
     private Payment payment;
+    private boolean isPaid;
     private LocalDateTime dateTimeCreated;
 
     @PrePersist
