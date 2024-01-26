@@ -74,13 +74,6 @@ public class GeegStarBookingBillService implements BookingBillService {
                         new BookingNotFoundException(String.format("The booking bill with id %d is not found", bookingId)));
         GetBookingBillDetailsResponse bookingBillDetailsResponse =
                 modelMapper.map(bookingBill, GetBookingBillDetailsResponse.class);
-        User talent = bookingBill.getTalent();
-        User planner = bookingBill.getPlanner();
-        GetUserResponse talentResponse = modelMapper.map(talent, GetUserResponse.class);
-        GetUserResponse plannerResponse = modelMapper.map(planner, GetUserResponse.class);
-        bookingBillDetailsResponse.setTalent(talentResponse);
-        bookingBillDetailsResponse.setPlanner(plannerResponse);
-        System.out.println(bookingBill.getBookingCost());
         bookingBillDetailsResponse.setAmount(bookingBill.getBookingCost());
         return bookingBillDetailsResponse;
     }

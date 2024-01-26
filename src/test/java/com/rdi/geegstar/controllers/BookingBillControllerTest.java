@@ -3,8 +3,6 @@ package com.rdi.geegstar.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rdi.geegstar.dto.requests.*;
-import com.rdi.geegstar.dto.response.BookingBillResponse;
-import com.rdi.geegstar.dto.response.GetBookingBillDetailsResponse;
 import com.rdi.geegstar.dto.response.BookingResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.enums.Role;
@@ -249,6 +247,10 @@ public class BookingBillControllerTest {
         }
     }
 
+    @Test
+    public void testPayBookingBill() {
+
+    }
 
     private static EventDetailRequest getEventDetailRequest() throws WrongDateAndTimeFormat {
         EventDetailRequest eventDetailsRequest = new EventDetailRequest();
