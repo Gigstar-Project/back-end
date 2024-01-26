@@ -6,7 +6,7 @@ import com.rdi.geegstar.data.models.Payment;
 import com.rdi.geegstar.data.models.User;
 import com.rdi.geegstar.data.repositories.BookingBillRepository;
 import com.rdi.geegstar.dto.requests.BookingBillRequest;
-import com.rdi.geegstar.dto.requests.PayBookingBillRequest;
+import com.rdi.geegstar.dto.requests.BookingBillPaymentRequest;
 import com.rdi.geegstar.dto.requests.PaymentRequest;
 import com.rdi.geegstar.dto.response.*;
 import com.rdi.geegstar.exceptions.BookingBillNotFoundException;
@@ -18,7 +18,6 @@ import com.rdi.geegstar.services.PaymentService;
 import com.rdi.geegstar.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -43,25 +42,22 @@ public class GeegStarBookingBillService implements BookingBillService {
         bookingBill.setTalent(talent);
         bookingBill.setPlanner(planner);
         bookingBill.setText(bookingBillRequest.getText());
+        bookingBill.setBookingCost(bookingBillRequest.getBookingCost());
         BookingBill savedBookingBill = bookingBillRepository.save(bookingBill);
         return modelMapper.map(savedBookingBill, BookingBillResponse.class);
     }
 
     @Override
-    public BookingBill findBookingBillById(Long bookingBillId) throws BookingBillNotFoundException {
-        return bookingBillRepository.findById(bookingBillId)
+    public BookingBillPaymentResponse payBookingBill(BookingBillPaymentRequest payBookingBillRequest)
+            throws BookingBillNotFoundException, UserNotFoundException {
+        Long bookingBillId = payBookingBillRequest.getBookingBillId();
+        BookingBill foundBookingBill = bookingBillRepository.findById(bookingBillId)
                 .orElseThrow(
                         () -> new BookingBillNotFoundException(
                                 String.format("Booking bill with Id %d is not found", bookingBillId)
                         ));
-    }
-
-    @Override
-    public BookingBillPaymentResponse payBookingBill(PayBookingBillRequest payBookingBillRequest)
-            throws BookingBillNotFoundException, UserNotFoundException {
-        BookingBill foundBookingBill = findBookingBillById(payBookingBillRequest.getBookingBillId());
         PaymentRequest paymentRequest = new PaymentRequest();
-        paymentRequest.setAmount(foundBookingBill.getAmount());
+        paymentRequest.setAmount(foundBookingBill.getBookingCost());
         paymentRequest.setReceiver(payBookingBillRequest.getReceiverId());
         paymentRequest.setSender(payBookingBillRequest.getSenderId());
         Payment payment = paymentService.pay(paymentRequest);
@@ -72,18 +68,20 @@ public class GeegStarBookingBillService implements BookingBillService {
     }
 
     @Override
-    public BookingBillDetailsResponse getBookingBillDetails(Long bookingId) throws BookingNotFoundException {
+    public GetBookingBillDetailsResponse getBookingBillDetails(Long bookingId) throws BookingNotFoundException {
         BookingBill bookingBill = bookingBillRepository.findByBookingId(bookingId)
                 .orElseThrow(() ->
                         new BookingNotFoundException(String.format("The booking bill with id %d is not found", bookingId)));
-        BookingBillDetailsResponse bookingBillDetailsResponse =
-                modelMapper.map(bookingBill, BookingBillDetailsResponse.class);
+        GetBookingBillDetailsResponse bookingBillDetailsResponse =
+                modelMapper.map(bookingBill, GetBookingBillDetailsResponse.class);
         User talent = bookingBill.getTalent();
         User planner = bookingBill.getPlanner();
         GetUserResponse talentResponse = modelMapper.map(talent, GetUserResponse.class);
         GetUserResponse plannerResponse = modelMapper.map(planner, GetUserResponse.class);
         bookingBillDetailsResponse.setTalent(talentResponse);
         bookingBillDetailsResponse.setPlanner(plannerResponse);
+        System.out.println(bookingBill.getBookingCost());
+        bookingBillDetailsResponse.setAmount(bookingBill.getBookingCost());
         return bookingBillDetailsResponse;
     }
 

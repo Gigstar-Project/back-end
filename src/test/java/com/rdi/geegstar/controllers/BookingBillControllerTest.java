@@ -3,7 +3,8 @@ package com.rdi.geegstar.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rdi.geegstar.dto.requests.*;
-import com.rdi.geegstar.dto.response.BookingBillDetailsResponse;
+import com.rdi.geegstar.dto.response.BookingBillResponse;
+import com.rdi.geegstar.dto.response.GetBookingBillDetailsResponse;
 import com.rdi.geegstar.dto.response.BookingResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.enums.Role;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -221,22 +223,30 @@ public class BookingBillControllerTest {
         bookingBillRequest.setTalentId(talantRegistrationResponse.getId());
 
         final String BOOKING_BILL_URL = "/api/v1/bill";
-        MvcResult bookingBillResponseMvcResult = null;
         try {
-            bookingBillResponseMvcResult = mockMvc.perform(
+            mockMvc.perform(
                             post(BOOKING_BILL_URL)
                                     .content(mapper.writeValueAsString(bookingBillRequest))
                                     .contentType(MediaType.APPLICATION_JSON)
                     )
                     .andExpect(status().isCreated())
-                    .andDo(print())
-                    .andReturn();
+                    .andDo(print());
         } catch (Exception exception) {
             exception.printStackTrace();
         }
 
-        String bookingBillResponseAsString = bookingResponseMvcResult.getResponse().getContentAsString();
-        BookingBillDetailsResponse bookingBillDetails = mapper.readValue(bookingBillResponseAsString, BookingBillDetailsResponse.class);
+        Long bookingId = bookingResponse.getBookingId();
+
+        try {
+            mockMvc.perform(
+                            MockMvcRequestBuilders.get(String.format("%s/%d", BOOKING_BILL_URL, bookingId))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print());
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
     }
 
 

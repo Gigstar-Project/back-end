@@ -1,6 +1,5 @@
 package com.rdi.geegstar.services;
 
-import com.rdi.geegstar.data.models.BookingBill;
 import com.rdi.geegstar.dto.requests.*;
 import com.rdi.geegstar.dto.response.*;
 import com.rdi.geegstar.enums.Role;
@@ -8,6 +7,7 @@ import com.rdi.geegstar.exceptions.BookingBillNotFoundException;
 import com.rdi.geegstar.exceptions.BookingNotFoundException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
 import com.rdi.geegstar.exceptions.WrongDateAndTimeFormat;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,8 +33,8 @@ public class BookingBillServiceTest {
         BookingRequest bookTalentRequest = getBookingRequest();
         BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
         BookingBillRequest bookingBillRequest = new BookingBillRequest();
-        BigDecimal cost = BigDecimal.valueOf(2000000);
-        bookingBillRequest.setBookingCost(cost);
+        BigDecimal bookingCost = BigDecimal.valueOf(2000000);
+        bookingBillRequest.setBookingCost(bookingCost);
         bookingBillRequest.setBookingId(bookTalentResponse.getBookingId());
         bookingBillRequest.setText("The cost covers for all expenses");
         RegistrationResponse talentRegistrationResponse = getUserRegistrationResponse(Role.TALENT);
@@ -44,28 +44,6 @@ public class BookingBillServiceTest {
 
         BookingBillResponse bookingBillResponse = bookingBillService.createBookingBill(bookingBillRequest);
         assertThat(bookingBillResponse).isNotNull();
-    }
-
-    @Test
-    public void testFindBookingBillById()
-            throws WrongDateAndTimeFormat, UserNotFoundException,
-            BookingNotFoundException, BookingBillNotFoundException {
-        BookingRequest bookTalentRequest = getBookingRequest();
-        BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
-        BookingBillRequest bookingBillRequest = new BookingBillRequest();
-        BigDecimal cost = BigDecimal.valueOf(2000000);
-        bookingBillRequest.setBookingCost(cost);
-        bookingBillRequest.setBookingId(bookTalentResponse.getBookingId());
-        bookingBillRequest.setText("The cost covers for all expenses");
-        RegistrationResponse talentRegistrationResponse = getUserRegistrationResponse(Role.TALENT);
-        RegistrationResponse plannerRegistrationResponse = getUserRegistrationResponse(Role.PLANNER);
-        bookingBillRequest.setPlannerId(talentRegistrationResponse.getId());
-        bookingBillRequest.setTalentId(plannerRegistrationResponse.getId());
-        BookingBillResponse bookingBillResponse = bookingBillService.createBookingBill(bookingBillRequest);
-
-        BookingBill foundBookingBill = bookingBillService.findBookingBillById(bookingBillResponse.getBookingBillId());
-
-        assertThat(foundBookingBill).isNotNull();
     }
 
     @Test
@@ -80,18 +58,18 @@ public class BookingBillServiceTest {
         bookingRequest.setEventDetailRequest(eventDetailRequest);
         BookingResponse bookingResponse = bookingService.bookTalent(bookingRequest);
         BookingBillRequest bookingBillRequest = new BookingBillRequest();
-        BigDecimal cost = BigDecimal.valueOf(2000000);
-        bookingBillRequest.setBookingCost(cost);
+        BigDecimal bookingCost = BigDecimal.valueOf(2000000);
+        bookingBillRequest.setBookingCost(bookingCost);
         bookingBillRequest.setBookingId(bookingResponse.getBookingId());
         bookingBillRequest.setText("The cost covers for all expenses");
         bookingBillRequest.setPlannerId(talentRegistrationResponse.getId());
         bookingBillRequest.setTalentId(plannerRegistrationResponse.getId());
         BookingBillResponse bookingBillResponse = bookingBillService.createBookingBill(bookingBillRequest);
 
-        BookingBillDetailsResponse bookingBillDetailsResponse =
+        GetBookingBillDetailsResponse getBookingBillDetailsResponse =
                 bookingBillService.getBookingBillDetails(bookingResponse.getBookingId());
 
-        assertThat(bookingBillDetailsResponse).isNotNull();
+        assertThat(getBookingBillDetailsResponse).isNotNull();
     }
 
     @Test
@@ -111,13 +89,13 @@ public class BookingBillServiceTest {
         bookingBillRequest.setTalentId(plannerRegistrationResponse.getId());
         BookingBillResponse bookingBillResponse = bookingBillService.createBookingBill(bookingBillRequest);
 
-        PayBookingBillRequest payBookingBillRequest = new PayBookingBillRequest();
-        payBookingBillRequest.setBookingBillId(bookingBillResponse.getBookingBillId());
-        payBookingBillRequest.setSenderId(plannerRegistrationResponse.getId());
-        payBookingBillRequest.setReceiverId(talentRegistrationResponse.getId());
+        BookingBillPaymentRequest bookingBillPaymentRequest = new BookingBillPaymentRequest();
+        bookingBillPaymentRequest.setBookingBillId(bookingBillResponse.getBookingBillId());
+        bookingBillPaymentRequest.setSenderId(plannerRegistrationResponse.getId());
+        bookingBillPaymentRequest.setReceiverId(talentRegistrationResponse.getId());
 
         BookingBillPaymentResponse bookingBillPaymentResponse =
-                bookingBillService.payBookingBill(payBookingBillRequest);
+                bookingBillService.payBookingBill(bookingBillPaymentRequest);
 
         assertThat(bookingBillPaymentResponse).isNotNull();
     }

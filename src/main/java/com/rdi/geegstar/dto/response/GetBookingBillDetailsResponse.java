@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 @Setter
 @Getter
-public class BookingBillDetailsResponse {
+public class GetBookingBillDetailsResponse {
     private Long id;
     private GetUserResponse planner;
     private GetUserResponse talent;

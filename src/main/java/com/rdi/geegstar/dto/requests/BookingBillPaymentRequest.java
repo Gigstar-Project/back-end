@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class PayBookingBillRequest {
+public class BookingBillPaymentRequest {
     private Long senderId;
     private Long receiverId;
     private Long bookingBillId;

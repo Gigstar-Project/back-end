@@ -1,9 +1,8 @@
 package com.rdi.geegstar.services;
 
-import com.rdi.geegstar.data.models.BookingBill;
 import com.rdi.geegstar.dto.requests.BookingBillRequest;
-import com.rdi.geegstar.dto.requests.PayBookingBillRequest;
-import com.rdi.geegstar.dto.response.BookingBillDetailsResponse;
+import com.rdi.geegstar.dto.requests.BookingBillPaymentRequest;
+import com.rdi.geegstar.dto.response.GetBookingBillDetailsResponse;
 import com.rdi.geegstar.dto.response.BookingBillPaymentResponse;
 import com.rdi.geegstar.dto.response.BookingBillResponse;
 import com.rdi.geegstar.exceptions.BookingBillNotFoundException;
@@ -14,11 +13,8 @@ public interface BookingBillService {
     BookingBillResponse createBookingBill(BookingBillRequest bookingBillRequest)
             throws UserNotFoundException, BookingNotFoundException;
 
-    BookingBill findBookingBillById(Long bookingBillId)
-            throws BookingBillNotFoundException;
-
-    BookingBillPaymentResponse payBookingBill(PayBookingBillRequest payBookingBillRequest)
+    BookingBillPaymentResponse payBookingBill(BookingBillPaymentRequest payBookingBillRequest)
             throws BookingBillNotFoundException, UserNotFoundException;
 
-    BookingBillDetailsResponse getBookingBillDetails(Long bookingId) throws BookingBillNotFoundException, BookingNotFoundException;
+    GetBookingBillDetailsResponse getBookingBillDetails(Long bookingId) throws BookingBillNotFoundException, BookingNotFoundException;
 }

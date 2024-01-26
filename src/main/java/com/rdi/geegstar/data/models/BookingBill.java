@@ -23,7 +23,7 @@ public class BookingBill {
     @OneToOne
     private User talent;
     private String text;
-    private BigDecimal amount;
+    private BigDecimal bookingCost;
     @OneToOne
     private Payment payment;
     private boolean isPaid;
