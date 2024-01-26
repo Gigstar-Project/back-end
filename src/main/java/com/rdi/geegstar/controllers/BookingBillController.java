@@ -1,5 +1,6 @@
 package com.rdi.geegstar.controllers;
 
+import com.rdi.geegstar.dto.requests.BookingBillPaymentRequest;
 import com.rdi.geegstar.dto.requests.BookingBillRequest;
 
 import com.rdi.geegstar.exceptions.BookingBillNotFoundException;
@@ -30,6 +31,15 @@ public class BookingBillController {
         try {
             return ResponseEntity.status(OK).body(bookingBillService.getBookingBillDetails(bookingId));
         } catch (BookingBillNotFoundException | BookingNotFoundException exception) {
+            return ResponseEntity.badRequest().body(exception);
+        }
+    }
+
+    @PostMapping("/payment")
+    public ResponseEntity<?> payBookingBill(@RequestBody BookingBillPaymentRequest bookingBillPaymentRequest) {
+        try {
+            return ResponseEntity.status(OK).body(bookingBillService.payBookingBill(bookingBillPaymentRequest));
+        } catch (UserNotFoundException | BookingBillNotFoundException exception) {
             return ResponseEntity.badRequest().body(exception);
         }
     }

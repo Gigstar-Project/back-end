@@ -3,6 +3,7 @@ package com.rdi.geegstar.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rdi.geegstar.dto.requests.*;
+import com.rdi.geegstar.dto.response.BookingBillResponse;
 import com.rdi.geegstar.dto.response.BookingResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.enums.Role;
@@ -248,8 +249,126 @@ public class BookingBillControllerTest {
     }
 
     @Test
-    public void testPayBookingBill() {
+    public void testPayBookingBill()
+            throws UnsupportedEncodingException, JsonProcessingException, WrongDateAndTimeFormat {
+        RegistrationRequest talentRegisterRequest = new RegistrationRequest();
+        talentRegisterRequest.setFirstName("Retnaa");
+        talentRegisterRequest.setLastName("Dayok");
+        talentRegisterRequest.setUsername("Darda");
+        talentRegisterRequest.setEmail("dayokr@gmail.com");
+        talentRegisterRequest.setPhoneNumber("07031005737");
+        talentRegisterRequest.setPassword("password");
+        talentRegisterRequest.setRole(Role.TALENT);
 
+        RegistrationRequest plannerRegisterRequest = new RegistrationRequest();
+        plannerRegisterRequest.setFirstName("Retnaa");
+        plannerRegisterRequest.setLastName("Dayok");
+        plannerRegisterRequest.setUsername("Darda");
+        plannerRegisterRequest.setEmail("dayokr@gmail.com");
+        plannerRegisterRequest.setPhoneNumber("07031005737");
+        plannerRegisterRequest.setPassword("password");
+        plannerRegisterRequest.setRole(Role.PLANNER);
+
+        ObjectMapper mapper = new ObjectMapper();
+        final String USER_URL = "/api/v1/user";
+        MvcResult talentRegistrationMvcResult = null;
+        try {
+            talentRegistrationMvcResult = mockMvc.perform(
+                            post(USER_URL)
+                                    .content(mapper.writeValueAsString(talentRegisterRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print())
+                    .andReturn();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        String talentResponseAsString = talentRegistrationMvcResult.getResponse().getContentAsString();
+        RegistrationResponse talantRegistrationResponse =
+                mapper.readValue(talentResponseAsString, RegistrationResponse.class);
+
+        MvcResult plannerRegistrationMvcResult = null;
+        try {
+            plannerRegistrationMvcResult = mockMvc.perform(
+                            post(USER_URL)
+                                    .content(mapper.writeValueAsString(plannerRegisterRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print())
+                    .andReturn();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        String plannerResponseAsString = plannerRegistrationMvcResult.getResponse().getContentAsString();
+        RegistrationResponse plannerRegistrationResponse = mapper.readValue(plannerResponseAsString, RegistrationResponse.class);
+
+        final String BOOKING_URL = "/api/v1/booking";
+        BookingRequest bookingRequest = new BookingRequest();
+        EventDetailRequest eventDetailRequest = getEventDetailRequest();
+        bookingRequest.setEventDetailRequest(eventDetailRequest);
+        bookingRequest.setTalentId(talantRegistrationResponse.getId());
+        bookingRequest.setPlannerId(plannerRegistrationResponse.getId());
+        MvcResult bookingResponseMvcResult = null;
+        try {
+            bookingResponseMvcResult = mockMvc.perform(
+                            post(BOOKING_URL)
+                                    .content(mapper.writeValueAsString(bookingRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().isCreated())
+                    .andDo(print())
+                    .andReturn();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+
+        String bookingResponseAsString = bookingResponseMvcResult.getResponse().getContentAsString();
+        BookingResponse bookingResponse = mapper.readValue(bookingResponseAsString, BookingResponse.class);
+
+        BookingBillRequest bookingBillRequest = new BookingBillRequest();
+        bookingBillRequest.setBookingId(bookingResponse.getBookingId());
+        BigDecimal bookingCost = BigDecimal.valueOf(200_000);
+        bookingBillRequest.setBookingCost(bookingCost);
+        bookingBillRequest.setText("This cost covers all expenses");
+        bookingBillRequest.setPlannerId(plannerRegistrationResponse.getId());
+        bookingBillRequest.setTalentId(talantRegistrationResponse.getId());
+
+        final String BOOKING_BILL_URL = "/api/v1/bill";
+        MvcResult bookingBillResponseMvcResult = null;
+        try {
+            bookingBillResponseMvcResult = mockMvc.perform(
+                            post(BOOKING_BILL_URL)
+                                    .content(mapper.writeValueAsString(bookingBillRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().isCreated())
+                    .andDo(print())
+                    .andReturn();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+
+        String bookingBillResponseAsString = bookingBillResponseMvcResult.getResponse().getContentAsString();
+        BookingBillResponse bookingBillResponse = mapper.readValue(bookingBillResponseAsString, BookingBillResponse.class);
+
+        BookingBillPaymentRequest bookingBillPaymentRequest = new BookingBillPaymentRequest();
+        bookingBillPaymentRequest.setBookingBillId(bookingBillResponse.getBookingBillId());
+        bookingBillPaymentRequest.setSenderId(plannerRegistrationResponse.getId());
+        bookingBillPaymentRequest.setReceiverId(talantRegistrationResponse.getId());
+
+        try {
+            mockMvc.perform(
+                            post(String.format("%s/payment", BOOKING_BILL_URL))
+                                    .content(mapper.writeValueAsString(bookingBillPaymentRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print());
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
     }
 
     private static EventDetailRequest getEventDetailRequest() throws WrongDateAndTimeFormat {
