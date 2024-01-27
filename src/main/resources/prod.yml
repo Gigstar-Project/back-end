@@ -1,0 +1,16 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL}
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: "${USERNAME}"
+    password: "${PASSWORD}"
+    url: jdbc:mysql://${HOST_NAME}:${PORT}/${DATABASE}
+
+mail:
+  api:
+    key: ${BREVO_API_KEY}
+brevo:
+  mail:
+    url: ${BREVO_URL}
