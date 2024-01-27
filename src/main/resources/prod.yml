@@ -6,8 +6,11 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: "${USERNAME}"
     password: "${PASSWORD}"
-    url: jdbc:mysql://${HOST_NAME}:${PORT}/${DATABASE}
+    url: jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/${MYSQL_DATABASE}
     name: back-end
+  properties:
+    hibernate:
+      dialect: org.hibernate.dialect.MySQL8Dialect
 
 mail:
   api:
@@ -15,3 +18,4 @@ mail:
 brevo:
   mail:
     url: ${BREVO_URL}
+
