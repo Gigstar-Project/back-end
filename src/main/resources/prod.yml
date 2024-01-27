@@ -1,12 +1,13 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: ${DDL}
+      ddl-auto: update
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: "${USERNAME}"
     password: "${PASSWORD}"
     url: jdbc:mysql://${HOST_NAME}:${PORT}/${DATABASE}
+    name: back-end
 
 mail:
   api:
