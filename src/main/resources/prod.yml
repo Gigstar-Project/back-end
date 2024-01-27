@@ -4,8 +4,8 @@ spring:
       ddl-auto: update
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: "${USERNAME}"
-    password: "${PASSWORD}"
+    username: ${MYSQLUSER}
+    password: ${MYSQLPASSWORD}
     url: jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/${MYSQL_DATABASE}
     name: back-end
   properties:
