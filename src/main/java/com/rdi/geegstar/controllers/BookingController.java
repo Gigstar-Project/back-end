@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -22,7 +21,7 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    public ResponseEntity<?> bookTalent(@Valid @RequestBody BookingRequest bookingRequest) {
+    public ResponseEntity<?> bookTalent( @RequestBody BookingRequest bookingRequest) {
         try {
             return ResponseEntity.status(CREATED).body(bookingService.bookTalent(bookingRequest));
         } catch (GeegStarException exception) {
