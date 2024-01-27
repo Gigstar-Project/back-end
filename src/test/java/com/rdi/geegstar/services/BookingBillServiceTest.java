@@ -3,11 +3,7 @@ package com.rdi.geegstar.services;
 import com.rdi.geegstar.dto.requests.*;
 import com.rdi.geegstar.dto.response.*;
 import com.rdi.geegstar.enums.Role;
-import com.rdi.geegstar.exceptions.BookingBillNotFoundException;
-import com.rdi.geegstar.exceptions.BookingNotFoundException;
-import com.rdi.geegstar.exceptions.UserNotFoundException;
-import com.rdi.geegstar.exceptions.WrongDateAndTimeFormat;
-import lombok.extern.slf4j.Slf4j;
+import com.rdi.geegstar.exceptions.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,13 +25,17 @@ public class BookingBillServiceTest {
 
     @Test
     public void testCreateBookingBill()
-            throws UserNotFoundException, BookingNotFoundException, WrongDateAndTimeFormat {
-        BookingRequest bookTalentRequest = getBookingRequest();
-        BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
+            throws UserNotFoundException, BookingNotFoundException, WrongDateAndTimeFormat, BookingNotAcceptedException {
+        BookingRequest bookingResquest = getBookingRequest();
+        BookingResponse bookingResponse = bookingService.bookTalent(bookingResquest);
+        AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
+        acceptBookingRequest.setBookingId(bookingResponse.getBookingId());
+        acceptBookingRequest.setTalentId(bookingResquest.getTalentId());
+        bookingService.acceptBooking(acceptBookingRequest);
         BookingBillRequest bookingBillRequest = new BookingBillRequest();
         BigDecimal bookingCost = BigDecimal.valueOf(2000000);
         bookingBillRequest.setBookingCost(bookingCost);
-        bookingBillRequest.setBookingId(bookTalentResponse.getBookingId());
+        bookingBillRequest.setBookingId(bookingResponse.getBookingId());
         bookingBillRequest.setText("The cost covers for all expenses");
         RegistrationResponse talentRegistrationResponse = getUserRegistrationResponse(Role.TALENT);
         RegistrationResponse plannerRegistrationResponse = getUserRegistrationResponse(Role.PLANNER);
@@ -48,7 +48,7 @@ public class BookingBillServiceTest {
 
     @Test
     public void testGetBookingBillDetails()
-            throws WrongDateAndTimeFormat, UserNotFoundException, BookingNotFoundException, BookingBillNotFoundException {
+            throws WrongDateAndTimeFormat, UserNotFoundException, BookingNotFoundException, BookingBillNotFoundException, BookingNotAcceptedException {
         RegistrationResponse talentRegistrationResponse = getUserRegistrationResponse(Role.TALENT);
         RegistrationResponse plannerRegistrationResponse = getUserRegistrationResponse(Role.PLANNER);
         BookingRequest bookingRequest = new BookingRequest();
@@ -57,6 +57,10 @@ public class BookingBillServiceTest {
         EventDetailRequest eventDetailRequest = getEventDetailRequest();
         bookingRequest.setEventDetailRequest(eventDetailRequest);
         BookingResponse bookingResponse = bookingService.bookTalent(bookingRequest);
+        AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
+        acceptBookingRequest.setBookingId(bookingResponse.getBookingId());
+        acceptBookingRequest.setTalentId(bookingRequest.getTalentId());
+        bookingService.acceptBooking(acceptBookingRequest);
         BookingBillRequest bookingBillRequest = new BookingBillRequest();
         BigDecimal bookingCost = BigDecimal.valueOf(2000000);
         bookingBillRequest.setBookingCost(bookingCost);
@@ -75,13 +79,17 @@ public class BookingBillServiceTest {
     @Test
     public void testPayBookingBill()
             throws WrongDateAndTimeFormat, UserNotFoundException,
-            BookingNotFoundException, BookingBillNotFoundException {
-        BookingRequest bookTalentRequest = getBookingRequest();
-        BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
+            BookingNotFoundException, BookingBillNotFoundException, BookingNotAcceptedException {
+        BookingRequest bookingRequest = getBookingRequest();
+        BookingResponse bookingResponse = bookingService.bookTalent(bookingRequest);
+        AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
+        acceptBookingRequest.setBookingId(bookingResponse.getBookingId());
+        acceptBookingRequest.setTalentId(bookingRequest.getTalentId());
+        bookingService.acceptBooking(acceptBookingRequest);
         BookingBillRequest bookingBillRequest = new BookingBillRequest();
         BigDecimal cost = BigDecimal.valueOf(2000000);
         bookingBillRequest.setBookingCost(cost);
-        bookingBillRequest.setBookingId(bookTalentResponse.getBookingId());
+        bookingBillRequest.setBookingId(bookingResponse.getBookingId());
         bookingBillRequest.setText("The cost covers for all expenses");
         RegistrationResponse talentRegistrationResponse = getUserRegistrationResponse(Role.TALENT);
         RegistrationResponse plannerRegistrationResponse = getUserRegistrationResponse(Role.PLANNER);

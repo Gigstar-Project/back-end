@@ -10,6 +10,7 @@ import com.rdi.geegstar.dto.requests.BookingBillPaymentRequest;
 import com.rdi.geegstar.dto.requests.PaymentRequest;
 import com.rdi.geegstar.dto.response.*;
 import com.rdi.geegstar.exceptions.BookingBillNotFoundException;
+import com.rdi.geegstar.exceptions.BookingNotAcceptedException;
 import com.rdi.geegstar.exceptions.BookingNotFoundException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
 import com.rdi.geegstar.services.BookingBillService;
@@ -33,10 +34,11 @@ public class GeegStarBookingBillService implements BookingBillService {
 
     @Override
     public BookingBillResponse createBookingBill(BookingBillRequest bookingBillRequest)
-            throws UserNotFoundException, BookingNotFoundException {
+            throws UserNotFoundException, BookingNotFoundException, BookingNotAcceptedException {
         User talent = userService.findUserById(bookingBillRequest.getTalentId());
         User planner = userService.findUserById(bookingBillRequest.getPlannerId());
         Booking bookingToBill = bookingService.findBookingById(bookingBillRequest.getBookingId());
+        if(!bookingToBill.isAccepted()) throw new BookingNotAcceptedException("The booking has not been accepted yet");
         BookingBill bookingBill = new BookingBill();
         bookingBill.setBooking(bookingToBill);
         bookingBill.setTalent(talent);

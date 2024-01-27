@@ -4,6 +4,7 @@ import com.rdi.geegstar.dto.requests.BookingBillPaymentRequest;
 import com.rdi.geegstar.dto.requests.BookingBillRequest;
 
 import com.rdi.geegstar.exceptions.BookingBillNotFoundException;
+import com.rdi.geegstar.exceptions.BookingNotAcceptedException;
 import com.rdi.geegstar.exceptions.BookingNotFoundException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
 import com.rdi.geegstar.services.BookingBillService;
@@ -21,9 +22,13 @@ public class BookingBillController {
     private final BookingBillService bookingBillService;
 
     @PostMapping
-    public ResponseEntity<?> createBookingBill(@RequestBody BookingBillRequest bookingBillRequest)
-            throws UserNotFoundException, BookingNotFoundException {
-        return ResponseEntity.status(CREATED).body(bookingBillService.createBookingBill(bookingBillRequest));
+    public ResponseEntity<?> createBookingBill(@RequestBody BookingBillRequest bookingBillRequest) {
+        try {
+            return ResponseEntity.status(CREATED).body(bookingBillService.createBookingBill(bookingBillRequest));
+        } catch (UserNotFoundException | BookingNotFoundException |
+                 BookingNotAcceptedException exception) {
+            return ResponseEntity.badRequest().body(exception);
+        }
     }
 
     @GetMapping("{bookingId}")

@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 
 import static com.rdi.geegstar.enums.EventType.BIRTHDAY_PARTY;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -112,6 +113,20 @@ public class BookingBillControllerTest {
 
         String bookingResponseAsString = bookingResponseMvcResult.getResponse().getContentAsString();
         BookingResponse bookingResponse = mapper.readValue(bookingResponseAsString, BookingResponse.class);
+        AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
+        acceptBookingRequest.setTalentId(talantRegistrationResponse.getId());
+        acceptBookingRequest.setBookingId(bookingResponse.getBookingId());
+        try {
+            mockMvc.perform(
+                            patch(String.format("%s/accept", BOOKING_URL))
+                                    .content(mapper.writeValueAsString(acceptBookingRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print());
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
 
         BookingBillRequest bookingBillRequest = new BookingBillRequest();
         bookingBillRequest.setBookingId(bookingResponse.getBookingId());
@@ -212,6 +227,20 @@ public class BookingBillControllerTest {
 
         String bookingResponseAsString = bookingResponseMvcResult.getResponse().getContentAsString();
         BookingResponse bookingResponse = mapper.readValue(bookingResponseAsString, BookingResponse.class);
+        AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
+        acceptBookingRequest.setTalentId(talantRegistrationResponse.getId());
+        acceptBookingRequest.setBookingId(bookingResponse.getBookingId());
+        try {
+            mockMvc.perform(
+                            patch(String.format("%s/accept", BOOKING_URL))
+                                    .content(mapper.writeValueAsString(acceptBookingRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print());
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
 
         BookingBillRequest bookingBillRequest = new BookingBillRequest();
         bookingBillRequest.setBookingId(bookingResponse.getBookingId());
@@ -326,6 +355,20 @@ public class BookingBillControllerTest {
 
         String bookingResponseAsString = bookingResponseMvcResult.getResponse().getContentAsString();
         BookingResponse bookingResponse = mapper.readValue(bookingResponseAsString, BookingResponse.class);
+        AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
+        acceptBookingRequest.setTalentId(talantRegistrationResponse.getId());
+        acceptBookingRequest.setBookingId(bookingResponse.getBookingId());
+        try {
+            mockMvc.perform(
+                            patch(String.format("%s/accept", BOOKING_URL))
+                                    .content(mapper.writeValueAsString(acceptBookingRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print());
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
 
         BookingBillRequest bookingBillRequest = new BookingBillRequest();
         bookingBillRequest.setBookingId(bookingResponse.getBookingId());
@@ -369,6 +412,7 @@ public class BookingBillControllerTest {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
+
     }
 
     private static EventDetailRequest getEventDetailRequest() throws WrongDateAndTimeFormat {
