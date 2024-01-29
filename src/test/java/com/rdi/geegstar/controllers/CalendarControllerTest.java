@@ -37,7 +37,7 @@ public class CalendarControllerTest {
         RegistrationRequest talentRegisterRequest = new RegistrationRequest();
         talentRegisterRequest.setFirstName("Retnaa");
         talentRegisterRequest.setLastName("Dayok");
-        talentRegisterRequest.setUsername("Darda");
+        talentRegisterRequest.setDisplayName("Darda");
         talentRegisterRequest.setEmail("dayokr@gmail.com");
         talentRegisterRequest.setPhoneNumber("07031005737");
         talentRegisterRequest.setPassword("password");
@@ -46,7 +46,7 @@ public class CalendarControllerTest {
         RegistrationRequest plannerRegisterRequest = new RegistrationRequest();
         plannerRegisterRequest.setFirstName("Retnaa");
         plannerRegisterRequest.setLastName("Dayok");
-        plannerRegisterRequest.setUsername("Darda");
+        plannerRegisterRequest.setDisplayName("Darda");
         plannerRegisterRequest.setEmail("dayokr@gmail.com");
         plannerRegisterRequest.setPhoneNumber("07031005737");
         plannerRegisterRequest.setPassword("password");

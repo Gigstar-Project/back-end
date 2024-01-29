@@ -26,11 +26,11 @@ public class BookingBillServiceTest {
     @Test
     public void testCreateBookingBill()
             throws UserNotFoundException, BookingNotFoundException, WrongDateAndTimeFormat, BookingNotAcceptedException {
-        BookingRequest bookingResquest = getBookingRequest();
-        BookingResponse bookingResponse = bookingService.bookTalent(bookingResquest);
+        BookingRequest bookingRequest = getBookingRequest();
+        BookingResponse bookingResponse = bookingService.bookTalent(bookingRequest);
         AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
         acceptBookingRequest.setBookingId(bookingResponse.getBookingId());
-        acceptBookingRequest.setTalentId(bookingResquest.getTalentId());
+        acceptBookingRequest.setTalentId(bookingRequest.getTalentId());
         bookingService.acceptBooking(acceptBookingRequest);
         BookingBillRequest bookingBillRequest = new BookingBillRequest();
         BigDecimal bookingCost = BigDecimal.valueOf(2000000);
@@ -125,7 +125,7 @@ public class BookingBillServiceTest {
         RegistrationRequest talentRegisterRequest = new RegistrationRequest();
         talentRegisterRequest.setFirstName("Retnaa");
         talentRegisterRequest.setLastName("Dayok");
-        talentRegisterRequest.setUsername("Darda");
+        talentRegisterRequest.setDisplayName("Darda");
         talentRegisterRequest.setEmail("dayokr@gmail.com");
         talentRegisterRequest.setPhoneNumber("07031005737");
         talentRegisterRequest.setPassword("password");
