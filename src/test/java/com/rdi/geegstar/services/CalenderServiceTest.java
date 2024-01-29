@@ -7,7 +7,6 @@ import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.enums.Role;
 import com.rdi.geegstar.exceptions.BookingNotFoundException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
-import com.rdi.geegstar.exceptions.WrongDateAndTimeFormat;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,7 @@ public class CalenderServiceTest {
     private BookingService bookingService;
 
     @Test
-    public void testGetTalentCalenders() throws WrongDateAndTimeFormat, UserNotFoundException, BookingNotFoundException {
+    public void testGetTalentCalenders() throws UserNotFoundException, BookingNotFoundException {
         RegistrationResponse talentRegistrationResponse = getRegistrationResponse(Role.TALENT);
         RegistrationResponse plannerRegistrationResponse = getRegistrationResponse(PLANNER);
         BookingRequest bookTalentRequest = new BookingRequest();
@@ -65,7 +64,7 @@ public class CalenderServiceTest {
         return userService.registerUser(registerRequest);
     }
 
-    private EventDetailRequest getEventDetailRequest() throws WrongDateAndTimeFormat {
+    private EventDetailRequest getEventDetailRequest() {
         EventDetailRequest eventDetailsRequest = new EventDetailRequest();
         eventDetailsRequest.setEventName("Darda's birthday party");
         eventDetailsRequest.setEventType(BIRTHDAY_PARTY);

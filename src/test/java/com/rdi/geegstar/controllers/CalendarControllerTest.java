@@ -6,7 +6,6 @@ import com.rdi.geegstar.dto.requests.*;
 import com.rdi.geegstar.dto.response.BookingResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.enums.Role;
-import com.rdi.geegstar.exceptions.WrongDateAndTimeFormat;
 import com.rdi.geegstar.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,7 @@ public class CalendarControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    public void testGetTalentCalendars() throws UnsupportedEncodingException, JsonProcessingException, WrongDateAndTimeFormat {
+    public void testGetTalentCalendars() throws UnsupportedEncodingException, JsonProcessingException{
         RegistrationRequest talentRegisterRequest = new RegistrationRequest();
         talentRegisterRequest.setFirstName("Retnaa");
         talentRegisterRequest.setLastName("Dayok");
@@ -140,7 +139,7 @@ public class CalendarControllerTest {
         }
     }
 
-    private static EventDetailRequest getEventDetailRequest() throws WrongDateAndTimeFormat {
+    private static EventDetailRequest getEventDetailRequest() {
         EventDetailRequest eventDetailsRequest = new EventDetailRequest();
         eventDetailsRequest.setEventName("Darda's birthday party");
         eventDetailsRequest.setEventType(BIRTHDAY_PARTY);

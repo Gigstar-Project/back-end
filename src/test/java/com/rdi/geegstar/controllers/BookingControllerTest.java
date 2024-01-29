@@ -6,7 +6,6 @@ import com.rdi.geegstar.dto.requests.*;
 import com.rdi.geegstar.dto.response.BookingResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.enums.Role;
-import com.rdi.geegstar.exceptions.WrongDateAndTimeFormat;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,7 +31,7 @@ public class BookingControllerTest {
     private final String URL = "/api/v1/booking";
 
     @Test
-    public void testBookTalent() throws WrongDateAndTimeFormat, UnsupportedEncodingException, JsonProcessingException {
+    public void testBookTalent() throws UnsupportedEncodingException, JsonProcessingException {
         Long talentId = registerUser(Role.TALENT);
         Long plannerId = registerUser(Role.PLANNER);
         ObjectMapper mapper = new ObjectMapper();
@@ -52,7 +51,7 @@ public class BookingControllerTest {
 
     @Test
     public void testAcceptBooking()
-            throws WrongDateAndTimeFormat, UnsupportedEncodingException, JsonProcessingException {
+            throws UnsupportedEncodingException, JsonProcessingException {
         Long talentId = registerUser(Role.TALENT);
         Long plannerId = registerUser(Role.PLANNER);
         BookingRequest bookingRequest = getBookingRequest(plannerId, talentId);
@@ -77,7 +76,7 @@ public class BookingControllerTest {
 
     @Test
     public void testDeclineBooking()
-            throws WrongDateAndTimeFormat, UnsupportedEncodingException, JsonProcessingException {
+            throws UnsupportedEncodingException, JsonProcessingException {
         Long talentId = registerUser(Role.TALENT);
         Long plannerId = registerUser(Role.PLANNER);
         BookingRequest bookingRequest = getBookingRequest(plannerId, talentId);
@@ -98,7 +97,7 @@ public class BookingControllerTest {
 
     @Test
     public void testGetUserBookings()
-            throws UnsupportedEncodingException, JsonProcessingException, WrongDateAndTimeFormat {
+            throws UnsupportedEncodingException, JsonProcessingException{
         Long talentId = registerUser(Role.TALENT);
         Long plannerId = registerUser(Role.PLANNER);
         int pageSize = 1;
@@ -147,7 +146,7 @@ public class BookingControllerTest {
         return mapper.readValue(content, BookingResponse.class);
     }
 
-    private static BookingRequest getBookingRequest(Long plannerId, Long talentId) throws WrongDateAndTimeFormat {
+    private static BookingRequest getBookingRequest(Long plannerId, Long talentId) {
         EventDetailRequest eventDetailRequest =
                 getEventDetailRequest();
         BookingRequest bookingRequest = new BookingRequest();
@@ -187,11 +186,11 @@ public class BookingControllerTest {
         return registrationResponse.getId();
     }
 
-    private static EventDetailRequest getEventDetailRequest() throws WrongDateAndTimeFormat {
+    private static EventDetailRequest getEventDetailRequest() {
         EventDetailRequest eventDetailsRequest = new EventDetailRequest();
         eventDetailsRequest.setEventName("Darda's birthday party");
         eventDetailsRequest.setEventType(BIRTHDAY_PARTY);
-        eventDetailsRequest.setEventDateAndTime("2023, 12, 04, 10, 30");
+        eventDetailsRequest.setEventDateAndTime("2023, 1, 04, 10, 30");
         AddressRequest addressRequest = getAddressRequest();
         eventDetailsRequest.setEventAddress(addressRequest);
         return eventDetailsRequest;

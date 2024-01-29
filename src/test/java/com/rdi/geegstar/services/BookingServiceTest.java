@@ -6,7 +6,6 @@ import com.rdi.geegstar.dto.response.*;
 import com.rdi.geegstar.enums.Role;
 import com.rdi.geegstar.exceptions.BookingNotFoundException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
-import com.rdi.geegstar.exceptions.WrongDateAndTimeFormat;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,7 +29,7 @@ public class BookingServiceTest {
     private UserService userService;
 
     @Test
-    public void testBookTalent() throws UserNotFoundException, WrongDateAndTimeFormat {
+    public void testBookTalent() throws UserNotFoundException{
         BookingRequest bookTalentRequest = getBookingRequest();
 
         BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
@@ -39,7 +38,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void testAcceptBooking() throws UserNotFoundException, BookingNotFoundException, WrongDateAndTimeFormat {
+    public void testAcceptBooking() throws UserNotFoundException, BookingNotFoundException{
         BookingRequest bookTalentRequest = getBookingRequest();
 
         BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
@@ -55,7 +54,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void testDeclineBooking() throws UserNotFoundException, BookingNotFoundException, WrongDateAndTimeFormat {
+    public void testDeclineBooking() throws UserNotFoundException, BookingNotFoundException{
         BookingRequest bookTalentRequest = getBookingRequest();
 
         BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
@@ -67,7 +66,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void testFindBookingById() throws WrongDateAndTimeFormat, UserNotFoundException, BookingNotFoundException {
+    public void testFindBookingById() throws UserNotFoundException, BookingNotFoundException {
         BookingRequest bookTalentRequest = getBookingRequest();
         BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
 
@@ -77,7 +76,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void testGetUserBookings() throws WrongDateAndTimeFormat, UserNotFoundException {
+    public void testGetUserBookings() throws UserNotFoundException {
         RegistrationResponse talentRegistrationResponse = getRegistrationResponse(Role.TALENT);
         RegistrationResponse talentRegistrationResponse2 = getRegistrationResponse(Role.TALENT);
         RegistrationResponse plannerRegistrationResponse = getRegistrationResponse(PLANNER);
@@ -110,7 +109,7 @@ public class BookingServiceTest {
         Assertions.assertThat(userBookingsResponse).hasSize(numberOfBookingsToPage);
     }
 
-    private BookingRequest getBookingRequest() throws WrongDateAndTimeFormat {
+    private BookingRequest getBookingRequest() {
         RegistrationResponse talentRegistrationResponse = getRegistrationResponse(Role.TALENT);
 
         RegistrationResponse plannerRegistrationResponse = getRegistrationResponse(PLANNER);
@@ -135,7 +134,7 @@ public class BookingServiceTest {
         return userService.registerUser(registerRequest);
     }
 
-    private EventDetailRequest getEventDetailRequest() throws WrongDateAndTimeFormat {
+    private EventDetailRequest getEventDetailRequest() {
         EventDetailRequest eventDetailsRequest = new EventDetailRequest();
         eventDetailsRequest.setEventName("Darda's birthday party");
         eventDetailsRequest.setEventType(BIRTHDAY_PARTY);

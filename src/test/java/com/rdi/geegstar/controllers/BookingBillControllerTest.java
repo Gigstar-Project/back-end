@@ -7,7 +7,6 @@ import com.rdi.geegstar.dto.response.BookingBillResponse;
 import com.rdi.geegstar.dto.response.BookingResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.enums.Role;
-import com.rdi.geegstar.exceptions.WrongDateAndTimeFormat;
 import com.rdi.geegstar.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,7 @@ public class BookingBillControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    public void testCreateBookingBill() throws WrongDateAndTimeFormat, UnsupportedEncodingException, JsonProcessingException {
+    public void testCreateBookingBill() throws UnsupportedEncodingException, JsonProcessingException {
         RegistrationRequest talentRegisterRequest = new RegistrationRequest();
         talentRegisterRequest.setFirstName("Retnaa");
         talentRegisterRequest.setLastName("Dayok");
@@ -151,7 +150,7 @@ public class BookingBillControllerTest {
     }
 
     @Test
-    public void testGetBookingBill() throws UnsupportedEncodingException, JsonProcessingException, WrongDateAndTimeFormat {
+    public void testGetBookingBill() throws UnsupportedEncodingException, JsonProcessingException{
         RegistrationRequest talentRegisterRequest = new RegistrationRequest();
         talentRegisterRequest.setFirstName("Retnaa");
         talentRegisterRequest.setLastName("Dayok");
@@ -279,7 +278,7 @@ public class BookingBillControllerTest {
 
     @Test
     public void testPayBookingBill()
-            throws UnsupportedEncodingException, JsonProcessingException, WrongDateAndTimeFormat {
+            throws UnsupportedEncodingException, JsonProcessingException{
         RegistrationRequest talentRegisterRequest = new RegistrationRequest();
         talentRegisterRequest.setFirstName("Retnaa");
         talentRegisterRequest.setLastName("Dayok");
@@ -415,7 +414,7 @@ public class BookingBillControllerTest {
 
     }
 
-    private static EventDetailRequest getEventDetailRequest() throws WrongDateAndTimeFormat {
+    private static EventDetailRequest getEventDetailRequest() {
         EventDetailRequest eventDetailsRequest = new EventDetailRequest();
         eventDetailsRequest.setEventName("Darda's birthday party");
         eventDetailsRequest.setEventType(BIRTHDAY_PARTY);

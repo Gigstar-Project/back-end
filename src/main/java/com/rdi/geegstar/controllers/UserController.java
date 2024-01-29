@@ -9,6 +9,8 @@ import com.rdi.geegstar.exceptions.GeegStarException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
 import com.rdi.geegstar.services.geegstarimplementations.GeegStarUserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +32,13 @@ public class UserController {
     }
 
     @PostMapping("/confirmation/{userEmail}")
-    public ResponseEntity<?> requestEmailConfirmationCode(@PathVariable String userEmail) {
+    public ResponseEntity<?> requestEmailConfirmationCode(@PathVariable
+                                                              @Email(message = "invalid email address",
+                                                                      regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\."
+                                                                              +"[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:"
+                                                                              +"[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)"
+                                                                              +"+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+                                                              String userEmail) {
         try {
             return ResponseEntity.status(CREATED).body(geegStarUserService.requestEmailConfirmationCode(userEmail));
         } catch (GeegStarException exception) {
@@ -39,7 +47,11 @@ public class UserController {
     }
 
     @PostMapping("/confirmation/{userEmail}/{tokenCode}")
-    public ResponseEntity<?> confirmEmail(@PathVariable String userEmail, @PathVariable String tokenCode) {
+    public ResponseEntity<?> confirmEmail(
+            @PathVariable String userEmail,
+            @PathVariable @Pattern(regexp = "^[0-9]{4}$",
+                    message = "Confirmation code must be a four-digit number")
+            String tokenCode) {
         try {
             return ResponseEntity.ok(geegStarUserService.confirmEmail(userEmail, tokenCode));
 
@@ -58,7 +70,7 @@ public class UserController {
     }
 
     @GetMapping("/talents")
-    public ResponseEntity<List<GetAllTalentsResponse>> getAllTalents(@RequestBody GetAllTalentsRequest getAllTalentsRequest) {
+    public ResponseEntity<List<GetAllTalentsResponse>> getAllTalents(@RequestBody @Valid GetAllTalentsRequest getAllTalentsRequest) {
         return ResponseEntity.ok(geegStarUserService.getAllTalents(getAllTalentsRequest));
     }
 }

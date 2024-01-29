@@ -6,6 +6,7 @@ import com.rdi.geegstar.dto.requests.GetUserBookingsRequest;
 import com.rdi.geegstar.exceptions.GeegStarException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
 import com.rdi.geegstar.services.BookingService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    public ResponseEntity<?> bookTalent( @RequestBody BookingRequest bookingRequest) {
+    public ResponseEntity<?> bookTalent( @RequestBody @Valid BookingRequest bookingRequest) {
         try {
             return ResponseEntity.status(CREATED).body(bookingService.bookTalent(bookingRequest));
         } catch (GeegStarException exception) {

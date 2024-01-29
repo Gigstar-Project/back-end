@@ -25,7 +25,7 @@ public class BookingBillServiceTest {
 
     @Test
     public void testCreateBookingBill()
-            throws UserNotFoundException, BookingNotFoundException, WrongDateAndTimeFormat, BookingNotAcceptedException {
+            throws UserNotFoundException, BookingNotFoundException, BookingNotAcceptedException {
         BookingRequest bookingRequest = getBookingRequest();
         BookingResponse bookingResponse = bookingService.bookTalent(bookingRequest);
         AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
@@ -48,7 +48,7 @@ public class BookingBillServiceTest {
 
     @Test
     public void testGetBookingBillDetails()
-            throws WrongDateAndTimeFormat, UserNotFoundException, BookingNotFoundException, BookingBillNotFoundException, BookingNotAcceptedException {
+            throws UserNotFoundException, BookingNotFoundException, BookingBillNotFoundException, BookingNotAcceptedException {
         RegistrationResponse talentRegistrationResponse = getUserRegistrationResponse(Role.TALENT);
         RegistrationResponse plannerRegistrationResponse = getUserRegistrationResponse(Role.PLANNER);
         BookingRequest bookingRequest = new BookingRequest();
@@ -78,7 +78,7 @@ public class BookingBillServiceTest {
 
     @Test
     public void testPayBookingBill()
-            throws WrongDateAndTimeFormat, UserNotFoundException,
+            throws UserNotFoundException,
             BookingNotFoundException, BookingBillNotFoundException, BookingNotAcceptedException {
         BookingRequest bookingRequest = getBookingRequest();
         BookingResponse bookingResponse = bookingService.bookTalent(bookingRequest);
@@ -108,7 +108,7 @@ public class BookingBillServiceTest {
         assertThat(bookingBillPaymentResponse).isNotNull();
     }
 
-    private BookingRequest getBookingRequest() throws WrongDateAndTimeFormat {
+    private BookingRequest getBookingRequest() {
         RegistrationResponse talentRegistrationResponse = getUserRegistrationResponse(Role.TALENT);
 
         RegistrationResponse plannerRegistrationResponse = getUserRegistrationResponse(Role.PLANNER);
@@ -133,7 +133,7 @@ public class BookingBillServiceTest {
         return userService.registerUser(talentRegisterRequest);
     }
 
-    private static EventDetailRequest getEventDetailRequest() throws WrongDateAndTimeFormat {
+    private static EventDetailRequest getEventDetailRequest() {
         EventDetailRequest eventDetailsRequest = new EventDetailRequest();
         eventDetailsRequest.setEventName("Darda's birthday party");
         eventDetailsRequest.setEventType(BIRTHDAY_PARTY);
