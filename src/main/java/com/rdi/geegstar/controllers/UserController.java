@@ -32,8 +32,7 @@ public class UserController {
     }
 
     @PostMapping("/confirmation/{userEmail}")
-    public ResponseEntity<?> requestEmailConfirmationCode(@PathVariable
-                                                              @Email(message = "invalid email address",
+    public ResponseEntity<?> requestEmailConfirmationCode(@PathVariable @Email(message = "invalid email address",
                                                                       regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\."
                                                                               +"[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:"
                                                                               +"[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)"
@@ -47,11 +46,10 @@ public class UserController {
     }
 
     @PostMapping("/confirmation/{userEmail}/{tokenCode}")
-    public ResponseEntity<?> confirmEmail(
-            @PathVariable String userEmail,
-            @PathVariable @Pattern(regexp = "^[0-9]{4}$",
-                    message = "Confirmation code must be a four-digit number")
-            String tokenCode) {
+    public ResponseEntity<?> confirmEmail(@PathVariable String userEmail,
+                                          @PathVariable @Pattern(regexp = "^[0-9]{4}$",
+                                                  message = "Confirmation code must be a four-digit number")
+                                          String tokenCode) {
         try {
             return ResponseEntity.ok(geegStarUserService.confirmEmail(userEmail, tokenCode));
 
@@ -70,7 +68,8 @@ public class UserController {
     }
 
     @GetMapping("/talents")
-    public ResponseEntity<List<GetAllTalentsResponse>> getAllTalents(@RequestBody @Valid GetAllTalentsRequest getAllTalentsRequest) {
+    public ResponseEntity<List<GetAllTalentsResponse>> getAllTalents(
+            @RequestBody GetAllTalentsRequest getAllTalentsRequest) {
         return ResponseEntity.ok(geegStarUserService.getAllTalents(getAllTalentsRequest));
     }
 }
