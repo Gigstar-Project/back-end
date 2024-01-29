@@ -8,6 +8,7 @@ import com.rdi.geegstar.dto.response.GetUserResponse;
 import com.rdi.geegstar.exceptions.GeegStarException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
 import com.rdi.geegstar.services.geegstarimplementations.GeegStarUserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class UserController {
     private final GeegStarUserService geegStarUserService;
 
     @PostMapping
-    public ResponseEntity<RegistrationResponse> register(@RequestBody RegistrationRequest registrationRequest) {
+    public ResponseEntity<RegistrationResponse> register(@Valid @RequestBody RegistrationRequest registrationRequest) {
         return ResponseEntity.status(CREATED).body(geegStarUserService.registerUser(registrationRequest));
     }
 

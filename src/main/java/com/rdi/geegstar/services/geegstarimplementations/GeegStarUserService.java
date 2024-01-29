@@ -73,7 +73,9 @@ public class GeegStarUserService implements UserService {
 
     @Override
     public List<GetAllTalentsResponse> getAllTalents(GetAllTalentsRequest getAllTalentRequest) {
-        Pageable pageable = PageRequest.of(getAllTalentRequest.getPageNumber(), getAllTalentRequest.getPageSize());
+        int pageNumber = getAllTalentRequest.getPageNumber() - 1;
+        int pageSize = getAllTalentRequest.getPageSize();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<User> talentPage = userRepository.findAllByRole(TALENT, pageable);
         List<User> talents = talentPage.getContent();
         return talents.stream()

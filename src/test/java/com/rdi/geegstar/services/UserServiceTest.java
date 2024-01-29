@@ -31,10 +31,10 @@ public class UserServiceTest {
         RegistrationRequest registerRequest = new RegistrationRequest();
         registerRequest.setFirstName("Retnaa");
         registerRequest.setLastName("Dayok");
-        registerRequest.setUsername("Darda");
+        registerRequest.setDisplayName("Darda");
         registerRequest.setEmail("dayokr@gmail.com");
         registerRequest.setPhoneNumber("07031005737");
-        registerRequest.setPassword("password");
+        registerRequest.setPassword("passwd");
         registerRequest.setRole(Role.TALENT);
         RegistrationResponse registrationResponse = userService.registerUser(registerRequest);
         assertNotNull(registrationResponse);
@@ -63,7 +63,7 @@ public class UserServiceTest {
         RegistrationRequest registerRequest = new RegistrationRequest();
         registerRequest.setFirstName("Retnaa");
         registerRequest.setLastName("Dayok");
-        registerRequest.setUsername("Darda");
+        registerRequest.setDisplayName("Darda");
         registerRequest.setEmail("dayr@gmail.com");
         registerRequest.setPhoneNumber("07031005737");
         registerRequest.setPassword("password");
@@ -81,10 +81,11 @@ public class UserServiceTest {
     public void testGetAllTalents() {
         GetAllTalentsRequest getAllTalentRequest = new GetAllTalentsRequest();
         int pageNumber = 1;
-        int pageSize = 1;
+        int pageSize = 3;
         getAllTalentRequest.setPageNumber(pageNumber);
         getAllTalentRequest.setPageSize(pageSize);
         List<GetAllTalentsResponse> talentsResponseList = userService.getAllTalents(getAllTalentRequest);
+        System.out.printf(talentsResponseList.toString());
         assertThat(talentsResponseList).isNotNull();
     }
 

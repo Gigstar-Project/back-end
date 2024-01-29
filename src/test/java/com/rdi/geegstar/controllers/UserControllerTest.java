@@ -31,7 +31,7 @@ public class UserControllerTest {
         RegistrationRequest registrationRequest = new RegistrationRequest();
         registrationRequest.setFirstName("Retnaa");
         registrationRequest.setLastName("Dayok");
-        registrationRequest.setUsername("Darda");
+        registrationRequest.setDisplayName("Darda");
         registrationRequest.setEmail("dayokr@gmail.com");
         registrationRequest.setPhoneNumber("07031005737");
         registrationRequest.setPassword("password");
@@ -104,7 +104,7 @@ public class UserControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         GetAllTalentsRequest getAllTalentsRequest = new GetAllTalentsRequest();
         int pageNumber = 1;
-        int pageSize = 1;
+        int pageSize = 2;
         getAllTalentsRequest.setPageNumber(pageNumber);
         getAllTalentsRequest.setPageSize(pageSize);
         try {
@@ -112,7 +112,7 @@ public class UserControllerTest {
                             MockMvcRequestBuilders.get(String.format("%s/talents", URL))
                                     .content(mapper.writeValueAsString(getAllTalentsRequest))
                                     .contentType(MediaType.APPLICATION_JSON)
-                                    .accept(MediaType.APPLICATION_JSON)
+
                     )
                     .andExpect(status().is2xxSuccessful())
                     .andDo(print());
