@@ -1,6 +1,7 @@
 package com.rdi.geegstar.exceptions;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -22,47 +23,11 @@ public class GlobalExceptionHandler {
         return errorsMapped;
     }
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(UserNotFoundException.class)
-    public Map<String, String> handleUserNotFoundException(UserNotFoundException exception) {
-        return getMappedError(exception.getMessage());
-    }
-
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(EmailIsTakenException.class)
-    public Map<String, String> handleEmailTakenException(EmailIsTakenException exception) {
-        return getMappedError(exception.getMessage());
-    }
-
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(EmailConfirmationFailedException.class)
-    public Map<String, String> handleEmailConfirmationFailedException(EmailConfirmationFailedException exception) {
-        return getMappedError(exception.getMessage());
-    }
-
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(BookingBillNotFoundException.class)
-    public Map<String, String> handleBookingNotFoundException(BookingBillNotFoundException exception) {
-        return getMappedError(exception.getMessage());
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(BookingNotAcceptedException.class)
-    public Map<String, String> handleBookingNotAcceptedException(BookingNotAcceptedException exception) {
-        return getMappedError(exception.getMessage());
-    }
-
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(BookingBillNotFoundException.class)
-    public Map<String, String> handleBookingBillNotFoundException(BookingBillNotFoundException exception) {
-        return getMappedError(exception.getMessage());
-    }
-
-    private static Map<String, String> getMappedError(String exception) {
+    @ExceptionHandler(GeegStarException.class)
+    public ResponseEntity<Map<String, String>> handleGeegStarExceptions(GeegStarException exception) {
         Map<String, String> error = new HashMap<>();
-        error.put("Error ", exception);
-        return error;
+        error.put("Error ", exception.getMessage());
+        return ResponseEntity.status(exception.getHttpStatus()).body(error);
     }
-
 
 }

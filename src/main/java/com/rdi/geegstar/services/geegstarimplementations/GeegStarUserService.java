@@ -10,10 +10,7 @@ import com.rdi.geegstar.dto.requests.RegistrationRequest;
 import com.rdi.geegstar.dto.response.GetAllTalentsResponse;
 import com.rdi.geegstar.dto.response.GetUserResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
-import com.rdi.geegstar.exceptions.EmailConfirmationFailedException;
-import com.rdi.geegstar.exceptions.EmailIsTakenException;
-import com.rdi.geegstar.exceptions.GeegStarException;
-import com.rdi.geegstar.exceptions.UserNotFoundException;
+import com.rdi.geegstar.exceptions.*;
 import com.rdi.geegstar.services.MailService;
 import com.rdi.geegstar.services.TokenService;
 import com.rdi.geegstar.services.UserService;
@@ -47,7 +44,7 @@ public class GeegStarUserService implements UserService {
     }
 
     @Override
-    public Object requestEmailConfirmationCode(String userEmail) throws GeegStarException {
+    public String requestEmailConfirmationCode(String userEmail) throws GeegStarException {
         boolean isEmailAvailable = isEmailAvailable(userEmail);
         Token generatedToken = tokenService.generateToken(userEmail);
         String tokenCode = generatedToken.getTokenCode();
@@ -98,9 +95,9 @@ public class GeegStarUserService implements UserService {
     private boolean isEmailAvailable(String userEmail) throws GeegStarException {
         String regexPattern = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
         boolean isNotValidEmail = !Pattern.compile(regexPattern).matcher(userEmail).matches();
-        if(isNotValidEmail) throw new GeegStarException(String.format("The email %s is not valid", userEmail));
+        if(isNotValidEmail) throw new InValidEmailException(String.format("The email %s is not valid", userEmail));
         boolean isEmailTaken = userRepository.findByEmail(userEmail).isPresent();
-        if (isEmailTaken) throw new EmailIsTakenException(String.format("The email %s is taken", userEmail));
+        if (isEmailTaken) throw new EmailIsTakenException(String.format("The email %s is already registered", userEmail));
         return true;
     }
 }
