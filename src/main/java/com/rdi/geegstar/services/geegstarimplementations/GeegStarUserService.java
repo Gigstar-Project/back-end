@@ -44,7 +44,7 @@ public class GeegStarUserService implements UserService {
     }
 
     @Override
-    public String requestEmailConfirmationCode(String userEmail) throws GeegStarException {
+    public String requestEmailConfirmationCode(String userEmail) throws InValidEmailException, EmailIsTakenException {
         boolean isEmailAvailable = isEmailAvailable(userEmail);
         Token generatedToken = tokenService.generateToken(userEmail);
         String tokenCode = generatedToken.getTokenCode();
@@ -92,7 +92,7 @@ public class GeegStarUserService implements UserService {
         mailService.sendMail(emailRequest);
     }
 
-    private boolean isEmailAvailable(String userEmail) throws GeegStarException {
+    private boolean isEmailAvailable(String userEmail) throws InValidEmailException, EmailIsTakenException {
         String regexPattern = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
         boolean isNotValidEmail = !Pattern.compile(regexPattern).matcher(userEmail).matches();
         if(isNotValidEmail) throw new InValidEmailException(String.format("The email %s is not valid", userEmail));

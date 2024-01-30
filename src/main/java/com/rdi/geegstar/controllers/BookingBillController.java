@@ -22,30 +22,20 @@ public class BookingBillController {
     private final BookingBillService bookingBillService;
 
     @PostMapping
-    public ResponseEntity<?> createBookingBill(@RequestBody BookingBillRequest bookingBillRequest) {
-        try {
-            return ResponseEntity.status(CREATED).body(bookingBillService.createBookingBill(bookingBillRequest));
-        } catch (UserNotFoundException | BookingNotFoundException |
-                 BookingNotAcceptedException exception) {
-            return ResponseEntity.badRequest().body(exception);
-        }
+    public ResponseEntity<?> createBookingBill(@RequestBody BookingBillRequest bookingBillRequest)
+            throws UserNotFoundException, BookingNotAcceptedException, BookingNotFoundException {
+        return ResponseEntity.status(CREATED).body(bookingBillService.createBookingBill(bookingBillRequest));
     }
 
     @GetMapping("{bookingId}")
-    public ResponseEntity<?> getBookingBillDetails(@PathVariable Long bookingId) {
-        try {
-            return ResponseEntity.status(OK).body(bookingBillService.getBookingBillDetails(bookingId));
-        } catch (BookingBillNotFoundException | BookingNotFoundException exception) {
-            return ResponseEntity.badRequest().body(exception);
-        }
+    public ResponseEntity<?> getBookingBillDetails(@PathVariable Long bookingId)
+            throws BookingNotFoundException, BookingBillNotFoundException {
+        return ResponseEntity.status(OK).body(bookingBillService.getBookingBillDetails(bookingId));
     }
 
     @PostMapping("/payment")
-    public ResponseEntity<?> payBookingBill(@RequestBody BookingBillPaymentRequest bookingBillPaymentRequest) {
-        try {
-            return ResponseEntity.status(OK).body(bookingBillService.payBookingBill(bookingBillPaymentRequest));
-        } catch (UserNotFoundException | BookingBillNotFoundException exception) {
-            return ResponseEntity.badRequest().body(exception);
-        }
+    public ResponseEntity<?> payBookingBill(@RequestBody BookingBillPaymentRequest bookingBillPaymentRequest)
+            throws UserNotFoundException, BookingBillNotFoundException {
+        return ResponseEntity.status(OK).body(bookingBillService.payBookingBill(bookingBillPaymentRequest));
     }
 }

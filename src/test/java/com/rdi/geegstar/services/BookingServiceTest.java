@@ -104,8 +104,6 @@ public class BookingServiceTest {
         getUserBookingsRequest.setUserRole(TALENT);
 
         List<UserBookingResponse> userBookingsResponse = bookingService.getUserBookings(getUserBookingsRequest);
-//        log.info("bookings:: {}", plannerBookingResponse);
-//        System.out.println(userBookingsResponse);
         Assertions.assertThat(userBookingsResponse).hasSize(numberOfBookingsToPage);
     }
 

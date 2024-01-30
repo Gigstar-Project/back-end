@@ -5,8 +5,7 @@ import com.rdi.geegstar.dto.requests.RegistrationRequest;
 import com.rdi.geegstar.dto.response.GetAllTalentsResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.dto.response.GetUserResponse;
-import com.rdi.geegstar.exceptions.GeegStarException;
-import com.rdi.geegstar.exceptions.UserNotFoundException;
+import com.rdi.geegstar.exceptions.*;
 import com.rdi.geegstar.services.geegstarimplementations.GeegStarUserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -37,25 +36,17 @@ public class UserController {
                                                                               +"[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:"
                                                                               +"[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)"
                                                                               +"+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
-                                                              String userEmail) {
-        try {
-            return ResponseEntity.status(CREATED).body(geegStarUserService.requestEmailConfirmationCode(userEmail));
-        } catch (GeegStarException exception) {
-            return ResponseEntity.badRequest().body(exception);
-        }
+                                                              String userEmail)
+            throws InValidEmailException, EmailIsTakenException {
+        return ResponseEntity.status(CREATED).body(geegStarUserService.requestEmailConfirmationCode(userEmail));
     }
 
     @PostMapping("/confirmation/{userEmail}/{tokenCode}")
     public ResponseEntity<?> confirmEmail(@PathVariable String userEmail,
                                           @PathVariable @Pattern(regexp = "^[0-9]{4}$",
                                                   message = "Confirmation code must be a four-digit number")
-                                          String tokenCode) {
-        try {
-            return ResponseEntity.ok(geegStarUserService.confirmEmail(userEmail, tokenCode));
-
-        } catch (GeegStarException exception) {
-            return ResponseEntity.badRequest().body(exception);
-        }
+                                          String tokenCode) throws EmailConfirmationFailedException {
+        return ResponseEntity.ok(geegStarUserService.confirmEmail(userEmail, tokenCode));
     }
 
     @GetMapping(value = "/{id}")

@@ -21,11 +21,7 @@ public class CalendarController {
     final private CalendarService calendarService;
 
     @GetMapping("{talentId}")
-    public ResponseEntity<?> getTalentCalendars(@PathVariable Long talentId) {
-        try {
-            return ResponseEntity.ok().body(calendarService.getTalentCalendars(talentId));
-        } catch (UserNotFoundException exception) {
-            return ResponseEntity.badRequest().body(exception);
-        }
+    public ResponseEntity<?> getTalentCalendars(@PathVariable Long talentId) throws UserNotFoundException {
+        return ResponseEntity.ok().body(calendarService.getTalentCalendars(talentId));
     }
 }

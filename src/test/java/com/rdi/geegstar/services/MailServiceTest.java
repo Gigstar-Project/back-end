@@ -4,7 +4,6 @@ package com.rdi.geegstar.services;
 import com.rdi.geegstar.dto.requests.EmailRequest;
 import com.rdi.geegstar.dto.requests.Recipient;
 import com.rdi.geegstar.dto.response.EmailResponse;
-import com.rdi.geegstar.exceptions.GeegStarException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -3,6 +3,7 @@ package com.rdi.geegstar.controllers;
 import com.rdi.geegstar.dto.requests.AcceptBookingRequest;
 import com.rdi.geegstar.dto.requests.BookingRequest;
 import com.rdi.geegstar.dto.requests.GetUserBookingsRequest;
+import com.rdi.geegstar.exceptions.BookingNotFoundException;
 import com.rdi.geegstar.exceptions.GeegStarException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
 import com.rdi.geegstar.services.BookingService;
@@ -22,38 +23,25 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    public ResponseEntity<?> bookTalent( @RequestBody @Valid BookingRequest bookingRequest) {
-        try {
-            return ResponseEntity.status(CREATED).body(bookingService.bookTalent(bookingRequest));
-        } catch (GeegStarException exception) {
-            return ResponseEntity.badRequest().body(exception);
-        }
+    public ResponseEntity<?> bookTalent( @RequestBody @Valid BookingRequest bookingRequest)
+            throws UserNotFoundException {
+        return ResponseEntity.status(CREATED).body(bookingService.bookTalent(bookingRequest));
     }
 
     @PatchMapping("/accept")
-    public ResponseEntity<?> acceptBooking(@RequestBody AcceptBookingRequest acceptBookingRequest) {
-        try {
-            return ResponseEntity.ok().body(bookingService.acceptBooking(acceptBookingRequest));
-        } catch (GeegStarException exception) {
-            return ResponseEntity.badRequest().body(exception);
-        }
+    public ResponseEntity<?> acceptBooking(@RequestBody AcceptBookingRequest acceptBookingRequest)
+            throws UserNotFoundException, BookingNotFoundException {
+        return ResponseEntity.ok().body(bookingService.acceptBooking(acceptBookingRequest));
     }
 
     @PatchMapping("/decline/{bookingId}")
-    public ResponseEntity<?> declineBooking(@PathVariable Long bookingId) {
-        try {
-            return ResponseEntity.ok().body(bookingService.declineBooking(bookingId));
-        } catch (GeegStarException exception) {
-            return ResponseEntity.badRequest().body(exception);
-        }
+    public ResponseEntity<?> declineBooking(@PathVariable Long bookingId) throws BookingNotFoundException {
+        return ResponseEntity.ok().body(bookingService.declineBooking(bookingId));
     }
 
     @GetMapping
-    public ResponseEntity<?> getUserBookings(@RequestBody GetUserBookingsRequest getUserBookingsRequest) {
-        try {
-            return ResponseEntity.ok().body(bookingService.getUserBookings(getUserBookingsRequest));
-        } catch (UserNotFoundException exception) {
-            return ResponseEntity.badRequest().body(exception);
-        }
+    public ResponseEntity<?> getUserBookings(@RequestBody GetUserBookingsRequest getUserBookingsRequest)
+            throws UserNotFoundException {
+        return ResponseEntity.ok().body(bookingService.getUserBookings(getUserBookingsRequest));
     }
 }

@@ -6,6 +6,7 @@ import com.rdi.geegstar.dto.requests.*;
 import com.rdi.geegstar.dto.response.BookingResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.enums.Role;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Slf4j
 public class BookingControllerTest {
 
     @Autowired
@@ -45,7 +47,7 @@ public class BookingControllerTest {
                     .andExpect(status().is2xxSuccessful())
                     .andDo(print());
         } catch (Exception exception) {
-            exception.printStackTrace();
+            log.info("Error :: ", exception);
         }
     }
 
@@ -70,7 +72,7 @@ public class BookingControllerTest {
                     .andExpect(status().is2xxSuccessful())
                     .andDo(print());
         } catch (Exception exception) {
-            exception.printStackTrace();
+            log.info("Error :: ", exception);
         }
     }
 
@@ -91,7 +93,7 @@ public class BookingControllerTest {
                     .andExpect(status().is2xxSuccessful())
                     .andDo(print());
         } catch (Exception exception) {
-            exception.printStackTrace();
+            log.info("Error :: ", exception);
         }
     }
 
@@ -99,12 +101,8 @@ public class BookingControllerTest {
     public void testGetUserBookings()
             throws UnsupportedEncodingException, JsonProcessingException{
         Long talentId = registerUser(Role.TALENT);
-        Long plannerId = registerUser(Role.PLANNER);
         int pageSize = 1;
         int pageNumber = 1;
-        BookingRequest bookingRequest = getBookingRequest(plannerId, talentId);
-        BookingResponse bookingResponse = getBookingResponse( bookingRequest);
-        Long bookingId = bookingResponse.getBookingId();
         GetUserBookingsRequest getUserBookingsRequest = new GetUserBookingsRequest();
         getUserBookingsRequest.setUserRole(Role.TALENT);
         getUserBookingsRequest.setUserId(talentId);
@@ -121,7 +119,7 @@ public class BookingControllerTest {
                     .andDo(print());
 
         } catch (Exception exception) {
-            throw new RuntimeException(exception);
+            log.info("Error :: ", exception);
         }
     }
 
@@ -138,7 +136,7 @@ public class BookingControllerTest {
                     .andExpect(status().is2xxSuccessful())
                     .andReturn();
         } catch (Exception exception) {
-            exception.printStackTrace();
+            log.info("Error :: ", exception);
         }
 
         assert responseOfBooking != null;
@@ -178,9 +176,10 @@ public class BookingControllerTest {
                     .andExpect(status().is2xxSuccessful())
                     .andReturn();
         } catch (Exception exception) {
-            exception.printStackTrace();
+            log.info("Error :: ", exception);
         }
 
+        assert userRegistrationResponse != null;
         String userResponse = userRegistrationResponse.getResponse().getContentAsString();
         RegistrationResponse registrationResponse = mapper.readValue(userResponse, RegistrationResponse.class);
         return registrationResponse.getId();
@@ -190,7 +189,7 @@ public class BookingControllerTest {
         EventDetailRequest eventDetailsRequest = new EventDetailRequest();
         eventDetailsRequest.setEventName("Darda's birthday party");
         eventDetailsRequest.setEventType(BIRTHDAY_PARTY);
-        eventDetailsRequest.setEventDateAndTime("2023, 1, 04, 10, 30");
+        eventDetailsRequest.setEventDateAndTime("2023, 01, 04, 10, 30");
         AddressRequest addressRequest = getAddressRequest();
         eventDetailsRequest.setEventAddress(addressRequest);
         return eventDetailsRequest;

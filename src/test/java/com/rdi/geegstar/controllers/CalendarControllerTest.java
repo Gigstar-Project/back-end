@@ -6,7 +6,7 @@ import com.rdi.geegstar.dto.requests.*;
 import com.rdi.geegstar.dto.response.BookingResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.enums.Role;
-import com.rdi.geegstar.services.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,10 +24,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Slf4j
 public class CalendarControllerTest {
 
-    @Autowired
-    private UserService userService;
     @Autowired
     private MockMvc mockMvc;
 
@@ -64,8 +63,9 @@ public class CalendarControllerTest {
                     .andDo(print())
                     .andReturn();
         } catch (Exception exception) {
-            exception.printStackTrace();
+            log.info("Error :: ", exception);
         }
+        assert talentRegistrationMvcResult != null;
         String talentResponseAsString = talentRegistrationMvcResult.getResponse().getContentAsString();
         RegistrationResponse talantRegistrationResponse =
                 mapper.readValue(talentResponseAsString, RegistrationResponse.class);
@@ -81,8 +81,9 @@ public class CalendarControllerTest {
                     .andDo(print())
                     .andReturn();
         } catch (Exception exception) {
-            exception.printStackTrace();
+            log.info("Error :: ", exception);
         }
+        assert plannerRegistrationMvcResult != null;
         String plannerResponseAsString = plannerRegistrationMvcResult.getResponse().getContentAsString();
         RegistrationResponse plannerRegistrationResponse = mapper.readValue(plannerResponseAsString, RegistrationResponse.class);
 
@@ -103,9 +104,9 @@ public class CalendarControllerTest {
                     .andDo(print())
                     .andReturn();
         } catch (Exception exception) {
-            exception.printStackTrace();
+            log.info("Error :: ", exception);
         }
-
+        assert bookingResponseMvcResult != null;
         String bookingResponseAsString = bookingResponseMvcResult.getResponse().getContentAsString();
         BookingResponse bookingResponse = mapper.readValue(bookingResponseAsString, BookingResponse.class);
         AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
@@ -120,9 +121,8 @@ public class CalendarControllerTest {
                     .andExpect(status().is2xxSuccessful())
                     .andDo(print());
         } catch (Exception exception) {
-            exception.printStackTrace();
+            log.info("Error :: ", exception);
         }
-
 
         final String CALENDAR_URL = "/api/v1/calendar";
         Long talentId = talantRegistrationResponse.getId();
@@ -135,7 +135,7 @@ public class CalendarControllerTest {
                     .andExpect(status().is2xxSuccessful())
                     .andDo(print());
         } catch (Exception exception) {
-            exception.printStackTrace();
+            log.info("Error :: ", exception);
         }
     }
 

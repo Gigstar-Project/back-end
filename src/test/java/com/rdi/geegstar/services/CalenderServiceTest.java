@@ -39,7 +39,7 @@ public class CalenderServiceTest {
         bookTalentRequest.setEventDetailRequest(eventDetailsRequest);
         bookTalentRequest.setPlannerId(plannerRegistrationResponse.getId());
         BookingResponse firstBookingResponse = bookingService.bookTalent(bookTalentRequest);
-        BookingResponse secondBookingResponse = bookingService.bookTalent(bookTalentRequest);
+        bookingService.bookTalent(bookTalentRequest);
         AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
         acceptBookingRequest.setTalentId(talentRegistrationResponse.getId());
         acceptBookingRequest.setBookingId(firstBookingResponse.getBookingId());

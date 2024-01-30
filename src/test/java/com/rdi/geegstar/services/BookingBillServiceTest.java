@@ -68,7 +68,7 @@ public class BookingBillServiceTest {
         bookingBillRequest.setText("The cost covers for all expenses");
         bookingBillRequest.setPlannerId(talentRegistrationResponse.getId());
         bookingBillRequest.setTalentId(plannerRegistrationResponse.getId());
-        BookingBillResponse bookingBillResponse = bookingBillService.createBookingBill(bookingBillRequest);
+        bookingBillService.createBookingBill(bookingBillRequest);
 
         GetBookingBillDetailsResponse getBookingBillDetailsResponse =
                 bookingBillService.getBookingBillDetails(bookingResponse.getBookingId());

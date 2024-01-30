@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rdi.geegstar.dto.requests.GetAllTalentsRequest;
 import com.rdi.geegstar.dto.requests.RegistrationRequest;
 import com.rdi.geegstar.enums.Role;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Slf4j
 public class UserControllerTest {
 
     @Autowired
@@ -46,7 +48,7 @@ public class UserControllerTest {
                     .andExpect(status().is2xxSuccessful())
                     .andDo(print());
         } catch (Exception exception) {
-            exception.printStackTrace();
+            log.info("Error :: ", exception);
         }
     }
 
@@ -61,7 +63,7 @@ public class UserControllerTest {
                     .andExpect(status().isCreated())
                     .andDo(print());
         } catch (Exception exception) {
-            exception.printStackTrace();
+            log.info("Error :: ", exception);
         }
     }
 
@@ -78,7 +80,7 @@ public class UserControllerTest {
                     .andExpect(status().is2xxSuccessful())
                     .andDo(print());
         } catch (Exception exception) {
-            exception.printStackTrace();
+            log.info("Error :: ", exception);
         }
     }
 
@@ -94,7 +96,7 @@ public class UserControllerTest {
                     .andExpect(status().is2xxSuccessful())
                     .andDo(print());
         } catch (Exception exception) {
-            exception.printStackTrace();
+            log.info("Error :: ", exception);
         }
     }
 
@@ -118,7 +120,7 @@ public class UserControllerTest {
                     .andDo(print());
 
         } catch (Exception exception) {
-            exception.printStackTrace();
+            log.info("Error :: ", exception);
         }
     }
 
