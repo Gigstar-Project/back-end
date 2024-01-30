@@ -59,12 +59,8 @@ public class UserController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<GetUserResponse> findUserBy(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(geegStarUserService.getUserById(id));
-        } catch (UserNotFoundException exception) {
-            throw new RuntimeException(exception);
-        }
+    public ResponseEntity<GetUserResponse> findUserBy(@PathVariable Long id) throws UserNotFoundException {
+        return ResponseEntity.ok(geegStarUserService.getUserById(id));
     }
 
     @GetMapping("/talents")
