@@ -1,9 +1,6 @@
 package com.rdi.geegstar.services.geegstarimplementations;
 
-import com.rdi.geegstar.data.models.Portfolio;
-import com.rdi.geegstar.data.models.Talent;
-import com.rdi.geegstar.data.models.Token;
-import com.rdi.geegstar.data.models.User;
+import com.rdi.geegstar.data.models.*;
 import com.rdi.geegstar.data.repositories.UserRepository;
 import com.rdi.geegstar.dto.requests.*;
 import com.rdi.geegstar.dto.response.GetAllTalentsResponse;
@@ -25,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static com.rdi.geegstar.enums.Role.PLANNER;
 import static com.rdi.geegstar.enums.Role.TALENT;
 
 @Service
@@ -45,14 +43,22 @@ public class GeegStarUserService implements UserService {
     }
 
     @Override
-    public RegistrationResponse registerUser(TalentRegistrationRequest registerRequest) {
-        Talent talent = modelMapper.map(registerRequest, Talent.class);
-        PortfolioRequest portfolioRequest = registerRequest.getPortfolioRequest();
+    public RegistrationResponse registerUser(PlannerRegistrationRequest plannerRegistrationRequest) {
+        Planner planner = modelMapper.map(plannerRegistrationRequest, Planner.class);
+        planner.setRole(PLANNER);
+        Planner savedPlanner = userRepository.save(planner);
+        System.out.println(savedPlanner);
+        return modelMapper.map(savedPlanner, RegistrationResponse.class);
+    }
+
+    @Override
+    public RegistrationResponse registerUser(TalentRegistrationRequest talentRegistrationRequest) {
+        Talent talent = modelMapper.map(talentRegistrationRequest, Talent.class);
+        PortfolioRequest portfolioRequest = talentRegistrationRequest.getPortfolioRequest();
         Portfolio portfolio = modelMapper.map(portfolioRequest, Portfolio.class);
         talent.setPortfolio(portfolio);
         talent.setRole(TALENT);
         Talent savedTalent = userRepository.save(talent);
-        log.info("Talent :: {}", savedTalent);
         return modelMapper.map(savedTalent, RegistrationResponse.class);
     }
 

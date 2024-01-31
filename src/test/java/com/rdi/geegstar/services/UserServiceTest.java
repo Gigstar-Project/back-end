@@ -1,10 +1,7 @@
 package com.rdi.geegstar.services;
 
 import com.rdi.geegstar.data.models.Portfolio;
-import com.rdi.geegstar.dto.requests.GetAllTalentsRequest;
-import com.rdi.geegstar.dto.requests.PortfolioRequest;
-import com.rdi.geegstar.dto.requests.RegistrationRequest;
-import com.rdi.geegstar.dto.requests.TalentRegistrationRequest;
+import com.rdi.geegstar.dto.requests.*;
 import com.rdi.geegstar.dto.response.GetAllTalentsResponse;
 import com.rdi.geegstar.dto.response.GetUserResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
@@ -48,6 +45,20 @@ public class UserServiceTest {
         talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
 
         RegistrationResponse registrationResponse = userService.registerUser(talentRegistrationRequest);
+        assertThat(registrationResponse).isNotNull();
+    }
+
+    @Test
+    public void testPlannerRegistration() {
+        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
+        plannerRegistrationRequest.setFirstName("Retnaa");
+        plannerRegistrationRequest.setLastName("Dayok");
+        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
+        plannerRegistrationRequest.setPassword("password");
+        plannerRegistrationRequest.setPhoneNumber("07031005737");
+        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+
+        RegistrationResponse registrationResponse = userService.registerUser(plannerRegistrationRequest);
         assertThat(registrationResponse).isNotNull();
     }
 
