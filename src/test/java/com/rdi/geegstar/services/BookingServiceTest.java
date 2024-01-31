@@ -124,7 +124,6 @@ public class BookingServiceTest {
         RegistrationRequest registerRequest = new RegistrationRequest();
         registerRequest.setFirstName("Retnaa");
         registerRequest.setLastName("Dayok");
-        registerRequest.setDisplayName("Darda");
         registerRequest.setEmail("dayokr@gmail.com");
         registerRequest.setPhoneNumber("07031005737");
         registerRequest.setPassword("password");

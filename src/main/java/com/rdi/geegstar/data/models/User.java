@@ -4,10 +4,7 @@ package com.rdi.geegstar.data.models;
 import com.rdi.geegstar.enums.Role;
 import com.rdi.geegstar.enums.TalentCategory;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +17,8 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
+@ToString
 public class User {
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -33,7 +32,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
     private String profilePicture;
-    private TalentCategory category;
     private LocalDateTime dateRegistered;
 
     @PrePersist

@@ -33,7 +33,6 @@ public class UserControllerTest {
         RegistrationRequest registrationRequest = new RegistrationRequest();
         registrationRequest.setFirstName("Retnaa");
         registrationRequest.setLastName("Dayok");
-        registrationRequest.setDisplayName("Darda");
         registrationRequest.setEmail("dayokr@gmail.com");
         registrationRequest.setPhoneNumber("07031005737");
         registrationRequest.setPassword("password");

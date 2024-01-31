@@ -1,12 +1,11 @@
 package com.rdi.geegstar.services.geegstarimplementations;
 
+import com.rdi.geegstar.data.models.Portfolio;
+import com.rdi.geegstar.data.models.Talent;
 import com.rdi.geegstar.data.models.Token;
 import com.rdi.geegstar.data.models.User;
 import com.rdi.geegstar.data.repositories.UserRepository;
-import com.rdi.geegstar.dto.requests.EmailRequest;
-import com.rdi.geegstar.dto.requests.GetAllTalentsRequest;
-import com.rdi.geegstar.dto.requests.Recipient;
-import com.rdi.geegstar.dto.requests.RegistrationRequest;
+import com.rdi.geegstar.dto.requests.*;
 import com.rdi.geegstar.dto.response.GetAllTalentsResponse;
 import com.rdi.geegstar.dto.response.GetUserResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
@@ -15,6 +14,7 @@ import com.rdi.geegstar.services.MailService;
 import com.rdi.geegstar.services.TokenService;
 import com.rdi.geegstar.services.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +29,7 @@ import static com.rdi.geegstar.enums.Role.TALENT;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class GeegStarUserService implements UserService {
 
     private final ModelMapper modelMapper;
@@ -41,6 +42,18 @@ public class GeegStarUserService implements UserService {
         User user = modelMapper.map(registerRequest, User.class);
         User savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, RegistrationResponse.class);
+    }
+
+    @Override
+    public RegistrationResponse registerUser(TalentRegistrationRequest registerRequest) {
+        Talent talent = modelMapper.map(registerRequest, Talent.class);
+        PortfolioRequest portfolioRequest = registerRequest.getPortfolioRequest();
+        Portfolio portfolio = modelMapper.map(portfolioRequest, Portfolio.class);
+        talent.setPortfolio(portfolio);
+        talent.setRole(TALENT);
+        Talent savedTalent = userRepository.save(talent);
+        log.info("Talent :: {}", savedTalent);
+        return modelMapper.map(savedTalent, RegistrationResponse.class);
     }
 
     @Override

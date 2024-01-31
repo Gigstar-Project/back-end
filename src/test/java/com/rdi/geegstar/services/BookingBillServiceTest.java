@@ -125,7 +125,6 @@ public class BookingBillServiceTest {
         RegistrationRequest talentRegisterRequest = new RegistrationRequest();
         talentRegisterRequest.setFirstName("Retnaa");
         talentRegisterRequest.setLastName("Dayok");
-        talentRegisterRequest.setDisplayName("Darda");
         talentRegisterRequest.setEmail("dayokr@gmail.com");
         talentRegisterRequest.setPhoneNumber("07031005737");
         talentRegisterRequest.setPassword("password");

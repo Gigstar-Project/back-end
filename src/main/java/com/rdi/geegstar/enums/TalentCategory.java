@@ -2,7 +2,7 @@ package com.rdi.geegstar.enums;
 
 public enum TalentCategory {
     COMEDIAN,
-    ARTIST,
+    ARTISTE,
     DJ,
     MC,
     SPEAKER

@@ -1,14 +1,19 @@
 package com.rdi.geegstar.services;
 
+import com.rdi.geegstar.data.models.Portfolio;
 import com.rdi.geegstar.dto.requests.GetAllTalentsRequest;
+import com.rdi.geegstar.dto.requests.PortfolioRequest;
 import com.rdi.geegstar.dto.requests.RegistrationRequest;
+import com.rdi.geegstar.dto.requests.TalentRegistrationRequest;
 import com.rdi.geegstar.dto.response.GetAllTalentsResponse;
 import com.rdi.geegstar.dto.response.GetUserResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.enums.Role;
+import com.rdi.geegstar.enums.TalentCategory;
 import com.rdi.geegstar.exceptions.EmailConfirmationFailedException;
 import com.rdi.geegstar.exceptions.GeegStarException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,14 +32,35 @@ public class UserServiceTest {
 
 
     @Test
+    public void testTalentRegistration() {
+        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
+        talentRegistrationRequest.setFirstName("Retnaa");
+        talentRegistrationRequest.setLastName("Dayok");
+        talentRegistrationRequest.setEmail("dayokr@gmail.com");
+        talentRegistrationRequest.setPassword("password");
+        talentRegistrationRequest.setPhoneNumber("07031005737");
+        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
+        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
+                + " An award winning star");
+        talentRegistrationRequest.setDisplayName("Jay Benjis");
+        PortfolioRequest portfolioRequest = new PortfolioRequest();
+        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
+        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+
+        RegistrationResponse registrationResponse = userService.registerUser(talentRegistrationRequest);
+        assertThat(registrationResponse).isNotNull();
+    }
+
+
+    @Test
     public void testRegister(){
         RegistrationRequest registerRequest = new RegistrationRequest();
         registerRequest.setFirstName("Retnaa");
         registerRequest.setLastName("Dayok");
-        registerRequest.setDisplayName("Darda");
+
         registerRequest.setEmail("dayokr@gmail.com");
         registerRequest.setPhoneNumber("07031005737");
-        registerRequest.setPassword("passwd");
+        registerRequest.setPassword("password");
         registerRequest.setRole(Role.TALENT);
         RegistrationResponse registrationResponse = userService.registerUser(registerRequest);
         assertNotNull(registrationResponse);
@@ -63,7 +89,6 @@ public class UserServiceTest {
         RegistrationRequest registerRequest = new RegistrationRequest();
         registerRequest.setFirstName("Retnaa");
         registerRequest.setLastName("Dayok");
-        registerRequest.setDisplayName("Darda");
         registerRequest.setEmail("dayr@gmail.com");
         registerRequest.setPhoneNumber("07031005737");
         registerRequest.setPassword("password");
