@@ -1,6 +1,7 @@
 package com.rdi.geegstar.controllers;
 
 import com.rdi.geegstar.dto.requests.GetAllTalentsRequest;
+import com.rdi.geegstar.dto.requests.PlannerRegistrationRequest;
 import com.rdi.geegstar.dto.requests.RegistrationRequest;
 import com.rdi.geegstar.dto.requests.TalentRegistrationRequest;
 import com.rdi.geegstar.dto.response.GetAllTalentsResponse;
@@ -32,8 +33,13 @@ public class UserController {
     }
 
     @PostMapping("/registration/talent")
-    public ResponseEntity<RegistrationResponse> register(@Valid @RequestBody TalentRegistrationRequest talentRegistrationRequest) {
+    public ResponseEntity<RegistrationResponse> registerUser(@Valid @RequestBody TalentRegistrationRequest talentRegistrationRequest) {
         return ResponseEntity.status(CREATED).body(userService.registerUser(talentRegistrationRequest));
+    }
+
+    @PostMapping("/registration/planner")
+    public ResponseEntity<RegistrationResponse> registerUser(@Valid @RequestBody PlannerRegistrationRequest plannerRegistrationRequest) {
+        return ResponseEntity.status(CREATED).body(userService.registerUser(plannerRegistrationRequest));
     }
 
     @PostMapping("/confirmation/{userEmail}")

@@ -1,10 +1,7 @@
 package com.rdi.geegstar.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rdi.geegstar.dto.requests.GetAllTalentsRequest;
-import com.rdi.geegstar.dto.requests.PortfolioRequest;
-import com.rdi.geegstar.dto.requests.RegistrationRequest;
-import com.rdi.geegstar.dto.requests.TalentRegistrationRequest;
+import com.rdi.geegstar.dto.requests.*;
 import com.rdi.geegstar.enums.Role;
 import com.rdi.geegstar.enums.TalentCategory;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +49,30 @@ public class UserControllerTest {
             mockMvc.perform(
                             post(String.format("%s/registration/talent", USER_URL))
                                     .content(mapper.writeValueAsString(talentRegistrationRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print());
+        } catch (Exception exception) {
+            log.info("Error ", exception);
+        }
+    }
+
+    @Test
+    public void testPlannerRegistration() {
+        ObjectMapper mapper = new ObjectMapper();
+        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
+        plannerRegistrationRequest.setFirstName("Retnaa");
+        plannerRegistrationRequest.setLastName("Dayok");
+        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
+        plannerRegistrationRequest.setPassword("password");
+        plannerRegistrationRequest.setPhoneNumber("07031005737");
+        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+
+        try {
+            mockMvc.perform(
+                            post(String.format("%s/registration/planner", USER_URL))
+                                    .content(mapper.writeValueAsString(plannerRegistrationRequest))
                                     .contentType(MediaType.APPLICATION_JSON)
                     )
                     .andExpect(status().is2xxSuccessful())
