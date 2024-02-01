@@ -1,6 +1,7 @@
 package com.rdi.geegstar.services.geegstarimplementations;
 
 import com.rdi.geegstar.data.models.*;
+import com.rdi.geegstar.data.repositories.TalentRepository;
 import com.rdi.geegstar.data.repositories.UserRepository;
 import com.rdi.geegstar.dto.requests.*;
 import com.rdi.geegstar.dto.response.*;
@@ -31,6 +32,7 @@ import static com.rdi.geegstar.enums.Role.TALENT;
 public class GeegStarUserService implements UserService {
 
     private final ModelMapper modelMapper;
+    private final TalentRepository talentRepository;
     private final UserRepository userRepository;
     private final TokenService tokenService;
     private final MailService mailService;
@@ -104,10 +106,10 @@ public class GeegStarUserService implements UserService {
         int pageNumber = getAllTalentRequest.getPageNumber() - 1;
         int pageSize = getAllTalentRequest.getPageSize();
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<User> talentPage = userRepository.findAllByRole(TALENT, pageable);
-        List<User> talents = talentPage.getContent();
+        Page<Talent> talentPage = talentRepository.findAll(pageable);
+        List<Talent> talents = talentPage.getContent();
         return talents.stream()
-                .map(user -> modelMapper.map(user, GetAllTalentsResponse.class))
+                .map(talent -> modelMapper.map(talent, GetAllTalentsResponse.class))
                 .toList();
     }
 

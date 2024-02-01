@@ -33,6 +33,7 @@ public class CalenderServiceTest {
 
     @Test
     public void testGetTalentCalenders() throws UserNotFoundException, BookingNotFoundException {
+        // Given
         TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
         talentRegistrationRequest.setFirstName("Retnaa");
         talentRegistrationRequest.setLastName("Dayok");
@@ -69,10 +70,12 @@ public class CalenderServiceTest {
         acceptBookingRequest.setTalentId(bookTalentRequest.getTalentId());
         bookingService.acceptBooking(acceptBookingRequest);
 
+        // When
         Long talentId = talentRegistrationResponse.getId();
-        List<GetTalentCalendars> getTalentCalenderResponse =
-                calenderService.getTalentCalendars(talentId);
+        List<GetTalentCalendars> getTalentCalenderResponse = calenderService.getTalentCalendars(talentId);
         log.info("Calender :: {}", getTalentCalenderResponse);
+
+        // Assert
         assertThat(getTalentCalenderResponse).isNotNull();
     }
 

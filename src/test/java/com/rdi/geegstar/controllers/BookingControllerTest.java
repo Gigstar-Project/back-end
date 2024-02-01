@@ -6,6 +6,7 @@ import com.rdi.geegstar.dto.requests.*;
 import com.rdi.geegstar.dto.response.BookingResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.enums.Role;
+import com.rdi.geegstar.enums.TalentCategory;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.io.UnsupportedEncodingException;
 
 import static com.rdi.geegstar.enums.EventType.BIRTHDAY_PARTY;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,17 +36,78 @@ public class BookingControllerTest {
 
     @Test
     public void testBookTalent() throws UnsupportedEncodingException, JsonProcessingException {
-        Long talentId = registerUser(Role.TALENT);
-        Long plannerId = registerUser(Role.PLANNER);
         ObjectMapper mapper = new ObjectMapper();
-        BookingRequest bookingRequest = getBookingRequest(plannerId, talentId);
+        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
+        talentRegistrationRequest.setFirstName("Retnaa");
+        talentRegistrationRequest.setLastName("Dayok");
+        talentRegistrationRequest.setEmail("dayokr@gmail.com");
+        talentRegistrationRequest.setPassword("password");
+        talentRegistrationRequest.setPhoneNumber("07031005737");
+        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
+        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
+                + " An award winning star");
+        talentRegistrationRequest.setDisplayName("Jay Benjis");
+        PortfolioRequest portfolioRequest = new PortfolioRequest();
+        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
+        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+
+        final String USER_URL = "/api/v1/user";
+        MvcResult talentRegistrationMvcResult = null;
         try {
-            mockMvc.perform(
-                            post(URL)
-                                    .content(mapper.writeValueAsString(bookingRequest))
+            talentRegistrationMvcResult = mockMvc.perform(
+                            post(String.format("%s/registration/talent", USER_URL))
+                                    .content(mapper.writeValueAsString(talentRegistrationRequest))
                                     .contentType(MediaType.APPLICATION_JSON)
                     )
                     .andExpect(status().is2xxSuccessful())
+                    .andDo(print())
+                    .andReturn();
+        } catch (Exception exception) {
+            log.info("Error :: ", exception);
+        }
+        assert talentRegistrationMvcResult != null;
+        String talentResponseAsString = talentRegistrationMvcResult.getResponse().getContentAsString();
+        RegistrationResponse talantRegistrationResponse =
+                mapper.readValue(talentResponseAsString, RegistrationResponse.class);
+
+        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
+        plannerRegistrationRequest.setFirstName("Retnaa");
+        plannerRegistrationRequest.setLastName("Dayok");
+        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
+        plannerRegistrationRequest.setPassword("password");
+        plannerRegistrationRequest.setPhoneNumber("07031005737");
+        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+
+        MvcResult plannerRegistrationMvcResult = null;
+        try {
+            plannerRegistrationMvcResult = mockMvc.perform(
+                            post(String.format("%s/registration/planner", USER_URL))
+                                    .content(mapper.writeValueAsString(plannerRegistrationRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print())
+                    .andReturn();
+        } catch (Exception exception) {
+            log.info("Error :: ", exception);
+        }
+        assert plannerRegistrationMvcResult != null;
+        String plannerResponseAsString = plannerRegistrationMvcResult.getResponse().getContentAsString();
+        RegistrationResponse plannerRegistrationResponse = mapper.readValue(plannerResponseAsString, RegistrationResponse.class);
+
+        final String BOOKING_URL = "/api/v1/booking";
+        BookingRequest bookingRequest = new BookingRequest();
+        EventDetailRequest eventDetailRequest = getEventDetailRequest();
+        bookingRequest.setEventDetailRequest(eventDetailRequest);
+        bookingRequest.setTalentId(talantRegistrationResponse.getId());
+        bookingRequest.setPlannerId(plannerRegistrationResponse.getId());
+        try {
+            mockMvc.perform(
+                            post(BOOKING_URL)
+                                    .content(mapper.writeValueAsString(bookingRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().isCreated())
                     .andDo(print());
         } catch (Exception exception) {
             log.info("Error :: ", exception);
@@ -54,18 +117,94 @@ public class BookingControllerTest {
     @Test
     public void testAcceptBooking()
             throws UnsupportedEncodingException, JsonProcessingException {
-        Long talentId = registerUser(Role.TALENT);
-        Long plannerId = registerUser(Role.PLANNER);
-        BookingRequest bookingRequest = getBookingRequest(plannerId, talentId);
-        BookingResponse bookingResponse = getBookingResponse(bookingRequest);
         ObjectMapper mapper = new ObjectMapper();
-        Long bookingId = bookingResponse.getBookingId();
+        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
+        talentRegistrationRequest.setFirstName("Retnaa");
+        talentRegistrationRequest.setLastName("Dayok");
+        talentRegistrationRequest.setEmail("dayokr@gmail.com");
+        talentRegistrationRequest.setPassword("password");
+        talentRegistrationRequest.setPhoneNumber("07031005737");
+        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
+        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
+                + " An award winning star");
+        talentRegistrationRequest.setDisplayName("Jay Benjis");
+        PortfolioRequest portfolioRequest = new PortfolioRequest();
+        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
+        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+
+        final String USER_URL = "/api/v1/user";
+        MvcResult talentRegistrationMvcResult = null;
+        try {
+            talentRegistrationMvcResult = mockMvc.perform(
+                            post(String.format("%s/registration/talent", USER_URL))
+                                    .content(mapper.writeValueAsString(talentRegistrationRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print())
+                    .andReturn();
+        } catch (Exception exception) {
+            log.info("Error :: ", exception);
+        }
+        assert talentRegistrationMvcResult != null;
+        String talentResponseAsString = talentRegistrationMvcResult.getResponse().getContentAsString();
+        RegistrationResponse talantRegistrationResponse =
+                mapper.readValue(talentResponseAsString, RegistrationResponse.class);
+
+        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
+        plannerRegistrationRequest.setFirstName("Retnaa");
+        plannerRegistrationRequest.setLastName("Dayok");
+        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
+        plannerRegistrationRequest.setPassword("password");
+        plannerRegistrationRequest.setPhoneNumber("07031005737");
+        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+
+        MvcResult plannerRegistrationMvcResult = null;
+        try {
+            plannerRegistrationMvcResult = mockMvc.perform(
+                            post(String.format("%s/registration/planner", USER_URL))
+                                    .content(mapper.writeValueAsString(plannerRegistrationRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print())
+                    .andReturn();
+        } catch (Exception exception) {
+            log.info("Error :: ", exception);
+        }
+        assert plannerRegistrationMvcResult != null;
+        String plannerResponseAsString = plannerRegistrationMvcResult.getResponse().getContentAsString();
+        RegistrationResponse plannerRegistrationResponse = mapper.readValue(plannerResponseAsString, RegistrationResponse.class);
+
+
+        final String BOOKING_URL = "/api/v1/booking";
+        BookingRequest bookingRequest = new BookingRequest();
+        EventDetailRequest eventDetailRequest = getEventDetailRequest();
+        bookingRequest.setEventDetailRequest(eventDetailRequest);
+        bookingRequest.setTalentId(talantRegistrationResponse.getId());
+        bookingRequest.setPlannerId(plannerRegistrationResponse.getId());
+        MvcResult bookingResponseMvcResult = null;
+        try {
+            bookingResponseMvcResult = mockMvc.perform(
+                            post(BOOKING_URL)
+                                    .content(mapper.writeValueAsString(bookingRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().isCreated())
+                    .andDo(print())
+                    .andReturn();
+        } catch (Exception exception) {
+            log.info("Error :: ", exception);
+        }
+        assert bookingResponseMvcResult != null;
+        String bookingResponseAsString = bookingResponseMvcResult.getResponse().getContentAsString();
+        BookingResponse bookingResponse = mapper.readValue(bookingResponseAsString, BookingResponse.class);
         AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
-        acceptBookingRequest.setBookingId(bookingId);
-        acceptBookingRequest.setTalentId(talentId);
+        acceptBookingRequest.setTalentId(talantRegistrationResponse.getId());
+        acceptBookingRequest.setBookingId(bookingResponse.getBookingId());
         try {
             mockMvc.perform(
-                            MockMvcRequestBuilders.patch(String.format("%s/accept", URL))
+                            patch(String.format("%s/accept", BOOKING_URL))
                                     .content(mapper.writeValueAsString(acceptBookingRequest))
                                     .contentType(MediaType.APPLICATION_JSON)
                     )
@@ -79,12 +218,89 @@ public class BookingControllerTest {
     @Test
     public void testDeclineBooking()
             throws UnsupportedEncodingException, JsonProcessingException {
-        Long talentId = registerUser(Role.TALENT);
-        Long plannerId = registerUser(Role.PLANNER);
-        BookingRequest bookingRequest = getBookingRequest(plannerId, talentId);
-        BookingResponse bookingResponse = getBookingResponse( bookingRequest);
-        Long bookingId = bookingResponse.getBookingId();
+        ObjectMapper mapper = new ObjectMapper();
+        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
+        talentRegistrationRequest.setFirstName("Retnaa");
+        talentRegistrationRequest.setLastName("Dayok");
+        talentRegistrationRequest.setEmail("dayokr@gmail.com");
+        talentRegistrationRequest.setPassword("password");
+        talentRegistrationRequest.setPhoneNumber("07031005737");
+        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
+        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
+                + " An award winning star");
+        talentRegistrationRequest.setDisplayName("Jay Benjis");
+        PortfolioRequest portfolioRequest = new PortfolioRequest();
+        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
+        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
 
+        final String USER_URL = "/api/v1/user";
+        MvcResult talentRegistrationMvcResult = null;
+        try {
+            talentRegistrationMvcResult = mockMvc.perform(
+                            post(String.format("%s/registration/talent", USER_URL))
+                                    .content(mapper.writeValueAsString(talentRegistrationRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print())
+                    .andReturn();
+        } catch (Exception exception) {
+            log.info("Error :: ", exception);
+        }
+        assert talentRegistrationMvcResult != null;
+        String talentResponseAsString = talentRegistrationMvcResult.getResponse().getContentAsString();
+        RegistrationResponse talantRegistrationResponse =
+                mapper.readValue(talentResponseAsString, RegistrationResponse.class);
+
+        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
+        plannerRegistrationRequest.setFirstName("Retnaa");
+        plannerRegistrationRequest.setLastName("Dayok");
+        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
+        plannerRegistrationRequest.setPassword("password");
+        plannerRegistrationRequest.setPhoneNumber("07031005737");
+        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+
+        MvcResult plannerRegistrationMvcResult = null;
+        try {
+            plannerRegistrationMvcResult = mockMvc.perform(
+                            post(String.format("%s/registration/planner", USER_URL))
+                                    .content(mapper.writeValueAsString(plannerRegistrationRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print())
+                    .andReturn();
+        } catch (Exception exception) {
+            log.info("Error :: ", exception);
+        }
+        assert plannerRegistrationMvcResult != null;
+        String plannerResponseAsString = plannerRegistrationMvcResult.getResponse().getContentAsString();
+        RegistrationResponse plannerRegistrationResponse = mapper.readValue(plannerResponseAsString, RegistrationResponse.class);
+
+
+        final String BOOKING_URL = "/api/v1/booking";
+        BookingRequest bookingRequest = new BookingRequest();
+        EventDetailRequest eventDetailRequest = getEventDetailRequest();
+        bookingRequest.setEventDetailRequest(eventDetailRequest);
+        bookingRequest.setTalentId(talantRegistrationResponse.getId());
+        bookingRequest.setPlannerId(plannerRegistrationResponse.getId());
+        MvcResult bookingResponseMvcResult = null;
+        try {
+            bookingResponseMvcResult = mockMvc.perform(
+                            post(BOOKING_URL)
+                                    .content(mapper.writeValueAsString(bookingRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().isCreated())
+                    .andDo(print())
+                    .andReturn();
+        } catch (Exception exception) {
+            log.info("Error :: ", exception);
+        }
+        assert bookingResponseMvcResult != null;
+        String bookingResponseAsString = bookingResponseMvcResult.getResponse().getContentAsString();
+        BookingResponse bookingResponse = mapper.readValue(bookingResponseAsString, BookingResponse.class);
+        Long bookingId = bookingResponse.getBookingId();
         try {
             mockMvc.perform(
                             MockMvcRequestBuilders.patch(String.format("%s/decline", bookingId))
@@ -100,15 +316,95 @@ public class BookingControllerTest {
     @Test
     public void testGetUserBookings()
             throws UnsupportedEncodingException, JsonProcessingException{
-        Long talentId = registerUser(Role.TALENT);
-        int pageSize = 1;
+        ObjectMapper mapper = new ObjectMapper();
+        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
+        talentRegistrationRequest.setFirstName("Retnaa");
+        talentRegistrationRequest.setLastName("Dayok");
+        talentRegistrationRequest.setEmail("dayokr@gmail.com");
+        talentRegistrationRequest.setPassword("password");
+        talentRegistrationRequest.setPhoneNumber("07031005737");
+        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
+        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
+                + " An award winning star");
+        talentRegistrationRequest.setDisplayName("Jay Benjis");
+        PortfolioRequest portfolioRequest = new PortfolioRequest();
+        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
+        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+
+        final String USER_URL = "/api/v1/user";
+        MvcResult talentRegistrationMvcResult = null;
+        try {
+            talentRegistrationMvcResult = mockMvc.perform(
+                            post(String.format("%s/registration/talent", USER_URL))
+                                    .content(mapper.writeValueAsString(talentRegistrationRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print())
+                    .andReturn();
+        } catch (Exception exception) {
+            log.info("Error :: ", exception);
+        }
+        assert talentRegistrationMvcResult != null;
+        String talentResponseAsString = talentRegistrationMvcResult.getResponse().getContentAsString();
+        RegistrationResponse talantRegistrationResponse =
+                mapper.readValue(talentResponseAsString, RegistrationResponse.class);
+
+        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
+        plannerRegistrationRequest.setFirstName("Retnaa");
+        plannerRegistrationRequest.setLastName("Dayok");
+        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
+        plannerRegistrationRequest.setPassword("password");
+        plannerRegistrationRequest.setPhoneNumber("07031005737");
+        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+
+        MvcResult plannerRegistrationMvcResult = null;
+        try {
+            plannerRegistrationMvcResult = mockMvc.perform(
+                            post(String.format("%s/registration/planner", USER_URL))
+                                    .content(mapper.writeValueAsString(plannerRegistrationRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print())
+                    .andReturn();
+        } catch (Exception exception) {
+            log.info("Error :: ", exception);
+        }
+        assert plannerRegistrationMvcResult != null;
+        String plannerResponseAsString = plannerRegistrationMvcResult.getResponse().getContentAsString();
+        RegistrationResponse plannerRegistrationResponse = mapper.readValue(plannerResponseAsString, RegistrationResponse.class);
+
+
+        final String BOOKING_URL = "/api/v1/booking";
+        BookingRequest bookingRequest = new BookingRequest();
+        EventDetailRequest eventDetailRequest = getEventDetailRequest();
+        bookingRequest.setEventDetailRequest(eventDetailRequest);
+        bookingRequest.setTalentId(talantRegistrationResponse.getId());
+        bookingRequest.setPlannerId(plannerRegistrationResponse.getId());
+        for (int index = 0; index <= 2; index++) {
+            try {
+                mockMvc.perform(
+                                post(BOOKING_URL)
+                                        .content(mapper.writeValueAsString(bookingRequest))
+                                        .contentType(MediaType.APPLICATION_JSON)
+                        )
+                        .andExpect(status().isCreated())
+                        .andDo(print())
+                        .andReturn();
+            } catch (Exception exception) {
+                log.info("Error :: ", exception);
+            }
+        }
+
+        Long talentId = talantRegistrationResponse.getId();
+        int pageSize = 2;
         int pageNumber = 1;
         GetUserBookingsRequest getUserBookingsRequest = new GetUserBookingsRequest();
         getUserBookingsRequest.setUserRole(Role.TALENT);
         getUserBookingsRequest.setUserId(talentId);
         getUserBookingsRequest.setPageSize(pageSize);
         getUserBookingsRequest.setPageNumber(pageNumber);
-        ObjectMapper mapper = new ObjectMapper();
         try{
             mockMvc.perform(
                             MockMvcRequestBuilders.get(URL)
@@ -121,67 +417,6 @@ public class BookingControllerTest {
         } catch (Exception exception) {
             log.info("Error :: ", exception);
         }
-    }
-
-    private BookingResponse getBookingResponse( BookingRequest bookingRequest)
-            throws UnsupportedEncodingException, JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        MvcResult responseOfBooking = null;
-        try {
-            responseOfBooking = mockMvc.perform(
-                            post(URL)
-                                    .content(mapper.writeValueAsString(bookingRequest))
-                                    .contentType(MediaType.APPLICATION_JSON)
-                    )
-                    .andExpect(status().is2xxSuccessful())
-                    .andReturn();
-        } catch (Exception exception) {
-            log.info("Error :: ", exception);
-        }
-
-        assert responseOfBooking != null;
-        String content = responseOfBooking.getResponse().getContentAsString();
-        return mapper.readValue(content, BookingResponse.class);
-    }
-
-    private static BookingRequest getBookingRequest(Long plannerId, Long talentId) {
-        EventDetailRequest eventDetailRequest =
-                getEventDetailRequest();
-        BookingRequest bookingRequest = new BookingRequest();
-        bookingRequest.setPlannerId(plannerId);
-        bookingRequest.setTalentId(talentId);
-        bookingRequest.setEventDetailRequest(eventDetailRequest);
-        return bookingRequest;
-    }
-
-
-    private Long registerUser(Role userRole) throws UnsupportedEncodingException, JsonProcessingException {
-        String USER_URL = "/api/v1/user";
-        ObjectMapper mapper = new ObjectMapper();
-        RegistrationRequest registrationRequest = new RegistrationRequest();
-        registrationRequest.setFirstName("Retnaa");
-        registrationRequest.setLastName("Dayok");
-        registrationRequest.setEmail("dayokr@gmail.com");
-        registrationRequest.setPhoneNumber("07031005737");
-        registrationRequest.setPassword("password");
-        registrationRequest.setRole(userRole);
-        MvcResult userRegistrationResponse = null;
-        try {
-            userRegistrationResponse = mockMvc.perform(
-                            post(USER_URL)
-                                    .content(mapper.writeValueAsString(registrationRequest))
-                                    .contentType(MediaType.APPLICATION_JSON)
-                    )
-                    .andExpect(status().is2xxSuccessful())
-                    .andReturn();
-        } catch (Exception exception) {
-            log.info("Error :: ", exception);
-        }
-
-        assert userRegistrationResponse != null;
-        String userResponse = userRegistrationResponse.getResponse().getContentAsString();
-        RegistrationResponse registrationResponse = mapper.readValue(userResponse, RegistrationResponse.class);
-        return registrationResponse.getId();
     }
 
     private static EventDetailRequest getEventDetailRequest() {

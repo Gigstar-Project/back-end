@@ -4,9 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rdi.geegstar.dto.requests.*;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
-import com.rdi.geegstar.enums.Role;
 import com.rdi.geegstar.enums.TalentCategory;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -216,10 +214,36 @@ public class UserControllerTest {
 
 
     @Test
-    @Sql("/db/insertUsers.sql")
-    @Transactional
     public void testGetAllTalents() {
         ObjectMapper mapper = new ObjectMapper();
+        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
+        talentRegistrationRequest.setFirstName("Retnaa");
+        talentRegistrationRequest.setLastName("Dayok");
+        talentRegistrationRequest.setEmail("dayokr@gmail.com");
+        talentRegistrationRequest.setPassword("password");
+        talentRegistrationRequest.setPhoneNumber("07031005737");
+        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
+        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
+                + " An award winning star");
+        talentRegistrationRequest.setDisplayName("Jay Benjis");
+        PortfolioRequest portfolioRequest = new PortfolioRequest();
+        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
+        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+
+        for (int index = 0; index <= 2; index++) {
+            try {
+                mockMvc.perform(
+                                post(String.format("%s/registration/talent", USER_URL))
+                                        .content(mapper.writeValueAsString(talentRegistrationRequest))
+                                        .contentType(MediaType.APPLICATION_JSON)
+                        )
+                        .andExpect(status().is2xxSuccessful())
+                        .andDo(print());
+            } catch (Exception exception) {
+                log.info("Error ", exception);
+            }
+        }
+
         GetAllTalentsRequest getAllTalentsRequest = new GetAllTalentsRequest();
         int pageNumber = 1;
         int pageSize = 2;

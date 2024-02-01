@@ -30,6 +30,7 @@ public class UserServiceTest {
 
     @Test
     public void testTalentRegistration() {
+        // Given
         TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
         talentRegistrationRequest.setFirstName("Retnaa");
         talentRegistrationRequest.setLastName("Dayok");
@@ -44,12 +45,16 @@ public class UserServiceTest {
         portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
         talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
 
+        // When
         RegistrationResponse registrationResponse = userService.registerUser(talentRegistrationRequest);
+
+        // Assert
         assertThat(registrationResponse).isNotNull();
     }
 
     @Test
     public void testPlannerRegistration() {
+        // Given
         PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
         plannerRegistrationRequest.setFirstName("Retnaa");
         plannerRegistrationRequest.setLastName("Dayok");
@@ -58,14 +63,20 @@ public class UserServiceTest {
         plannerRegistrationRequest.setPhoneNumber("07031005737");
         plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
 
+        // When
         RegistrationResponse registrationResponse = userService.registerUser(plannerRegistrationRequest);
         assertThat(registrationResponse).isNotNull();
     }
 
     @Test
     public void testRequestConfirmationCode() throws GeegStarException {
+        // Given
         String userEmail = "max_ret@yahoo.com";
+
+        // When
         var response = userService.requestEmailConfirmationCode(userEmail);
+
+        // Assert
         assertNotNull(response);
     }
 
@@ -73,14 +84,20 @@ public class UserServiceTest {
     @Test
     @Sql("/db/insert.sql")
     public void testConfirmingEmail() throws EmailConfirmationFailedException {
+        // Given
         String userEmail = "john499@qianhost.com";
         String code = "4532";
+
+        // When
         var response = userService.confirmEmail(userEmail, code);
+
+        // Assert
         assertTrue(response);
     }
 
     @Test
-    public void testGetUserThatIsATalentById() throws UserNotFoundException {
+    public void testGetUserThatIsATalent() throws UserNotFoundException {
+        // Given
         TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
         talentRegistrationRequest.setFirstName("Retnaa");
         talentRegistrationRequest.setLastName("Dayok");
@@ -96,13 +113,16 @@ public class UserServiceTest {
         talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
         RegistrationResponse registrationResponse = userService.registerUser(talentRegistrationRequest);
 
+        // When
         GetUserResponse getUserResponse = userService.getUserById(registrationResponse.getId());
 
+        // Assert
         assertThat(getUserResponse).isNotNull();
     }
 
     @Test
     public void testGetUserThatIsAPlanner() throws UserNotFoundException {
+        // Given
         PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
         plannerRegistrationRequest.setFirstName("Retnaa");
         plannerRegistrationRequest.setLastName("Dayok");
@@ -112,22 +132,45 @@ public class UserServiceTest {
         plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
         RegistrationResponse registrationResponse = userService.registerUser(plannerRegistrationRequest);
 
+        // When
         GetUserResponse getUserResponse = userService.getUserById(registrationResponse.getId());
 
+        // Assert
         assertThat(getUserResponse).isNotNull();
     }
 
 
     @Test
-    @Sql("/db/insertUsers.sql")
     public void testGetAllTalents() {
+        // Given
+        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
+        talentRegistrationRequest.setFirstName("Retnaa");
+        talentRegistrationRequest.setLastName("Dayok");
+        talentRegistrationRequest.setEmail("dayokr@gmail.com");
+        talentRegistrationRequest.setPassword("password");
+        talentRegistrationRequest.setPhoneNumber("07031005737");
+        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
+        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
+                + " An award winning star");
+        talentRegistrationRequest.setDisplayName("Jay Benjis");
+        PortfolioRequest portfolioRequest = new PortfolioRequest();
+        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
+        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+
+        for (int index = 0; index <= 2; index++) {
+            userService.registerUser(talentRegistrationRequest);
+        }
+
+        // When
         GetAllTalentsRequest getAllTalentRequest = new GetAllTalentsRequest();
         int pageNumber = 1;
-        int pageSize = 3;
+        int pageSize = 1;
         getAllTalentRequest.setPageNumber(pageNumber);
         getAllTalentRequest.setPageSize(pageSize);
         List<GetAllTalentsResponse> talentsResponseList = userService.getAllTalents(getAllTalentRequest);
-        System.out.printf(talentsResponseList.toString());
+        System.out.println(talentsResponseList);
+
+        // Assert
         assertThat(talentsResponseList).isNotNull();
     }
 
