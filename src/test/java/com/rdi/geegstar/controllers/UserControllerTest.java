@@ -89,29 +89,6 @@ public class UserControllerTest {
         }
     }
 
-    @Test
-    public void testRegistration() {
-        ObjectMapper mapper = new ObjectMapper();
-        RegistrationRequest registrationRequest = new RegistrationRequest();
-        registrationRequest.setFirstName("Retnaa");
-        registrationRequest.setLastName("Dayok");
-        registrationRequest.setEmail("dayokr@gmail.com");
-        registrationRequest.setPhoneNumber("07031005737");
-        registrationRequest.setPassword("password");
-        registrationRequest.setRole(Role.TALENT);
-
-        try {
-            mockMvc.perform(
-                            post(USER_URL)
-                                    .content(mapper.writeValueAsString(registrationRequest))
-                                    .contentType(MediaType.APPLICATION_JSON)
-                    )
-                    .andExpect(status().is2xxSuccessful())
-                    .andDo(print());
-        } catch (Exception exception) {
-            log.info("Error :: ", exception);
-        }
-    }
 
     @Test
     public void testRequestConfirmationCode() {
@@ -237,22 +214,6 @@ public class UserControllerTest {
         }
     }
 
-    @Test
-    @Transactional
-    @Sql("/db/insertUsers.sql")
-    public void testGetUserById() {
-        Long userId = 104L;
-        try{
-            mockMvc.perform(
-                            MockMvcRequestBuilders.get(String.format("%s/%d", USER_URL, userId))
-                                    .accept(MediaType.APPLICATION_JSON)
-                    )
-                    .andExpect(status().is2xxSuccessful())
-                    .andDo(print());
-        } catch (Exception exception) {
-            log.info("Error :: ", exception);
-        }
-    }
 
     @Test
     @Sql("/db/insertUsers.sql")

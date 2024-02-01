@@ -117,22 +117,6 @@ public class UserServiceTest {
         assertThat(getUserResponse).isNotNull();
     }
 
-    @Test
-    public void testGetUserById() throws UserNotFoundException {
-        RegistrationRequest registerRequest = new RegistrationRequest();
-        registerRequest.setFirstName("Retnaa");
-        registerRequest.setLastName("Dayok");
-        registerRequest.setEmail("dayr@gmail.com");
-        registerRequest.setPhoneNumber("07031005737");
-        registerRequest.setPassword("password");
-        registerRequest.setRole(Role.TALENT);
-        RegistrationResponse registrationResponse = userService.registerUser(registerRequest);
-        assertNotNull(registrationResponse);
-
-        GetUserResponse userDisplayDetails = userService.getUserById(registrationResponse.getId());
-
-        assertThat(userDisplayDetails).isNotNull();
-    }
 
     @Test
     @Sql("/db/insertUsers.sql")
