@@ -13,7 +13,7 @@ import com.rdi.geegstar.exceptions.*;
 import java.util.List;
 
 public interface UserService {
-    RegistrationResponse registerUser(RegistrationRequest registerRequest);
+
     RegistrationResponse registerUser(PlannerRegistrationRequest plannerRegistrationRequest);
     RegistrationResponse registerUser(TalentRegistrationRequest talentRegistrationRequest);
 

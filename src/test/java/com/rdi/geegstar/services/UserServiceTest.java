@@ -62,22 +62,6 @@ public class UserServiceTest {
         assertThat(registrationResponse).isNotNull();
     }
 
-
-    @Test
-    public void testRegister(){
-        RegistrationRequest registerRequest = new RegistrationRequest();
-        registerRequest.setFirstName("Retnaa");
-        registerRequest.setLastName("Dayok");
-
-        registerRequest.setEmail("dayokr@gmail.com");
-        registerRequest.setPhoneNumber("07031005737");
-        registerRequest.setPassword("password");
-        registerRequest.setRole(Role.TALENT);
-        RegistrationResponse registrationResponse = userService.registerUser(registerRequest);
-        assertNotNull(registrationResponse);
-    }
-
-
     @Test
     public void testRequestConfirmationCode() throws GeegStarException {
         String userEmail = "max_ret@yahoo.com";
@@ -93,6 +77,44 @@ public class UserServiceTest {
         String code = "4532";
         var response = userService.confirmEmail(userEmail, code);
         assertTrue(response);
+    }
+
+    @Test
+    public void testGetUserThatIsATalentById() throws UserNotFoundException {
+        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
+        talentRegistrationRequest.setFirstName("Retnaa");
+        talentRegistrationRequest.setLastName("Dayok");
+        talentRegistrationRequest.setEmail("dayokr@gmail.com");
+        talentRegistrationRequest.setPassword("password");
+        talentRegistrationRequest.setPhoneNumber("07031005737");
+        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
+        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
+                + " An award winning star");
+        talentRegistrationRequest.setDisplayName("Jay Benjis");
+        PortfolioRequest portfolioRequest = new PortfolioRequest();
+        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
+        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+        RegistrationResponse registrationResponse = userService.registerUser(talentRegistrationRequest);
+
+        GetUserResponse getUserResponse = userService.getUserById(registrationResponse.getId());
+
+        assertThat(getUserResponse).isNotNull();
+    }
+
+    @Test
+    public void testGetUserThatIsAPlanner() throws UserNotFoundException {
+        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
+        plannerRegistrationRequest.setFirstName("Retnaa");
+        plannerRegistrationRequest.setLastName("Dayok");
+        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
+        plannerRegistrationRequest.setPassword("password");
+        plannerRegistrationRequest.setPhoneNumber("07031005737");
+        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+        RegistrationResponse registrationResponse = userService.registerUser(plannerRegistrationRequest);
+
+        GetUserResponse getUserResponse = userService.getUserById(registrationResponse.getId());
+
+        assertThat(getUserResponse).isNotNull();
     }
 
     @Test
