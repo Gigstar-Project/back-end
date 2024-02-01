@@ -3,9 +3,8 @@ package com.rdi.geegstar.services.geegstarimplementations;
 import com.rdi.geegstar.data.models.*;
 import com.rdi.geegstar.data.repositories.UserRepository;
 import com.rdi.geegstar.dto.requests.*;
-import com.rdi.geegstar.dto.response.GetAllTalentsResponse;
-import com.rdi.geegstar.dto.response.GetUserResponse;
-import com.rdi.geegstar.dto.response.RegistrationResponse;
+import com.rdi.geegstar.dto.response.*;
+import com.rdi.geegstar.enums.Role;
 import com.rdi.geegstar.exceptions.*;
 import com.rdi.geegstar.services.MailService;
 import com.rdi.geegstar.services.TokenService;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import static com.rdi.geegstar.enums.Role.PLANNER;
@@ -47,7 +47,6 @@ public class GeegStarUserService implements UserService {
         Planner planner = modelMapper.map(plannerRegistrationRequest, Planner.class);
         planner.setRole(PLANNER);
         Planner savedPlanner = userRepository.save(planner);
-        System.out.println(savedPlanner);
         return modelMapper.map(savedPlanner, RegistrationResponse.class);
     }
 
@@ -83,8 +82,27 @@ public class GeegStarUserService implements UserService {
 
     @Override
     public GetUserResponse getUserById(Long userId) throws UserNotFoundException {
-        User user = findUserById(userId);
-        return modelMapper.map(user, GetUserResponse.class);
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(!userOptional.isPresent())
+            throw new UserNotFoundException(String.format("The user with id %s is not found in our system", userId));
+        Role role = userOptional.get().getRole();
+        if (TALENT.equals(role)) {
+            return getTalentResponse(userOptional);
+        } else return getPlannerResponse(userOptional);
+    }
+
+    private GetUserResponse getPlannerResponse(Optional<User> userOptional) {
+        Planner planner = modelMapper.map(userOptional, Planner.class);
+        return modelMapper.map(planner, GetPlannerResponse.class);
+    }
+
+    private GetUserResponse getTalentResponse(Optional<User> userOptional) {
+        Talent talent = modelMapper.map(userOptional, Talent.class);
+        GetTalentResponse getTalentResponse = modelMapper.map(talent, GetTalentResponse.class);
+        Portfolio portfolio = talent.getPortfolio();
+        PortfolioResponse portfolioResponse = modelMapper.map(portfolio, PortfolioResponse.class);
+        getTalentResponse.setPortfolioResponse(portfolioResponse);
+        return getTalentResponse;
     }
 
     @Override
