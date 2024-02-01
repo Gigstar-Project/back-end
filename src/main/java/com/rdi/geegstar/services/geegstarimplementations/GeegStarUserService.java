@@ -35,12 +35,6 @@ public class GeegStarUserService implements UserService {
     private final TokenService tokenService;
     private final MailService mailService;
 
-    @Override
-    public RegistrationResponse registerUser(RegistrationRequest registerRequest) {
-        User user = modelMapper.map(registerRequest, User.class);
-        User savedUser = userRepository.save(user);
-        return modelMapper.map(savedUser, RegistrationResponse.class);
-    }
 
     @Override
     public RegistrationResponse registerUser(PlannerRegistrationRequest plannerRegistrationRequest) {

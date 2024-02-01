@@ -1,10 +1,12 @@
 package com.rdi.geegstar.services;
 
 import com.rdi.geegstar.dto.requests.*;
+import com.rdi.geegstar.dto.response.AcceptBookingResponse;
 import com.rdi.geegstar.dto.response.BookingResponse;
 import com.rdi.geegstar.dto.response.GetTalentCalendars;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
 import com.rdi.geegstar.enums.Role;
+import com.rdi.geegstar.enums.TalentCategory;
 import com.rdi.geegstar.exceptions.BookingNotFoundException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -31,18 +33,40 @@ public class CalenderServiceTest {
 
     @Test
     public void testGetTalentCalenders() throws UserNotFoundException, BookingNotFoundException {
-        RegistrationResponse talentRegistrationResponse = getRegistrationResponse(Role.TALENT);
-        RegistrationResponse plannerRegistrationResponse = getRegistrationResponse(PLANNER);
+        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
+        talentRegistrationRequest.setFirstName("Retnaa");
+        talentRegistrationRequest.setLastName("Dayok");
+        talentRegistrationRequest.setEmail("dayokr@gmail.com");
+        talentRegistrationRequest.setPassword("password");
+        talentRegistrationRequest.setPhoneNumber("07031005737");
+        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
+        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
+                + " An award winning star");
+        talentRegistrationRequest.setDisplayName("Jay Benjis");
+        PortfolioRequest portfolioRequest = new PortfolioRequest();
+        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
+        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+        RegistrationResponse talentRegistrationResponse = userService.registerUser(talentRegistrationRequest);
+
+        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
+        plannerRegistrationRequest.setFirstName("Retnaa");
+        plannerRegistrationRequest.setLastName("Dayok");
+        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
+        plannerRegistrationRequest.setPassword("password");
+        plannerRegistrationRequest.setPhoneNumber("07031005737");
+        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+        RegistrationResponse plannerRegistrationResponse = userService.registerUser(plannerRegistrationRequest);
+
         BookingRequest bookTalentRequest = new BookingRequest();
         EventDetailRequest eventDetailsRequest = getEventDetailRequest();
         bookTalentRequest.setTalentId(talentRegistrationResponse.getId());
         bookTalentRequest.setEventDetailRequest(eventDetailsRequest);
         bookTalentRequest.setPlannerId(plannerRegistrationResponse.getId());
-        BookingResponse firstBookingResponse = bookingService.bookTalent(bookTalentRequest);
-        bookingService.bookTalent(bookTalentRequest);
+        BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
+
         AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
-        acceptBookingRequest.setTalentId(talentRegistrationResponse.getId());
-        acceptBookingRequest.setBookingId(firstBookingResponse.getBookingId());
+        acceptBookingRequest.setBookingId(bookTalentResponse.getBookingId());
+        acceptBookingRequest.setTalentId(bookTalentRequest.getTalentId());
         bookingService.acceptBooking(acceptBookingRequest);
 
         Long talentId = talentRegistrationResponse.getId();
@@ -52,16 +76,6 @@ public class CalenderServiceTest {
         assertThat(getTalentCalenderResponse).isNotNull();
     }
 
-    private RegistrationResponse getRegistrationResponse(Role talent) {
-        RegistrationRequest registerRequest = new RegistrationRequest();
-        registerRequest.setFirstName("Retnaa");
-        registerRequest.setLastName("Dayok");
-        registerRequest.setEmail("dayokr@gmail.com");
-        registerRequest.setPhoneNumber("07031005737");
-        registerRequest.setPassword("password");
-        registerRequest.setRole(talent);
-        return userService.registerUser(registerRequest);
-    }
 
     private EventDetailRequest getEventDetailRequest() {
         EventDetailRequest eventDetailsRequest = new EventDetailRequest();
