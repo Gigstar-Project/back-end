@@ -1,20 +1,17 @@
 package com.rdi.geegstar.services.geegstarimplementations;
 
-import com.rdi.geegstar.data.models.Token;
-import com.rdi.geegstar.data.models.User;
+import com.rdi.geegstar.data.models.*;
+import com.rdi.geegstar.data.repositories.TalentRepository;
 import com.rdi.geegstar.data.repositories.UserRepository;
-import com.rdi.geegstar.dto.requests.EmailRequest;
-import com.rdi.geegstar.dto.requests.GetAllTalentsRequest;
-import com.rdi.geegstar.dto.requests.Recipient;
-import com.rdi.geegstar.dto.requests.RegistrationRequest;
-import com.rdi.geegstar.dto.response.GetAllTalentsResponse;
-import com.rdi.geegstar.dto.response.GetUserResponse;
-import com.rdi.geegstar.dto.response.RegistrationResponse;
+import com.rdi.geegstar.dto.requests.*;
+import com.rdi.geegstar.dto.response.*;
+import com.rdi.geegstar.enums.Role;
 import com.rdi.geegstar.exceptions.*;
 import com.rdi.geegstar.services.MailService;
 import com.rdi.geegstar.services.TokenService;
 import com.rdi.geegstar.services.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,24 +20,41 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
+import static com.rdi.geegstar.enums.Role.PLANNER;
 import static com.rdi.geegstar.enums.Role.TALENT;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class GeegStarUserService implements UserService {
 
     private final ModelMapper modelMapper;
+    private final TalentRepository talentRepository;
     private final UserRepository userRepository;
     private final TokenService tokenService;
     private final MailService mailService;
 
+
     @Override
-    public RegistrationResponse registerUser(RegistrationRequest registerRequest) {
-        User user = modelMapper.map(registerRequest, User.class);
-        User savedUser = userRepository.save(user);
-        return modelMapper.map(savedUser, RegistrationResponse.class);
+    public RegistrationResponse registerUser(PlannerRegistrationRequest plannerRegistrationRequest) {
+        Planner planner = modelMapper.map(plannerRegistrationRequest, Planner.class);
+        planner.setRole(PLANNER);
+        Planner savedPlanner = userRepository.save(planner);
+        return modelMapper.map(savedPlanner, RegistrationResponse.class);
+    }
+
+    @Override
+    public RegistrationResponse registerUser(TalentRegistrationRequest talentRegistrationRequest) {
+        Talent talent = modelMapper.map(talentRegistrationRequest, Talent.class);
+        PortfolioRequest portfolioRequest = talentRegistrationRequest.getPortfolioRequest();
+        Portfolio portfolio = modelMapper.map(portfolioRequest, Portfolio.class);
+        talent.setPortfolio(portfolio);
+        talent.setRole(TALENT);
+        Talent savedTalent = userRepository.save(talent);
+        return modelMapper.map(savedTalent, RegistrationResponse.class);
     }
 
     @Override
@@ -64,8 +78,27 @@ public class GeegStarUserService implements UserService {
 
     @Override
     public GetUserResponse getUserById(Long userId) throws UserNotFoundException {
-        User user = findUserById(userId);
-        return modelMapper.map(user, GetUserResponse.class);
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(!userOptional.isPresent())
+            throw new UserNotFoundException(String.format("The user with id %s is not found in our system", userId));
+        Role role = userOptional.get().getRole();
+        if (TALENT.equals(role)) {
+            return getTalentResponse(userOptional);
+        } else return getPlannerResponse(userOptional);
+    }
+
+    private GetUserResponse getPlannerResponse(Optional<User> userOptional) {
+        Planner planner = modelMapper.map(userOptional, Planner.class);
+        return modelMapper.map(planner, GetPlannerResponse.class);
+    }
+
+    private GetUserResponse getTalentResponse(Optional<User> userOptional) {
+        Talent talent = modelMapper.map(userOptional, Talent.class);
+        GetTalentResponse getTalentResponse = modelMapper.map(talent, GetTalentResponse.class);
+        Portfolio portfolio = talent.getPortfolio();
+        PortfolioResponse portfolioResponse = modelMapper.map(portfolio, PortfolioResponse.class);
+        getTalentResponse.setPortfolioResponse(portfolioResponse);
+        return getTalentResponse;
     }
 
     @Override
@@ -73,10 +106,10 @@ public class GeegStarUserService implements UserService {
         int pageNumber = getAllTalentRequest.getPageNumber() - 1;
         int pageSize = getAllTalentRequest.getPageSize();
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<User> talentPage = userRepository.findAllByRole(TALENT, pageable);
-        List<User> talents = talentPage.getContent();
+        Page<Talent> talentPage = talentRepository.findAll(pageable);
+        List<Talent> talents = talentPage.getContent();
         return talents.stream()
-                .map(user -> modelMapper.map(user, GetAllTalentsResponse.class))
+                .map(talent -> modelMapper.map(talent, GetAllTalentsResponse.class))
                 .toList();
     }
 
