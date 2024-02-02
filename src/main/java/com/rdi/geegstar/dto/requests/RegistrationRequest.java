@@ -35,5 +35,4 @@ public class RegistrationRequest {
 
     private String profilePicture;
 
-    private Role role;
 }

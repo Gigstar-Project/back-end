@@ -50,7 +50,10 @@ public class GeegStarUserService implements UserService {
     public RegistrationResponse registerUser(TalentRegistrationRequest talentRegistrationRequest) {
         Talent talent = modelMapper.map(talentRegistrationRequest, Talent.class);
         PortfolioRequest portfolioRequest = talentRegistrationRequest.getPortfolioRequest();
-        Portfolio portfolio = modelMapper.map(portfolioRequest, Portfolio.class);
+        Portfolio portfolio = null;
+        if (null != talentRegistrationRequest.getPortfolioRequest()) {
+            portfolio = modelMapper.map(portfolioRequest, Portfolio.class);
+        }
         talent.setPortfolio(portfolio);
         talent.setRole(TALENT);
         Talent savedTalent = userRepository.save(talent);
