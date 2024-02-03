@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Setter
 @Getter
+@ToString(callSuper = true)
 public class BookingResponseEventDetailResponse {
     private String eventName;
     private LocalDateTime eventDateAndTime;

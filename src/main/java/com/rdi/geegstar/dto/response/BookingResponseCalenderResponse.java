@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Setter
 @Getter
+@ToString(callSuper = true)
 public class BookingResponseCalenderResponse {
     private Long id;
     private Boolean isBooked;

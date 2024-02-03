@@ -20,5 +20,5 @@ public interface BookingService {
 
     Booking findBookingById(Long bookingId) throws BookingNotFoundException;
 
-    List<UserBookingResponse> getUserBookings(GetUserBookingsRequest getUserBookingsRequest) throws UserNotFoundException;
+    List<UserBookingResponse> getUserBookings(GetUserBookingsRequest getUserBookingsRequest);
 }

@@ -3,6 +3,9 @@ package com.rdi.geegstar.controllers;
 import com.rdi.geegstar.dto.requests.BookingBillPaymentRequest;
 import com.rdi.geegstar.dto.requests.BookingBillRequest;
 
+import com.rdi.geegstar.dto.response.BookingBillPaymentResponse;
+import com.rdi.geegstar.dto.response.BookingBillResponse;
+import com.rdi.geegstar.dto.response.GetBookingBillDetailsResponse;
 import com.rdi.geegstar.exceptions.BookingBillNotFoundException;
 import com.rdi.geegstar.exceptions.BookingNotAcceptedException;
 import com.rdi.geegstar.exceptions.BookingNotFoundException;
@@ -22,19 +25,19 @@ public class BookingBillController {
     private final BookingBillService bookingBillService;
 
     @PostMapping
-    public ResponseEntity<?> createBookingBill(@RequestBody BookingBillRequest bookingBillRequest)
+    public ResponseEntity<BookingBillResponse> createBookingBill(@RequestBody BookingBillRequest bookingBillRequest)
             throws UserNotFoundException, BookingNotAcceptedException, BookingNotFoundException {
         return ResponseEntity.status(CREATED).body(bookingBillService.createBookingBill(bookingBillRequest));
     }
 
     @GetMapping("{bookingId}")
-    public ResponseEntity<?> getBookingBillDetails(@PathVariable Long bookingId)
+    public ResponseEntity<GetBookingBillDetailsResponse> getBookingBillDetails(@PathVariable Long bookingId)
             throws BookingNotFoundException, BookingBillNotFoundException {
         return ResponseEntity.status(OK).body(bookingBillService.getBookingBillDetails(bookingId));
     }
 
     @PostMapping("/payment")
-    public ResponseEntity<?> payBookingBill(@RequestBody BookingBillPaymentRequest bookingBillPaymentRequest)
+    public ResponseEntity<BookingBillPaymentResponse> payBookingBill(@RequestBody BookingBillPaymentRequest bookingBillPaymentRequest)
             throws UserNotFoundException, BookingBillNotFoundException {
         return ResponseEntity.status(OK).body(bookingBillService.payBookingBill(bookingBillPaymentRequest));
     }

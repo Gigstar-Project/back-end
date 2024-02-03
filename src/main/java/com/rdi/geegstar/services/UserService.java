@@ -17,7 +17,7 @@ public interface UserService {
     RegistrationResponse registerUser(PlannerRegistrationRequest plannerRegistrationRequest);
     RegistrationResponse registerUser(TalentRegistrationRequest talentRegistrationRequest);
 
-    Object requestEmailConfirmationCode(String userEmail) throws InValidEmailException, EmailIsTakenException;
+    String requestEmailConfirmationCode(String userEmail) throws InValidEmailException, EmailIsTakenException;
 
     Boolean confirmEmail(String userEmail, String code) throws EmailConfirmationFailedException;
 

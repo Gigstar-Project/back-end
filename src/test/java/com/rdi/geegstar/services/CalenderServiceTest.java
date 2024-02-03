@@ -1,11 +1,9 @@
 package com.rdi.geegstar.services;
 
 import com.rdi.geegstar.dto.requests.*;
-import com.rdi.geegstar.dto.response.AcceptBookingResponse;
 import com.rdi.geegstar.dto.response.BookingResponse;
-import com.rdi.geegstar.dto.response.GetTalentCalendars;
+import com.rdi.geegstar.dto.response.GetTalentCalendarsResponse;
 import com.rdi.geegstar.dto.response.RegistrationResponse;
-import com.rdi.geegstar.enums.Role;
 import com.rdi.geegstar.enums.TalentCategory;
 import com.rdi.geegstar.exceptions.BookingNotFoundException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
@@ -17,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 import static com.rdi.geegstar.enums.EventType.BIRTHDAY_PARTY;
-import static com.rdi.geegstar.enums.Role.PLANNER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
@@ -72,7 +69,7 @@ public class CalenderServiceTest {
 
         // When
         Long talentId = talentRegistrationResponse.getId();
-        List<GetTalentCalendars> getTalentCalenderResponse = calenderService.getTalentCalendars(talentId);
+        List<GetTalentCalendarsResponse> getTalentCalenderResponse = calenderService.getTalentCalendars(talentId);
         log.info("Calender :: {}", getTalentCalenderResponse);
 
         // Assert

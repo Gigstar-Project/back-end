@@ -314,7 +314,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void testGetUserBookings()
+    public void testGetUserBookingsForTalent()
             throws UnsupportedEncodingException, JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
         TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
@@ -398,7 +398,7 @@ public class BookingControllerTest {
         }
 
         Long talentId = talantRegistrationResponse.getId();
-        int pageSize = 2;
+        int pageSize = 1;
         int pageNumber = 1;
         GetUserBookingsRequest getUserBookingsRequest = new GetUserBookingsRequest();
         getUserBookingsRequest.setUserRole(Role.TALENT);
@@ -413,7 +413,110 @@ public class BookingControllerTest {
                     )
                     .andExpect(status().is2xxSuccessful())
                     .andDo(print());
+        } catch (Exception exception) {
+            log.info("Error :: ", exception);
+        }
+    }
 
+    @Test
+    public void testGetUserBookingsForPlanner()
+            throws UnsupportedEncodingException, JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
+        talentRegistrationRequest.setFirstName("Retnaa");
+        talentRegistrationRequest.setLastName("Dayok");
+        talentRegistrationRequest.setEmail("dayokr@gmail.com");
+        talentRegistrationRequest.setPassword("password");
+        talentRegistrationRequest.setPhoneNumber("07031005737");
+        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
+        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
+                + " An award winning star");
+        talentRegistrationRequest.setDisplayName("Jay Benjis");
+        PortfolioRequest portfolioRequest = new PortfolioRequest();
+        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
+        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+
+        final String USER_URL = "/api/v1/user";
+        MvcResult talentRegistrationMvcResult = null;
+        try {
+            talentRegistrationMvcResult = mockMvc.perform(
+                            post(String.format("%s/registration/talent", USER_URL))
+                                    .content(mapper.writeValueAsString(talentRegistrationRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print())
+                    .andReturn();
+        } catch (Exception exception) {
+            log.info("Error :: ", exception);
+        }
+        assert talentRegistrationMvcResult != null;
+        String talentResponseAsString = talentRegistrationMvcResult.getResponse().getContentAsString();
+        RegistrationResponse talantRegistrationResponse =
+                mapper.readValue(talentResponseAsString, RegistrationResponse.class);
+
+        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
+        plannerRegistrationRequest.setFirstName("Retnaa");
+        plannerRegistrationRequest.setLastName("Dayok");
+        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
+        plannerRegistrationRequest.setPassword("password");
+        plannerRegistrationRequest.setPhoneNumber("07031005737");
+        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+
+        MvcResult plannerRegistrationMvcResult = null;
+        try {
+            plannerRegistrationMvcResult = mockMvc.perform(
+                            post(String.format("%s/registration/planner", USER_URL))
+                                    .content(mapper.writeValueAsString(plannerRegistrationRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print())
+                    .andReturn();
+        } catch (Exception exception) {
+            log.info("Error :: ", exception);
+        }
+        assert plannerRegistrationMvcResult != null;
+        String plannerResponseAsString = plannerRegistrationMvcResult.getResponse().getContentAsString();
+        RegistrationResponse plannerRegistrationResponse = mapper.readValue(plannerResponseAsString, RegistrationResponse.class);
+
+
+        final String BOOKING_URL = "/api/v1/booking";
+        BookingRequest bookingRequest = new BookingRequest();
+        EventDetailRequest eventDetailRequest = getEventDetailRequest();
+        bookingRequest.setEventDetailRequest(eventDetailRequest);
+        bookingRequest.setTalentId(talantRegistrationResponse.getId());
+        bookingRequest.setPlannerId(plannerRegistrationResponse.getId());
+
+        try {
+            mockMvc.perform(
+                            post(BOOKING_URL)
+                                    .content(mapper.writeValueAsString(bookingRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().isCreated())
+                    .andDo(print())
+                    .andReturn();
+        } catch (Exception exception) {
+            log.info("Error :: ", exception);
+        }
+
+        Long plannerId = plannerRegistrationResponse.getId();
+        int pageSize = 1;
+        int pageNumber = 1;
+        GetUserBookingsRequest getUserBookingsRequest = new GetUserBookingsRequest();
+        getUserBookingsRequest.setUserRole(Role.PLANNER);
+        getUserBookingsRequest.setUserId(plannerId);
+        getUserBookingsRequest.setPageSize(pageSize);
+        getUserBookingsRequest.setPageNumber(pageNumber);
+        try{
+            mockMvc.perform(
+                            MockMvcRequestBuilders.get(URL)
+                                    .content(mapper.writeValueAsString(getUserBookingsRequest))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print());
         } catch (Exception exception) {
             log.info("Error :: ", exception);
         }
@@ -423,7 +526,7 @@ public class BookingControllerTest {
         EventDetailRequest eventDetailsRequest = new EventDetailRequest();
         eventDetailsRequest.setEventName("Darda's birthday party");
         eventDetailsRequest.setEventType(BIRTHDAY_PARTY);
-        eventDetailsRequest.setEventDateAndTime("2023, 01, 04, 10, 30");
+        eventDetailsRequest.setEventDateAndTime("2030, 05, 08, 10, 30");
         AddressRequest addressRequest = getAddressRequest();
         eventDetailsRequest.setEventAddress(addressRequest);
         return eventDetailsRequest;
