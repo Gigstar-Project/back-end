@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @ToString
-public class GetTalentCalendars {
+public class GetTalentCalendarsResponse {
     private Long id;
     private Boolean isBooked;
     private LocalDateTime eventDateAndTime;

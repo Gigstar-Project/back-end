@@ -51,9 +51,8 @@ public class GeegStarUserService implements UserService {
         Talent talent = modelMapper.map(talentRegistrationRequest, Talent.class);
         PortfolioRequest portfolioRequest = talentRegistrationRequest.getPortfolioRequest();
         Portfolio portfolio = null;
-        if (null != talentRegistrationRequest.getPortfolioRequest()) {
-            portfolio = modelMapper.map(portfolioRequest, Portfolio.class);
-        }
+        boolean isPortfolioNotNull = null != talentRegistrationRequest.getPortfolioRequest();
+        if (isPortfolioNotNull) portfolio = modelMapper.map(portfolioRequest, Portfolio.class);
         talent.setPortfolio(portfolio);
         talent.setRole(TALENT);
         Talent savedTalent = userRepository.save(talent);
@@ -82,7 +81,7 @@ public class GeegStarUserService implements UserService {
     @Override
     public GetUserResponse getUserById(Long userId) throws UserNotFoundException {
         Optional<User> userOptional = userRepository.findById(userId);
-        if(!userOptional.isPresent())
+        if(userOptional.isEmpty())
             throw new UserNotFoundException(String.format("The user with id %s is not found in our system", userId));
         Role role = userOptional.get().getRole();
         if (TALENT.equals(role)) {

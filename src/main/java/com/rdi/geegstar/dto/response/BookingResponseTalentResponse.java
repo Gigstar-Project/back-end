@@ -9,12 +9,11 @@ import java.util.List;
 
 @Setter
 @Getter
-@ToString
+@ToString(callSuper = true)
 public class BookingResponseTalentResponse {
     private Long id;
     private String displayName;
     private String bio;
     private TalentCategory category;
     private String profilePicture;
-    private List<String> portfolio;
 }

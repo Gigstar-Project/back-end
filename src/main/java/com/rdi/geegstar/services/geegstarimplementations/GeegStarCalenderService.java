@@ -1,9 +1,8 @@
 package com.rdi.geegstar.services.geegstarimplementations;
 
 import com.rdi.geegstar.data.models.Calendar;
-import com.rdi.geegstar.data.models.User;
 import com.rdi.geegstar.data.repositories.CalendarRepository;
-import com.rdi.geegstar.dto.response.GetTalentCalendars;
+import com.rdi.geegstar.dto.response.GetTalentCalendarsResponse;
 
 import com.rdi.geegstar.exceptions.UserNotFoundException;
 import com.rdi.geegstar.services.CalendarService;
@@ -23,10 +22,10 @@ public class GeegStarCalenderService implements CalendarService {
     private final UserService userService;
 
     @Override
-    public List<GetTalentCalendars> getTalentCalendars(Long talentId) throws UserNotFoundException {
+    public List<GetTalentCalendarsResponse> getTalentCalendars(Long talentId) throws UserNotFoundException {
         List<Calendar> calendars = calendarRepository.findByTalentId(talentId);
         return calendars.stream()
-                .map(calender -> modelMapper.map(calender, GetTalentCalendars.class))
+                .map(calender -> modelMapper.map(calender, GetTalentCalendarsResponse.class))
                 .toList();
     }
 }

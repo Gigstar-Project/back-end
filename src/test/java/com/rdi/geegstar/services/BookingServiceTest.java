@@ -189,7 +189,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void testGetUserBookings() throws UserNotFoundException {
+    public void testGetUserBookingsForTalent() throws UserNotFoundException {
         TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
         talentRegistrationRequest.setFirstName("Retnaa");
         talentRegistrationRequest.setLastName("Dayok");
@@ -227,26 +227,98 @@ public class BookingServiceTest {
         bookTalentRequest2.setEventDetailRequest(eventDetailsRequest);
         bookTalentRequest2.setPlannerId(plannerRegistrationResponse.getId());
 
-        bookingService.bookTalent(bookTalentRequest);
-        bookingService.bookTalent(bookTalentRequest2);
+        for (int index = 0; index <= 2; index++) {
+            bookingService.bookTalent(bookTalentRequest);
+            bookingService.bookTalent(bookTalentRequest2);
+        }
 
         GetUserBookingsRequest getUserBookingsRequest = new GetUserBookingsRequest();
         int pageNumber = 1;
-        int numberOfBookingsToPage = 1;
+        int numberOfBookingsToPage = 2;
         getUserBookingsRequest.setUserId(talentRegistrationResponse2.getId());
         getUserBookingsRequest.setPageNumber(pageNumber);
         getUserBookingsRequest.setPageSize(numberOfBookingsToPage);
         getUserBookingsRequest.setUserRole(TALENT);
 
         List<UserBookingResponse> userBookingsResponse = bookingService.getUserBookings(getUserBookingsRequest);
+        System.out.println(userBookingsResponse);
         Assertions.assertThat(userBookingsResponse).hasSize(numberOfBookingsToPage);
+    }
+
+    @Test
+    public void testGetUserBookingsForPlanner() throws UserNotFoundException {
+        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
+        talentRegistrationRequest.setFirstName("Retnaa");
+        talentRegistrationRequest.setLastName("Dayok");
+        talentRegistrationRequest.setEmail("dayokr@gmail.com");
+        talentRegistrationRequest.setPassword("password");
+        talentRegistrationRequest.setPhoneNumber("07031005737");
+        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
+        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
+                + " An award winning star");
+        talentRegistrationRequest.setDisplayName("Jay Benjis");
+        PortfolioRequest portfolioRequest = new PortfolioRequest();
+        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
+        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+        RegistrationResponse talentRegistrationResponse = userService.registerUser(talentRegistrationRequest);
+
+        TalentRegistrationRequest talentRegistrationRequest2 = new TalentRegistrationRequest();
+        talentRegistrationRequest2.setFirstName("Emmanuel");
+        talentRegistrationRequest2.setLastName("Omale");
+        talentRegistrationRequest2.setEmail("othnielomale@gmail.com");
+        talentRegistrationRequest2.setPassword("password");
+        talentRegistrationRequest2.setPhoneNumber("08101112303");
+        talentRegistrationRequest2.setTalentCategory(TalentCategory.ARTISTE);
+        talentRegistrationRequest2.setBio("A singer of the hit song Oyi. An award winning star");
+        talentRegistrationRequest2.setDisplayName("Oyimehnn");
+        PortfolioRequest portfolioRequest2 = new PortfolioRequest();
+        portfolioRequest2.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
+        talentRegistrationRequest2.setPortfolioRequest(portfolioRequest2);
+        RegistrationResponse talentRegistrationResponse2 = userService.registerUser(talentRegistrationRequest2);
+
+        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
+        plannerRegistrationRequest.setFirstName("Retnaa");
+        plannerRegistrationRequest.setLastName("Dayok");
+        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
+        plannerRegistrationRequest.setPassword("password");
+        plannerRegistrationRequest.setPhoneNumber("07031005737");
+        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+        RegistrationResponse plannerRegistrationResponse = userService.registerUser(plannerRegistrationRequest);
+
+        EventDetailRequest eventDetailsRequest = getEventDetailRequest();
+        BookingRequest bookTalentRequest = new BookingRequest();
+        bookTalentRequest.setTalentId(talentRegistrationResponse.getId());
+        bookTalentRequest.setEventDetailRequest(eventDetailsRequest);
+        bookTalentRequest.setPlannerId(plannerRegistrationResponse.getId());
+
+        BookingRequest bookTalentRequest2 = new BookingRequest();
+        bookTalentRequest2.setTalentId(talentRegistrationResponse2.getId());
+        bookTalentRequest2.setEventDetailRequest(eventDetailsRequest);
+        bookTalentRequest2.setPlannerId(plannerRegistrationResponse.getId());
+
+        for (int index = 0; index <= 2; index++) {
+            bookingService.bookTalent(bookTalentRequest);
+            bookingService.bookTalent(bookTalentRequest2);
+        }
+
+        GetUserBookingsRequest getUserBookingsRequest = new GetUserBookingsRequest();
+        int pageNumber = 1;
+        int numberOfBookingsToPage = 2;
+        getUserBookingsRequest.setUserId(plannerRegistrationResponse.getId());
+        getUserBookingsRequest.setPageNumber(pageNumber);
+        getUserBookingsRequest.setPageSize(numberOfBookingsToPage);
+        getUserBookingsRequest.setUserRole(PLANNER);
+
+        List<UserBookingResponse> userBookingsResponse = bookingService.getUserBookings(getUserBookingsRequest);
+        System.out.println(userBookingsResponse);
+        Assertions.assertThat(userBookingsResponse).isNotNull();
     }
 
     private EventDetailRequest getEventDetailRequest() {
         EventDetailRequest eventDetailsRequest = new EventDetailRequest();
         eventDetailsRequest.setEventName("Darda's birthday party");
         eventDetailsRequest.setEventType(BIRTHDAY_PARTY);
-        eventDetailsRequest.setEventDateAndTime("2023, 12, 04, 10, 30");
+        eventDetailsRequest.setEventDateAndTime("2024, 12, 04, 10, 30");
         AddressRequest addressRequest = getAddressRequest();
         eventDetailsRequest.setEventAddress(addressRequest);
         return eventDetailsRequest;
