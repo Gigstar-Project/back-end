@@ -29,6 +29,42 @@ public class PaymentServiceTest {
     @Sql("/db/insertUsers.sql")
     public void testPayment() throws UserNotFoundException {
         // Given
+        TalentRegistrationRequest talentRegistrationRequest = getTalentRegistrationRequest();
+        PortfolioRequest portfolioRequest = new PortfolioRequest();
+        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
+        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+        RegistrationResponse talentRegistrationResponse = userService.registerUser(talentRegistrationRequest);
+        PlannerRegistrationRequest plannerRegistrationRequest = getPlannerRegistrationRequest();
+        RegistrationResponse plannerRegistrationResponse = userService.registerUser(plannerRegistrationRequest);
+        PaymentRequest paymentRequest = getPaymentRequest(plannerRegistrationResponse, talentRegistrationResponse);
+
+        // When
+        Payment payment = paymentService.pay(paymentRequest);
+
+        // Assert
+        assertThat(payment).isNotNull();
+    }
+
+    private static PaymentRequest getPaymentRequest(RegistrationResponse plannerRegistrationResponse, RegistrationResponse talentRegistrationResponse) {
+        PaymentRequest paymentRequest = new PaymentRequest();
+        paymentRequest.setSender(plannerRegistrationResponse.getId());
+        paymentRequest.setReceiver(talentRegistrationResponse.getId());
+        paymentRequest.setAmount(BigDecimal.valueOf(200_000));
+        return paymentRequest;
+    }
+
+    private static PlannerRegistrationRequest getPlannerRegistrationRequest() {
+        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
+        plannerRegistrationRequest.setFirstName("Retnaa");
+        plannerRegistrationRequest.setLastName("Dayok");
+        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
+        plannerRegistrationRequest.setPassword("password");
+        plannerRegistrationRequest.setPhoneNumber("07031005737");
+        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+        return plannerRegistrationRequest;
+    }
+
+    private static TalentRegistrationRequest getTalentRegistrationRequest() {
         TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
         talentRegistrationRequest.setFirstName("Retnaa");
         talentRegistrationRequest.setLastName("Dayok");
@@ -39,27 +75,6 @@ public class PaymentServiceTest {
         talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
                 + " An award winning star");
         talentRegistrationRequest.setDisplayName("Jay Benjis");
-        PortfolioRequest portfolioRequest = new PortfolioRequest();
-        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
-        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
-        RegistrationResponse talentRegistrationResponse = userService.registerUser(talentRegistrationRequest);
-        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
-        plannerRegistrationRequest.setFirstName("Retnaa");
-        plannerRegistrationRequest.setLastName("Dayok");
-        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
-        plannerRegistrationRequest.setPassword("password");
-        plannerRegistrationRequest.setPhoneNumber("07031005737");
-        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
-        RegistrationResponse plannerRegistrationResponse = userService.registerUser(plannerRegistrationRequest);
-        PaymentRequest paymentRequest = new PaymentRequest();
-        paymentRequest.setSender(plannerRegistrationResponse.getId());
-        paymentRequest.setReceiver(talentRegistrationResponse.getId());
-        paymentRequest.setAmount(BigDecimal.valueOf(200_000));
-
-        // When
-        Payment payment = paymentService.pay(paymentRequest);
-
-        // Assert
-        assertThat(payment).isNotNull();
+        return talentRegistrationRequest;
     }
 }
