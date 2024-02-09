@@ -1,6 +1,8 @@
 package com.rdi.geegstar.dto.requests;
 
 import com.rdi.geegstar.enums.TalentCategory;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -16,7 +18,6 @@ public class TalentRegistrationRequest extends RegistrationRequest {
 
     @NotBlank(message = "A talent needs a bio to briefly give their background")
     private String bio;
-
     private TalentCategory talentCategory;
     private PortfolioRequest portfolioRequest;
 

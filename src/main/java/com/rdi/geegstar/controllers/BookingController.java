@@ -8,7 +8,6 @@ import com.rdi.geegstar.dto.response.BookingResponse;
 import com.rdi.geegstar.dto.response.DeclineBookingResponse;
 import com.rdi.geegstar.dto.response.UserBookingResponse;
 import com.rdi.geegstar.exceptions.BookingNotFoundException;
-import com.rdi.geegstar.exceptions.GeegStarException;
 import com.rdi.geegstar.exceptions.UserNotFoundException;
 import com.rdi.geegstar.services.BookingService;
 import jakarta.validation.Valid;
@@ -29,7 +28,7 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    public ResponseEntity<BookingResponse> bookTalent(@RequestBody @Valid BookingRequest bookingRequest)
+    public ResponseEntity<BookingResponse> bookTalent(@RequestBody BookingRequest bookingRequest)
             throws UserNotFoundException {
         return ResponseEntity.status(CREATED).body(bookingService.bookTalent(bookingRequest));
     }

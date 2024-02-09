@@ -27,35 +27,13 @@ public class BookingBillServiceTest {
     @Test
     public void testCreateBookingBill()
             throws UserNotFoundException, BookingNotFoundException, BookingNotAcceptedException {
-        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
-        talentRegistrationRequest.setFirstName("Retnaa");
-        talentRegistrationRequest.setLastName("Dayok");
-        talentRegistrationRequest.setEmail("dayokr@gmail.com");
-        talentRegistrationRequest.setPassword("password");
-        talentRegistrationRequest.setPhoneNumber("07031005737");
-        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
-        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
-                + " An award winning star");
-        talentRegistrationRequest.setDisplayName("Jay Benjis");
-        PortfolioRequest portfolioRequest = new PortfolioRequest();
-        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
-        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+        TalentRegistrationRequest talentRegistrationRequest = getTalentRegistrationRequest();
         RegistrationResponse talentRegistrationResponse = userService.registerUser(talentRegistrationRequest);
 
-        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
-        plannerRegistrationRequest.setFirstName("Retnaa");
-        plannerRegistrationRequest.setLastName("Dayok");
-        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
-        plannerRegistrationRequest.setPassword("password");
-        plannerRegistrationRequest.setPhoneNumber("07031005737");
-        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+        PlannerRegistrationRequest plannerRegistrationRequest = getPlannerRegistrationRequest();
         RegistrationResponse plannerRegistrationResponse = userService.registerUser(plannerRegistrationRequest);
 
-        BookingRequest bookTalentRequest = new BookingRequest();
-        EventDetailRequest eventDetailsRequest = getEventDetailRequest();
-        bookTalentRequest.setTalentId(talentRegistrationResponse.getId());
-        bookTalentRequest.setEventDetailRequest(eventDetailsRequest);
-        bookTalentRequest.setPlannerId(plannerRegistrationResponse.getId());
+        BookingRequest bookTalentRequest = getBookingRequest(talentRegistrationResponse, plannerRegistrationResponse);
         BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
 
         AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
@@ -63,13 +41,7 @@ public class BookingBillServiceTest {
         acceptBookingRequest.setTalentId(bookTalentRequest.getTalentId());
         bookingService.acceptBooking(acceptBookingRequest);
 
-        BookingBillRequest bookingBillRequest = new BookingBillRequest();
-        BigDecimal bookingCost = BigDecimal.valueOf(2000000);
-        bookingBillRequest.setBookingCost(bookingCost);
-        bookingBillRequest.setBookingId(bookTalentResponse.getBookingId());
-        bookingBillRequest.setText("The cost covers for all expenses");
-        bookingBillRequest.setPlannerId(talentRegistrationResponse.getId());
-        bookingBillRequest.setTalentId(plannerRegistrationResponse.getId());
+        BookingBillRequest bookingBillRequest = getBookingBillRequest(bookTalentResponse, talentRegistrationResponse, plannerRegistrationResponse);
 
         BookingBillResponse bookingBillResponse = bookingBillService.createBookingBill(bookingBillRequest);
         assertThat(bookingBillResponse).isNotNull();
@@ -78,35 +50,13 @@ public class BookingBillServiceTest {
     @Test
     public void testGetBookingBillDetails()
             throws UserNotFoundException, BookingNotFoundException, BookingBillNotFoundException, BookingNotAcceptedException {
-        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
-        talentRegistrationRequest.setFirstName("Retnaa");
-        talentRegistrationRequest.setLastName("Dayok");
-        talentRegistrationRequest.setEmail("dayokr@gmail.com");
-        talentRegistrationRequest.setPassword("password");
-        talentRegistrationRequest.setPhoneNumber("07031005737");
-        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
-        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
-                + " An award winning star");
-        talentRegistrationRequest.setDisplayName("Jay Benjis");
-        PortfolioRequest portfolioRequest = new PortfolioRequest();
-        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
-        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+        TalentRegistrationRequest talentRegistrationRequest = getTalentRegistrationRequest();
         RegistrationResponse talentRegistrationResponse = userService.registerUser(talentRegistrationRequest);
 
-        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
-        plannerRegistrationRequest.setFirstName("Retnaa");
-        plannerRegistrationRequest.setLastName("Dayok");
-        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
-        plannerRegistrationRequest.setPassword("password");
-        plannerRegistrationRequest.setPhoneNumber("07031005737");
-        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+        PlannerRegistrationRequest plannerRegistrationRequest = getPlannerRegistrationRequest();
         RegistrationResponse plannerRegistrationResponse = userService.registerUser(plannerRegistrationRequest);
 
-        BookingRequest bookTalentRequest = new BookingRequest();
-        EventDetailRequest eventDetailsRequest = getEventDetailRequest();
-        bookTalentRequest.setTalentId(talentRegistrationResponse.getId());
-        bookTalentRequest.setEventDetailRequest(eventDetailsRequest);
-        bookTalentRequest.setPlannerId(plannerRegistrationResponse.getId());
+        BookingRequest bookTalentRequest = getBookingRequest(talentRegistrationResponse, plannerRegistrationResponse);
         BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
 
         AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
@@ -114,13 +64,7 @@ public class BookingBillServiceTest {
         acceptBookingRequest.setTalentId(bookTalentRequest.getTalentId());
         bookingService.acceptBooking(acceptBookingRequest);
 
-        BookingBillRequest bookingBillRequest = new BookingBillRequest();
-        BigDecimal bookingCost = BigDecimal.valueOf(2000000);
-        bookingBillRequest.setBookingCost(bookingCost);
-        bookingBillRequest.setBookingId(bookTalentResponse.getBookingId());
-        bookingBillRequest.setText("The cost covers for all expenses");
-        bookingBillRequest.setPlannerId(talentRegistrationResponse.getId());
-        bookingBillRequest.setTalentId(plannerRegistrationResponse.getId());
+        BookingBillRequest bookingBillRequest = getBookingBillRequest(bookTalentResponse, talentRegistrationResponse, plannerRegistrationResponse);
         bookingBillService.createBookingBill(bookingBillRequest);
 
         GetBookingBillDetailsResponse getBookingBillDetailsResponse =
@@ -129,10 +73,38 @@ public class BookingBillServiceTest {
         assertThat(getBookingBillDetailsResponse).isNotNull();
     }
 
-    @Test
-    public void testPayBookingBill()
-            throws UserNotFoundException,
-            BookingNotFoundException, BookingBillNotFoundException, BookingNotAcceptedException {
+    private static BookingBillRequest getBookingBillRequest(BookingResponse bookTalentResponse, RegistrationResponse talentRegistrationResponse, RegistrationResponse plannerRegistrationResponse) {
+        BookingBillRequest bookingBillRequest = new BookingBillRequest();
+        BigDecimal bookingCost = BigDecimal.valueOf(2000000);
+        bookingBillRequest.setBookingCost(bookingCost);
+        bookingBillRequest.setBookingId(bookTalentResponse.getBookingId());
+        bookingBillRequest.setText("The cost covers for all expenses");
+        bookingBillRequest.setPlannerId(talentRegistrationResponse.getId());
+        bookingBillRequest.setTalentId(plannerRegistrationResponse.getId());
+        return bookingBillRequest;
+    }
+
+    private static BookingRequest getBookingRequest(RegistrationResponse talentRegistrationResponse, RegistrationResponse plannerRegistrationResponse) {
+        BookingRequest bookTalentRequest = new BookingRequest();
+        EventDetailRequest eventDetailsRequest = getEventDetailRequest();
+        bookTalentRequest.setTalentId(talentRegistrationResponse.getId());
+        bookTalentRequest.setEventDetailRequest(eventDetailsRequest);
+        bookTalentRequest.setPlannerId(plannerRegistrationResponse.getId());
+        return bookTalentRequest;
+    }
+
+    private static PlannerRegistrationRequest getPlannerRegistrationRequest() {
+        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
+        plannerRegistrationRequest.setFirstName("Retnaa");
+        plannerRegistrationRequest.setLastName("Dayok");
+        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
+        plannerRegistrationRequest.setPassword("password");
+        plannerRegistrationRequest.setPhoneNumber("07031005737");
+        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+        return plannerRegistrationRequest;
+    }
+
+    private static TalentRegistrationRequest getTalentRegistrationRequest() {
         TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
         talentRegistrationRequest.setFirstName("Retnaa");
         talentRegistrationRequest.setLastName("Dayok");
@@ -146,22 +118,20 @@ public class BookingBillServiceTest {
         PortfolioRequest portfolioRequest = new PortfolioRequest();
         portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
         talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+        return talentRegistrationRequest;
+    }
+
+    @Test
+    public void testPayBookingBill()
+            throws UserNotFoundException,
+            BookingNotFoundException, BookingBillNotFoundException, BookingNotAcceptedException {
+        TalentRegistrationRequest talentRegistrationRequest = getTalentRegistrationRequest();
         RegistrationResponse talentRegistrationResponse = userService.registerUser(talentRegistrationRequest);
 
-        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
-        plannerRegistrationRequest.setFirstName("Retnaa");
-        plannerRegistrationRequest.setLastName("Dayok");
-        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
-        plannerRegistrationRequest.setPassword("password");
-        plannerRegistrationRequest.setPhoneNumber("07031005737");
-        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+        PlannerRegistrationRequest plannerRegistrationRequest = getPlannerRegistrationRequest();
         RegistrationResponse plannerRegistrationResponse = userService.registerUser(plannerRegistrationRequest);
 
-        BookingRequest bookTalentRequest = new BookingRequest();
-        EventDetailRequest eventDetailsRequest = getEventDetailRequest();
-        bookTalentRequest.setTalentId(talentRegistrationResponse.getId());
-        bookTalentRequest.setEventDetailRequest(eventDetailsRequest);
-        bookTalentRequest.setPlannerId(plannerRegistrationResponse.getId());
+        BookingRequest bookTalentRequest = getBookingRequest(talentRegistrationResponse, plannerRegistrationResponse);
         BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
 
         AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
@@ -169,13 +139,7 @@ public class BookingBillServiceTest {
         acceptBookingRequest.setTalentId(bookTalentRequest.getTalentId());
         bookingService.acceptBooking(acceptBookingRequest);
 
-        BookingBillRequest bookingBillRequest = new BookingBillRequest();
-        BigDecimal bookingCost = BigDecimal.valueOf(2000000);
-        bookingBillRequest.setBookingCost(bookingCost);
-        bookingBillRequest.setBookingId(bookTalentResponse.getBookingId());
-        bookingBillRequest.setText("The cost covers for all expenses");
-        bookingBillRequest.setPlannerId(talentRegistrationResponse.getId());
-        bookingBillRequest.setTalentId(plannerRegistrationResponse.getId());
+        BookingBillRequest bookingBillRequest = getBookingBillRequest(bookTalentResponse, talentRegistrationResponse, plannerRegistrationResponse);
         BookingBillResponse bookingBillResponse = bookingBillService.createBookingBill(bookingBillRequest);
 
         BookingBillPaymentRequest bookingBillPaymentRequest = new BookingBillPaymentRequest();

@@ -31,43 +31,40 @@ public class BookingServiceTest {
 
     @Test
     public void testBookTalent() throws UserNotFoundException{
-        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
-        talentRegistrationRequest.setFirstName("Retnaa");
-        talentRegistrationRequest.setLastName("Dayok");
-        talentRegistrationRequest.setEmail("dayokr@gmail.com");
-        talentRegistrationRequest.setPassword("password");
-        talentRegistrationRequest.setPhoneNumber("07031005737");
-        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
-        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
-                + " An award winning star");
-        talentRegistrationRequest.setDisplayName("Jay Benjis");
-        PortfolioRequest portfolioRequest = new PortfolioRequest();
-        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
-        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+        TalentRegistrationRequest talentRegistrationRequest = getTalentRegistrationRequest();
         RegistrationResponse talentRegistrationResponse = userService.registerUser(talentRegistrationRequest);
 
-        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
-        plannerRegistrationRequest.setFirstName("Retnaa");
-        plannerRegistrationRequest.setLastName("Dayok");
-        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
-        plannerRegistrationRequest.setPassword("password");
-        plannerRegistrationRequest.setPhoneNumber("07031005737");
-        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+        PlannerRegistrationRequest plannerRegistrationRequest = getPlannerRegistrationRequest();
         RegistrationResponse plannerRegistrationResponse = userService.registerUser(plannerRegistrationRequest);
 
-        BookingRequest bookTalentRequest = new BookingRequest();
-        EventDetailRequest eventDetailsRequest = getEventDetailRequest();
-        bookTalentRequest.setTalentId(talentRegistrationResponse.getId());
-        bookTalentRequest.setEventDetailRequest(eventDetailsRequest);
-        bookTalentRequest.setPlannerId(plannerRegistrationResponse.getId());
+        BookingRequest bookTalentRequest = getBookingRequest(talentRegistrationResponse, plannerRegistrationResponse);
 
         BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
 
         assertThat(bookTalentResponse).isNotNull();
     }
 
-    @Test
-    public void testAcceptBooking() throws UserNotFoundException, BookingNotFoundException{
+    private BookingRequest getBookingRequest(RegistrationResponse talentRegistrationResponse, RegistrationResponse plannerRegistrationResponse) {
+        BookingRequest bookTalentRequest = new BookingRequest();
+        EventDetailRequest eventDetailsRequest = getEventDetailRequest();
+        bookTalentRequest.setTalentId(talentRegistrationResponse.getId());
+        bookTalentRequest.setEventDetailRequest(eventDetailsRequest);
+        bookTalentRequest.setPlannerId(plannerRegistrationResponse.getId());
+        return bookTalentRequest;
+    }
+
+    private static PlannerRegistrationRequest getPlannerRegistrationRequest() {
+        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
+        plannerRegistrationRequest.setFirstName("Retnaa");
+        plannerRegistrationRequest.setLastName("Dayok");
+        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
+        plannerRegistrationRequest.setPassword("password");
+        plannerRegistrationRequest.setPhoneNumber("07031005737");
+        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+        return plannerRegistrationRequest;
+    }
+
+    private static TalentRegistrationRequest getTalentRegistrationRequest() {
         TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
         talentRegistrationRequest.setFirstName("Retnaa");
         talentRegistrationRequest.setLastName("Dayok");
@@ -81,22 +78,18 @@ public class BookingServiceTest {
         PortfolioRequest portfolioRequest = new PortfolioRequest();
         portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
         talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+        return talentRegistrationRequest;
+    }
+
+    @Test
+    public void testAcceptBooking() throws UserNotFoundException, BookingNotFoundException{
+        TalentRegistrationRequest talentRegistrationRequest = getTalentRegistrationRequest();
         RegistrationResponse talentRegistrationResponse = userService.registerUser(talentRegistrationRequest);
 
-        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
-        plannerRegistrationRequest.setFirstName("Retnaa");
-        plannerRegistrationRequest.setLastName("Dayok");
-        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
-        plannerRegistrationRequest.setPassword("password");
-        plannerRegistrationRequest.setPhoneNumber("07031005737");
-        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+        PlannerRegistrationRequest plannerRegistrationRequest = getPlannerRegistrationRequest();
         RegistrationResponse plannerRegistrationResponse = userService.registerUser(plannerRegistrationRequest);
 
-        BookingRequest bookTalentRequest = new BookingRequest();
-        EventDetailRequest eventDetailsRequest = getEventDetailRequest();
-        bookTalentRequest.setTalentId(talentRegistrationResponse.getId());
-        bookTalentRequest.setEventDetailRequest(eventDetailsRequest);
-        bookTalentRequest.setPlannerId(plannerRegistrationResponse.getId());
+        BookingRequest bookTalentRequest = getBookingRequest(talentRegistrationResponse, plannerRegistrationResponse);
 
         BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
 
@@ -112,35 +105,13 @@ public class BookingServiceTest {
 
     @Test
     public void testDeclineBooking() throws UserNotFoundException, BookingNotFoundException{
-        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
-        talentRegistrationRequest.setFirstName("Retnaa");
-        talentRegistrationRequest.setLastName("Dayok");
-        talentRegistrationRequest.setEmail("dayokr@gmail.com");
-        talentRegistrationRequest.setPassword("password");
-        talentRegistrationRequest.setPhoneNumber("07031005737");
-        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
-        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
-                + " An award winning star");
-        talentRegistrationRequest.setDisplayName("Jay Benjis");
-        PortfolioRequest portfolioRequest = new PortfolioRequest();
-        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
-        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+        TalentRegistrationRequest talentRegistrationRequest = getTalentRegistrationRequest();
         RegistrationResponse talentRegistrationResponse = userService.registerUser(talentRegistrationRequest);
 
-        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
-        plannerRegistrationRequest.setFirstName("Retnaa");
-        plannerRegistrationRequest.setLastName("Dayok");
-        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
-        plannerRegistrationRequest.setPassword("password");
-        plannerRegistrationRequest.setPhoneNumber("07031005737");
-        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+        PlannerRegistrationRequest plannerRegistrationRequest = getPlannerRegistrationRequest();
         RegistrationResponse plannerRegistrationResponse = userService.registerUser(plannerRegistrationRequest);
 
-        BookingRequest bookTalentRequest = new BookingRequest();
-        EventDetailRequest eventDetailsRequest = getEventDetailRequest();
-        bookTalentRequest.setTalentId(talentRegistrationResponse.getId());
-        bookTalentRequest.setEventDetailRequest(eventDetailsRequest);
-        bookTalentRequest.setPlannerId(plannerRegistrationResponse.getId());
+        BookingRequest bookTalentRequest = getBookingRequest(talentRegistrationResponse, plannerRegistrationResponse);
 
         BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
 
@@ -151,35 +122,13 @@ public class BookingServiceTest {
 
     @Test
     public void testFindBookingById() throws UserNotFoundException, BookingNotFoundException {
-        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
-        talentRegistrationRequest.setFirstName("Retnaa");
-        talentRegistrationRequest.setLastName("Dayok");
-        talentRegistrationRequest.setEmail("dayokr@gmail.com");
-        talentRegistrationRequest.setPassword("password");
-        talentRegistrationRequest.setPhoneNumber("07031005737");
-        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
-        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
-                + " An award winning star");
-        talentRegistrationRequest.setDisplayName("Jay Benjis");
-        PortfolioRequest portfolioRequest = new PortfolioRequest();
-        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
-        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+        TalentRegistrationRequest talentRegistrationRequest = getTalentRegistrationRequest();
         RegistrationResponse talentRegistrationResponse = userService.registerUser(talentRegistrationRequest);
 
-        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
-        plannerRegistrationRequest.setFirstName("Retnaa");
-        plannerRegistrationRequest.setLastName("Dayok");
-        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
-        plannerRegistrationRequest.setPassword("password");
-        plannerRegistrationRequest.setPhoneNumber("07031005737");
-        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+        PlannerRegistrationRequest plannerRegistrationRequest = getPlannerRegistrationRequest();
         RegistrationResponse plannerRegistrationResponse = userService.registerUser(plannerRegistrationRequest);
 
-        BookingRequest bookTalentRequest = new BookingRequest();
-        EventDetailRequest eventDetailsRequest = getEventDetailRequest();
-        bookTalentRequest.setTalentId(talentRegistrationResponse.getId());
-        bookTalentRequest.setEventDetailRequest(eventDetailsRequest);
-        bookTalentRequest.setPlannerId(plannerRegistrationResponse.getId());
+        BookingRequest bookTalentRequest = getBookingRequest(talentRegistrationResponse, plannerRegistrationResponse);
 
         BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
 
@@ -190,29 +139,11 @@ public class BookingServiceTest {
 
     @Test
     public void testGetUserBookingsForTalent() throws UserNotFoundException {
-        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
-        talentRegistrationRequest.setFirstName("Retnaa");
-        talentRegistrationRequest.setLastName("Dayok");
-        talentRegistrationRequest.setEmail("dayokr@gmail.com");
-        talentRegistrationRequest.setPassword("password");
-        talentRegistrationRequest.setPhoneNumber("07031005737");
-        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
-        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
-                + " An award winning star");
-        talentRegistrationRequest.setDisplayName("Jay Benjis");
-        PortfolioRequest portfolioRequest = new PortfolioRequest();
-        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
-        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+        TalentRegistrationRequest talentRegistrationRequest = getTalentRegistrationRequest();
         RegistrationResponse talentRegistrationResponse = userService.registerUser(talentRegistrationRequest);
         RegistrationResponse talentRegistrationResponse2 = userService.registerUser(talentRegistrationRequest);
 
-        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
-        plannerRegistrationRequest.setFirstName("Retnaa");
-        plannerRegistrationRequest.setLastName("Dayok");
-        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
-        plannerRegistrationRequest.setPassword("password");
-        plannerRegistrationRequest.setPhoneNumber("07031005737");
-        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+        PlannerRegistrationRequest plannerRegistrationRequest = getPlannerRegistrationRequest();
         RegistrationResponse plannerRegistrationResponse = userService.registerUser(plannerRegistrationRequest);
 
 
@@ -247,19 +178,7 @@ public class BookingServiceTest {
 
     @Test
     public void testGetUserBookingsForPlanner() throws UserNotFoundException {
-        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
-        talentRegistrationRequest.setFirstName("Retnaa");
-        talentRegistrationRequest.setLastName("Dayok");
-        talentRegistrationRequest.setEmail("dayokr@gmail.com");
-        talentRegistrationRequest.setPassword("password");
-        talentRegistrationRequest.setPhoneNumber("07031005737");
-        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
-        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
-                + " An award winning star");
-        talentRegistrationRequest.setDisplayName("Jay Benjis");
-        PortfolioRequest portfolioRequest = new PortfolioRequest();
-        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
-        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+        TalentRegistrationRequest talentRegistrationRequest = getTalentRegistrationRequest();
         RegistrationResponse talentRegistrationResponse = userService.registerUser(talentRegistrationRequest);
 
         TalentRegistrationRequest talentRegistrationRequest2 = new TalentRegistrationRequest();
@@ -276,13 +195,7 @@ public class BookingServiceTest {
         talentRegistrationRequest2.setPortfolioRequest(portfolioRequest2);
         RegistrationResponse talentRegistrationResponse2 = userService.registerUser(talentRegistrationRequest2);
 
-        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
-        plannerRegistrationRequest.setFirstName("Retnaa");
-        plannerRegistrationRequest.setLastName("Dayok");
-        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
-        plannerRegistrationRequest.setPassword("password");
-        plannerRegistrationRequest.setPhoneNumber("07031005737");
-        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+        PlannerRegistrationRequest plannerRegistrationRequest = getPlannerRegistrationRequest();
         RegistrationResponse plannerRegistrationResponse = userService.registerUser(plannerRegistrationRequest);
 
         EventDetailRequest eventDetailsRequest = getEventDetailRequest();

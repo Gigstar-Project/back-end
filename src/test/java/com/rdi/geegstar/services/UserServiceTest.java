@@ -31,16 +31,7 @@ public class UserServiceTest {
     @Test
     public void testTalentRegistration() {
         // Given
-        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
-        talentRegistrationRequest.setFirstName("Retnaa");
-        talentRegistrationRequest.setLastName("Dayok");
-        talentRegistrationRequest.setEmail("dayokr@gmail.com");
-        talentRegistrationRequest.setPassword("password");
-        talentRegistrationRequest.setPhoneNumber("07031005737");
-        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
-        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
-                + " An award winning star");
-        talentRegistrationRequest.setDisplayName("Jay Benjis");
+        TalentRegistrationRequest talentRegistrationRequest = getTalentRegistrationRequest();
         PortfolioRequest portfolioRequest = new PortfolioRequest();
         portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
         talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
@@ -52,16 +43,24 @@ public class UserServiceTest {
         assertThat(registrationResponse).isNotNull();
     }
 
+    private static TalentRegistrationRequest getTalentRegistrationRequest() {
+        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
+        talentRegistrationRequest.setFirstName("Retnaa");
+        talentRegistrationRequest.setLastName("Dayok");
+        talentRegistrationRequest.setEmail("dayokr@gmail.com");
+        talentRegistrationRequest.setPassword("password");
+        talentRegistrationRequest.setPhoneNumber("07031005737");
+        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
+        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
+                + " An award winning star");
+        talentRegistrationRequest.setDisplayName("Jay Benjis");
+        return talentRegistrationRequest;
+    }
+
     @Test
     public void testPlannerRegistration() {
         // Given
-        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
-        plannerRegistrationRequest.setFirstName("Retnaa");
-        plannerRegistrationRequest.setLastName("Dayok");
-        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
-        plannerRegistrationRequest.setPassword("password");
-        plannerRegistrationRequest.setPhoneNumber("07031005737");
-        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+        PlannerRegistrationRequest plannerRegistrationRequest = getPlannerRegistrationRequest();
 
         // When
         RegistrationResponse registrationResponse = userService.registerUser(plannerRegistrationRequest);
@@ -98,16 +97,7 @@ public class UserServiceTest {
     @Test
     public void testGetUserThatIsATalent() throws UserNotFoundException {
         // Given
-        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
-        talentRegistrationRequest.setFirstName("Retnaa");
-        talentRegistrationRequest.setLastName("Dayok");
-        talentRegistrationRequest.setEmail("dayokr@gmail.com");
-        talentRegistrationRequest.setPassword("password");
-        talentRegistrationRequest.setPhoneNumber("07031005737");
-        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
-        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
-                + " An award winning star");
-        talentRegistrationRequest.setDisplayName("Jay Benjis");
+        TalentRegistrationRequest talentRegistrationRequest = getTalentRegistrationRequest();
         PortfolioRequest portfolioRequest = new PortfolioRequest();
         portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
         talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
@@ -123,13 +113,7 @@ public class UserServiceTest {
     @Test
     public void testGetUserThatIsAPlanner() throws UserNotFoundException {
         // Given
-        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
-        plannerRegistrationRequest.setFirstName("Retnaa");
-        plannerRegistrationRequest.setLastName("Dayok");
-        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
-        plannerRegistrationRequest.setPassword("password");
-        plannerRegistrationRequest.setPhoneNumber("07031005737");
-        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+        PlannerRegistrationRequest plannerRegistrationRequest = getPlannerRegistrationRequest();
         RegistrationResponse registrationResponse = userService.registerUser(plannerRegistrationRequest);
 
         // When
@@ -139,20 +123,22 @@ public class UserServiceTest {
         assertThat(getUserResponse).isNotNull();
     }
 
+    private static PlannerRegistrationRequest getPlannerRegistrationRequest() {
+        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
+        plannerRegistrationRequest.setFirstName("Retnaa");
+        plannerRegistrationRequest.setLastName("Dayok");
+        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
+        plannerRegistrationRequest.setPassword("password");
+        plannerRegistrationRequest.setPhoneNumber("07031005737");
+        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+        return plannerRegistrationRequest;
+    }
+
 
     @Test
     public void testGetAllTalents() {
         // Given
-        TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
-        talentRegistrationRequest.setFirstName("Retnaa");
-        talentRegistrationRequest.setLastName("Dayok");
-        talentRegistrationRequest.setEmail("dayokr@gmail.com");
-        talentRegistrationRequest.setPassword("password");
-        talentRegistrationRequest.setPhoneNumber("07031005737");
-        talentRegistrationRequest.setTalentCategory(TalentCategory.ARTISTE);
-        talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
-                + " An award winning star");
-        talentRegistrationRequest.setDisplayName("Jay Benjis");
+        TalentRegistrationRequest talentRegistrationRequest = getTalentRegistrationRequest();
         PortfolioRequest portfolioRequest = new PortfolioRequest();
         portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
         talentRegistrationRequest.setPortfolioRequest(portfolioRequest);

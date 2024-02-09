@@ -31,6 +31,58 @@ public class CalenderServiceTest {
     @Test
     public void testGetTalentCalenders() throws UserNotFoundException, BookingNotFoundException {
         // Given
+        TalentRegistrationRequest talentRegistrationRequest = getTalentRegistrationRequest();
+        PortfolioRequest portfolioRequest = new PortfolioRequest();
+        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
+        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
+        RegistrationResponse talentRegistrationResponse = userService.registerUser(talentRegistrationRequest);
+
+        PlannerRegistrationRequest plannerRegistrationRequest = getPlannerRegistrationRequest();
+        RegistrationResponse plannerRegistrationResponse = userService.registerUser(plannerRegistrationRequest);
+
+        BookingRequest bookTalentRequest = getBookingRequest(talentRegistrationResponse, plannerRegistrationResponse);
+        BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
+
+        AcceptBookingRequest acceptBookingRequest = getAcceptBookingRequest(bookTalentResponse, bookTalentRequest);
+        bookingService.acceptBooking(acceptBookingRequest);
+
+        // When
+        Long talentId = talentRegistrationResponse.getId();
+        List<GetTalentCalendarsResponse> getTalentCalenderResponse = calenderService.getTalentCalendars(talentId);
+        log.info("Calender :: {}", getTalentCalenderResponse);
+
+        // Assert
+        assertThat(getTalentCalenderResponse).isNotNull();
+    }
+
+    private static AcceptBookingRequest getAcceptBookingRequest(BookingResponse bookTalentResponse, BookingRequest bookTalentRequest) {
+        AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
+        acceptBookingRequest.setBookingId(bookTalentResponse.getBookingId());
+        acceptBookingRequest.setTalentId(bookTalentRequest.getTalentId());
+        return acceptBookingRequest;
+    }
+
+    private BookingRequest getBookingRequest(RegistrationResponse talentRegistrationResponse, RegistrationResponse plannerRegistrationResponse) {
+        BookingRequest bookTalentRequest = new BookingRequest();
+        EventDetailRequest eventDetailsRequest = getEventDetailRequest();
+        bookTalentRequest.setTalentId(talentRegistrationResponse.getId());
+        bookTalentRequest.setEventDetailRequest(eventDetailsRequest);
+        bookTalentRequest.setPlannerId(plannerRegistrationResponse.getId());
+        return bookTalentRequest;
+    }
+
+    private static PlannerRegistrationRequest getPlannerRegistrationRequest() {
+        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
+        plannerRegistrationRequest.setFirstName("Retnaa");
+        plannerRegistrationRequest.setLastName("Dayok");
+        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
+        plannerRegistrationRequest.setPassword("password");
+        plannerRegistrationRequest.setPhoneNumber("07031005737");
+        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
+        return plannerRegistrationRequest;
+    }
+
+    private static TalentRegistrationRequest getTalentRegistrationRequest() {
         TalentRegistrationRequest talentRegistrationRequest = new TalentRegistrationRequest();
         talentRegistrationRequest.setFirstName("Retnaa");
         talentRegistrationRequest.setLastName("Dayok");
@@ -41,39 +93,7 @@ public class CalenderServiceTest {
         talentRegistrationRequest.setBio("A young vibrant talented afro musician, singer of the hit song Banger."
                 + " An award winning star");
         talentRegistrationRequest.setDisplayName("Jay Benjis");
-        PortfolioRequest portfolioRequest = new PortfolioRequest();
-        portfolioRequest.setFirstLink("https://www.youtube.com/watch?v=1qw5ITr3k9E&t=780s");
-        talentRegistrationRequest.setPortfolioRequest(portfolioRequest);
-        RegistrationResponse talentRegistrationResponse = userService.registerUser(talentRegistrationRequest);
-
-        PlannerRegistrationRequest plannerRegistrationRequest = new PlannerRegistrationRequest();
-        plannerRegistrationRequest.setFirstName("Retnaa");
-        plannerRegistrationRequest.setLastName("Dayok");
-        plannerRegistrationRequest.setEmail("dayokr@gmail.com");
-        plannerRegistrationRequest.setPassword("password");
-        plannerRegistrationRequest.setPhoneNumber("07031005737");
-        plannerRegistrationRequest.setEventPlanningCompanyName("StarEvents Inc");
-        RegistrationResponse plannerRegistrationResponse = userService.registerUser(plannerRegistrationRequest);
-
-        BookingRequest bookTalentRequest = new BookingRequest();
-        EventDetailRequest eventDetailsRequest = getEventDetailRequest();
-        bookTalentRequest.setTalentId(talentRegistrationResponse.getId());
-        bookTalentRequest.setEventDetailRequest(eventDetailsRequest);
-        bookTalentRequest.setPlannerId(plannerRegistrationResponse.getId());
-        BookingResponse bookTalentResponse = bookingService.bookTalent(bookTalentRequest);
-
-        AcceptBookingRequest acceptBookingRequest = new AcceptBookingRequest();
-        acceptBookingRequest.setBookingId(bookTalentResponse.getBookingId());
-        acceptBookingRequest.setTalentId(bookTalentRequest.getTalentId());
-        bookingService.acceptBooking(acceptBookingRequest);
-
-        // When
-        Long talentId = talentRegistrationResponse.getId();
-        List<GetTalentCalendarsResponse> getTalentCalenderResponse = calenderService.getTalentCalendars(talentId);
-        log.info("Calender :: {}", getTalentCalenderResponse);
-
-        // Assert
-        assertThat(getTalentCalenderResponse).isNotNull();
+        return talentRegistrationRequest;
     }
 
 
